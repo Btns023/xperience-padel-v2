@@ -79,16 +79,25 @@ export default async function DemandesPage() {
                   </span>
                   <Badge
                     variant={
-                      r.status === "demande_recue" ? "secondary" : "default"
+                      r.status === "annulee"
+                        ? "destructive"
+                        : r.status === "demande_recue"
+                          ? "secondary"
+                          : "default"
                     }
                   >
                     {REGISTRATION_STATUS_LABEL[r.status]}
                   </Badge>
                   {r.level_mismatch ? (
-                    <Badge variant="outline">écart de niveau</Badge>
+                    <Badge
+                      variant="outline"
+                      className="border-amber-400 text-amber-700 dark:border-amber-500/50 dark:text-amber-400"
+                    >
+                      écart de niveau
+                    </Badge>
                   ) : null}
                   {r.cancel_requested_at && r.status !== "annulee" ? (
-                    <Badge variant="outline">annulation demandée</Badge>
+                    <Badge variant="destructive">annulation demandée</Badge>
                   ) : null}
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">
