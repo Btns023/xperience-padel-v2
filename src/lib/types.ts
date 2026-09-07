@@ -161,3 +161,67 @@ export const SLOT_STATUS_LABEL: Record<SlotStatus, string> = {
   open: "Ouvert",
   closed: "Fermé",
 };
+
+// --- Lot 2 : joueurs, entreprises, inscriptions ----------------------
+
+export type InvitationStatus = "none" | "pending" | "accepted";
+
+export type RegistrationStatus =
+  | "demande_recue"
+  | "groupe_constitue"
+  | "validee"
+  | "facturee"
+  | "payee"
+  | "annulee";
+
+export interface Organization {
+  id: string;
+  owner_id: string;
+  name: string;
+  address: string | null;
+  vat_number: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Player {
+  id: string;
+  managed_by: string;
+  profile_id: string | null;
+  first_name: string;
+  last_name: string;
+  email: string;
+  birthdate: string;
+  level_code: string;
+  image_consent: boolean;
+  invitation_status: InvitationStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Registration {
+  id: string;
+  player_id: string;
+  slot_id: string;
+  season_id: string;
+  status: RegistrationStatus;
+  billed_to_profile_id: string;
+  billed_to_org_id: string | null;
+  level_mismatch: boolean;
+  promo_code: string | null;
+  prorata_sessions: number | null;
+  notes: string | null;
+  cancel_requested_at: string | null;
+  requested_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const REGISTRATION_STATUS_LABEL: Record<RegistrationStatus, string> = {
+  demande_recue: "Demande reçue",
+  groupe_constitue: "Groupe constitué",
+  validee: "Validée",
+  facturee: "Facturée",
+  payee: "Payée",
+  annulee: "Annulée",
+};

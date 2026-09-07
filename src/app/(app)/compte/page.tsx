@@ -1,4 +1,6 @@
-import { requireUser, getCurrentProfile } from "@/lib/auth";
+import Link from "next/link";
+import { getCurrentProfile } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import {
   Card,
   CardContent,
@@ -7,38 +9,67 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+export const metadata = { title: "Mon espace" };
+
 export default async function ComptePage() {
-  await requireUser();
   const profile = await getCurrentProfile();
+  const supabase = await createClient();
+
+  const [{ count: playerCount }, { count: activeReg }] = await Promise.all([
+    supabase.from("players").select("*", { count: "exact", head: true }),
+    supabase
+      .from("registrations")
+      .select("*", { count: "exact", head: true })
+      .neq("status", "annulee"),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Mon espace</h1>
         <p className="text-muted-foreground">
-          Bienvenue{profile?.first_name ? `, ${profile.first_name}` : ""}.
+          Bonjour{profile?.first_name ? ` ${profile.first_name}` : ""}.
         </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Link href="/compte/joueurs">
+          <Card className="transition-colors hover:border-foreground/20">
+            <CardHeader>
+              <CardDescription>Mes joueurs</CardDescription>
+              <CardTitle className="text-3xl tabular-nums">
+                {playerCount ?? 0}
+              </CardTitle>
+            </CardHeader>
+          </Card>
+        </Link>
+        <Link href="/compte/inscriptions">
+          <Card className="transition-colors hover:border-foreground/20">
+            <CardHeader>
+              <CardDescription>Inscriptions en cours</CardDescription>
+              <CardTitle className="text-3xl tabular-nums">
+                {activeReg ?? 0}
+              </CardTitle>
+            </CardHeader>
+          </Card>
+        </Link>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Socle en place</CardTitle>
+          <CardTitle className="text-base">S&apos;inscrire à un cours</CardTitle>
           <CardDescription>
-            Lot 0 livré : compte, connexion, rôles. Les modules suivants
-            (joueurs, inscriptions, factures) arrivent aux prochains lots.
+            1. Ajoute les joueurs · 2. Choisis un créneau · 3. Envoie la demande.
+            Une facture suit après constitution du groupe (paiement par virement).
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          <dl className="grid gap-2 sm:grid-cols-2">
-            <div>
-              <dt className="font-medium text-foreground">Rôle</dt>
-              <dd>{profile?.role}</dd>
-            </div>
-            <div>
-              <dt className="font-medium text-foreground">Téléphone</dt>
-              <dd>{profile?.phone ?? "—"}</dd>
-            </div>
-          </dl>
+        <CardContent>
+          <Link
+            href="/compte/inscription"
+            className="text-sm underline underline-offset-4"
+          >
+            Voir les créneaux ouverts →
+          </Link>
         </CardContent>
       </Card>
     </div>

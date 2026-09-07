@@ -110,6 +110,44 @@ export type Database = {
         }
         Relationships: []
       }
+      organizations: {
+        Row: {
+          address: string | null
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+          vat_number: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organizations_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       padel_levels: {
         Row: {
           code: string
@@ -127,6 +165,73 @@ export type Database = {
           rank?: number
         }
         Relationships: []
+      }
+      players: {
+        Row: {
+          birthdate: string
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          image_consent: boolean
+          invitation_status: Database["public"]["Enums"]["invitation_status"]
+          last_name: string
+          level_code: string
+          managed_by: string
+          profile_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          birthdate: string
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          image_consent: boolean
+          invitation_status?: Database["public"]["Enums"]["invitation_status"]
+          last_name: string
+          level_code: string
+          managed_by: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          birthdate?: string
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          image_consent?: boolean
+          invitation_status?: Database["public"]["Enums"]["invitation_status"]
+          last_name?: string
+          level_code?: string
+          managed_by?: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_level_code_fkey"
+            columns: ["level_code"]
+            isOneToOne: false
+            referencedRelation: "padel_levels"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "players_managed_by_fkey"
+            columns: ["managed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "players_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       price_tiers: {
         Row: {
@@ -273,6 +378,96 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      registrations: {
+        Row: {
+          billed_to_org_id: string | null
+          billed_to_profile_id: string
+          cancel_requested_at: string | null
+          created_at: string
+          id: string
+          level_mismatch: boolean
+          notes: string | null
+          player_id: string
+          promo_code: string | null
+          prorata_sessions: number | null
+          requested_at: string
+          season_id: string
+          slot_id: string
+          status: Database["public"]["Enums"]["registration_status"]
+          updated_at: string
+        }
+        Insert: {
+          billed_to_org_id?: string | null
+          billed_to_profile_id: string
+          cancel_requested_at?: string | null
+          created_at?: string
+          id?: string
+          level_mismatch?: boolean
+          notes?: string | null
+          player_id: string
+          promo_code?: string | null
+          prorata_sessions?: number | null
+          requested_at?: string
+          season_id: string
+          slot_id: string
+          status?: Database["public"]["Enums"]["registration_status"]
+          updated_at?: string
+        }
+        Update: {
+          billed_to_org_id?: string | null
+          billed_to_profile_id?: string
+          cancel_requested_at?: string | null
+          created_at?: string
+          id?: string
+          level_mismatch?: boolean
+          notes?: string | null
+          player_id?: string
+          promo_code?: string | null
+          prorata_sessions?: number | null
+          requested_at?: string
+          season_id?: string
+          slot_id?: string
+          status?: Database["public"]["Enums"]["registration_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_billed_to_org_id_fkey"
+            columns: ["billed_to_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_billed_to_profile_id_fkey"
+            columns: ["billed_to_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "slots"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seasons: {
         Row: {
@@ -429,6 +624,7 @@ export type Database = {
     }
     Enums: {
       app_role: "client" | "coach" | "admin"
+      invitation_status: "none" | "pending" | "accepted"
       price_tier_kind: "group_size" | "duration" | "unit" | "flat"
       pricing_model: "per_group_size" | "per_duration" | "unit" | "flat"
       product_category:
@@ -437,6 +633,13 @@ export type Database = {
         | "stage"
         | "ete_indien"
         | "cours_prive"
+      registration_status:
+        | "demande_recue"
+        | "groupe_constitue"
+        | "validee"
+        | "facturee"
+        | "payee"
+        | "annulee"
       season_status: "draft" | "active" | "archived"
       slot_status: "draft" | "open" | "closed"
     }
@@ -570,6 +773,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["client", "coach", "admin"],
+      invitation_status: ["none", "pending", "accepted"],
       price_tier_kind: ["group_size", "duration", "unit", "flat"],
       pricing_model: ["per_group_size", "per_duration", "unit", "flat"],
       product_category: [
@@ -578,6 +782,14 @@ export const Constants = {
         "stage",
         "ete_indien",
         "cours_prive",
+      ],
+      registration_status: [
+        "demande_recue",
+        "groupe_constitue",
+        "validee",
+        "facturee",
+        "payee",
+        "annulee",
       ],
       season_status: ["draft", "active", "archived"],
       slot_status: ["draft", "open", "closed"],

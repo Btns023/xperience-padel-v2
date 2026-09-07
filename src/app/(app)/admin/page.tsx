@@ -11,22 +11,29 @@ import {
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
 
-  const [{ count: seasons }, { count: products }, { count: slots }, { count: openSlots }] =
+  const [{ count: pendingReq }, { count: openSlots }, { count: slots }, { count: seasons }] =
     await Promise.all([
-      supabase.from("seasons").select("*", { count: "exact", head: true }),
-      supabase.from("products").select("*", { count: "exact", head: true }),
-      supabase.from("slots").select("*", { count: "exact", head: true }),
+      supabase
+        .from("registrations")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "demande_recue"),
       supabase
         .from("slots")
         .select("*", { count: "exact", head: true })
         .eq("status", "open"),
+      supabase.from("slots").select("*", { count: "exact", head: true }),
+      supabase.from("seasons").select("*", { count: "exact", head: true }),
     ]);
 
   const stats = [
-    { label: "Saisons", value: seasons ?? 0, href: "/admin/saisons" },
-    { label: "Produits", value: products ?? 0, href: "/admin/produits" },
-    { label: "Créneaux", value: slots ?? 0, href: "/admin/creneaux" },
+    {
+      label: "Demandes en attente",
+      value: pendingReq ?? 0,
+      href: "/admin/demandes",
+    },
     { label: "Créneaux ouverts", value: openSlots ?? 0, href: "/admin/creneaux" },
+    { label: "Créneaux", value: slots ?? 0, href: "/admin/creneaux" },
+    { label: "Saisons", value: seasons ?? 0, href: "/admin/saisons" },
   ];
 
   return (
@@ -34,8 +41,8 @@ export default async function AdminDashboardPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Tableau de bord</h1>
         <p className="text-muted-foreground">
-          Lot 1 — catalogue de la saison. Les indicateurs de facturation et de
-          paiement arriveront avec les lots suivants.
+          Catalogue et demandes d&apos;inscription. Les indicateurs de
+          facturation et de paiement arriveront avec les lots suivants.
         </p>
       </div>
 
