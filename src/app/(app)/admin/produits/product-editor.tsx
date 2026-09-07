@@ -212,7 +212,7 @@ export function TierList({
           .slice()
           .sort((a, b) => a.position - b.position)
           .map((t) => (
-            <TierRow key={t.id} tier={t} />
+            <TierRow key={`${t.id}:${t.updated_at}`} tier={t} />
           ))}
       </div>
 

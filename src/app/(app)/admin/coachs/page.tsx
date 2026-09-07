@@ -28,7 +28,7 @@ export default async function CoachsPage() {
 
       <div className="flex flex-col gap-4">
         {coaches.map((c) => (
-          <CoachRow key={c.id} coach={c} />
+          <CoachRow key={`${c.id}:${c.updated_at}`} coach={c} />
         ))}
       </div>
 

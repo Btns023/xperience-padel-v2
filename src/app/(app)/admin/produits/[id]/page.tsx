@@ -45,7 +45,7 @@ export default async function ProduitDetailPage({
         </p>
       </div>
 
-      <ProductForm product={product} />
+      <ProductForm key={product.updated_at} product={product} />
       <TierList product={product} tiers={tiers} />
     </div>
   );

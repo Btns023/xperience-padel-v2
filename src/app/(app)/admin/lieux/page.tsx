@@ -27,7 +27,7 @@ export default async function LieuxPage() {
 
       <div className="flex flex-col gap-4">
         {locations.map((l) => (
-          <LocationRow key={l.id} location={l} />
+          <LocationRow key={`${l.id}:${l.updated_at}`} location={l} />
         ))}
       </div>
 
