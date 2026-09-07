@@ -39,6 +39,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          credit_note_prefix: string
+          id: string
+          invoice_prefix: string
+          issuer_address: string
+          issuer_bce: string
+          issuer_bic: string
+          issuer_iban: string
+          issuer_legal_name: string
+          issuer_name: string
+          payment_terms_days: number
+          updated_at: string
+          vat_note: string
+        }
+        Insert: {
+          credit_note_prefix?: string
+          id?: string
+          invoice_prefix?: string
+          issuer_address: string
+          issuer_bce: string
+          issuer_bic: string
+          issuer_iban: string
+          issuer_legal_name: string
+          issuer_name: string
+          payment_terms_days?: number
+          updated_at?: string
+          vat_note: string
+        }
+        Update: {
+          credit_note_prefix?: string
+          id?: string
+          invoice_prefix?: string
+          issuer_address?: string
+          issuer_bce?: string
+          issuer_bic?: string
+          issuer_iban?: string
+          issuer_legal_name?: string
+          issuer_name?: string
+          payment_terms_days?: number
+          updated_at?: string
+          vat_note?: string
+        }
+        Relationships: []
+      }
       coaches: {
         Row: {
           active: boolean
@@ -79,6 +124,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      document_counters: {
+        Row: {
+          kind: Database["public"]["Enums"]["invoice_kind"]
+          last_number: number
+          year: number
+        }
+        Insert: {
+          kind: Database["public"]["Enums"]["invoice_kind"]
+          last_number?: number
+          year: number
+        }
+        Update: {
+          kind?: Database["public"]["Enums"]["invoice_kind"]
+          last_number?: number
+          year?: number
+        }
+        Relationships: []
       }
       groups: {
         Row: {
@@ -133,6 +196,171 @@ export type Database = {
             columns: ["slot_id"]
             isOneToOne: false
             referencedRelation: "slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_lines: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          description: string
+          discount_cents: number
+          id: string
+          invoice_id: string
+          position: number
+          promo_code: string | null
+          quantity: number
+          registration_id: string | null
+          unit_price_cents: number
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          description: string
+          discount_cents?: number
+          id?: string
+          invoice_id: string
+          position?: number
+          promo_code?: string | null
+          quantity?: number
+          registration_id?: string | null
+          unit_price_cents: number
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          description?: string
+          discount_cents?: number
+          id?: string
+          invoice_id?: string
+          position?: number
+          promo_code?: string | null
+          quantity?: number
+          registration_id?: string | null
+          unit_price_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_lines_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_lines_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          billed_to_org_id: string | null
+          billed_to_profile_id: string
+          created_at: string
+          group_id: string | null
+          id: string
+          issued_on: string
+          issuer_snapshot: Json
+          kind: Database["public"]["Enums"]["invoice_kind"]
+          notes: string | null
+          number: string | null
+          paid_at: string | null
+          parent_invoice_id: string | null
+          recipient_snapshot: Json
+          season_id: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          structured_comm: string | null
+          total_cents: number
+          updated_at: string
+          vat_note: string
+        }
+        Insert: {
+          billed_to_org_id?: string | null
+          billed_to_profile_id: string
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          issued_on?: string
+          issuer_snapshot?: Json
+          kind?: Database["public"]["Enums"]["invoice_kind"]
+          notes?: string | null
+          number?: string | null
+          paid_at?: string | null
+          parent_invoice_id?: string | null
+          recipient_snapshot?: Json
+          season_id?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          structured_comm?: string | null
+          total_cents?: number
+          updated_at?: string
+          vat_note?: string
+        }
+        Update: {
+          billed_to_org_id?: string | null
+          billed_to_profile_id?: string
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          issued_on?: string
+          issuer_snapshot?: Json
+          kind?: Database["public"]["Enums"]["invoice_kind"]
+          notes?: string | null
+          number?: string | null
+          paid_at?: string | null
+          parent_invoice_id?: string | null
+          recipient_snapshot?: Json
+          season_id?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          structured_comm?: string | null
+          total_cents?: number
+          updated_at?: string
+          vat_note?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_billed_to_org_id_fkey"
+            columns: ["billed_to_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_billed_to_profile_id_fkey"
+            columns: ["billed_to_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_parent_invoice_id_fkey"
+            columns: ["parent_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
             referencedColumns: ["id"]
           },
         ]
@@ -436,6 +664,44 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          active: boolean
+          amount_cents: number
+          code: string
+          created_at: string
+          id: string
+          product_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          amount_cents: number
+          code: string
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          amount_cents?: number
+          code?: string
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_codes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       registrations: {
         Row: {
           billed_to_org_id: string | null
@@ -699,11 +965,17 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
+      next_document_number: {
+        Args: { p_kind: Database["public"]["Enums"]["invoice_kind"] }
+        Returns: number
+      }
     }
     Enums: {
       app_role: "client" | "coach" | "admin"
       group_status: "forming" | "confirmed"
       invitation_status: "none" | "pending" | "accepted"
+      invoice_kind: "invoice" | "credit_note"
+      invoice_status: "draft" | "sent" | "paid" | "cancelled"
       price_tier_kind: "group_size" | "duration" | "unit" | "flat"
       pricing_model: "per_group_size" | "per_duration" | "unit" | "flat"
       product_category:
@@ -854,6 +1126,8 @@ export const Constants = {
       app_role: ["client", "coach", "admin"],
       group_status: ["forming", "confirmed"],
       invitation_status: ["none", "pending", "accepted"],
+      invoice_kind: ["invoice", "credit_note"],
+      invoice_status: ["draft", "sent", "paid", "cancelled"],
       price_tier_kind: ["group_size", "duration", "unit", "flat"],
       pricing_model: ["per_group_size", "per_duration", "unit", "flat"],
       product_category: [

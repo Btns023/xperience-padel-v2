@@ -6,6 +6,7 @@ const NAV = [
   { href: "/compte/joueurs", label: "Mes joueurs" },
   { href: "/compte/inscription", label: "S'inscrire" },
   { href: "/compte/inscriptions", label: "Mes inscriptions" },
+  { href: "/compte/factures", label: "Mes factures" },
 ];
 
 export default async function CompteLayout({

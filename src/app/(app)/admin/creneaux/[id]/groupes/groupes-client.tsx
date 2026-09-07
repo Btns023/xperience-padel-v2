@@ -7,6 +7,7 @@ import { GROUP_STATUS_LABEL, type GroupStatus } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import {
   assignRegistration,
   unassignRegistration,
@@ -16,6 +17,7 @@ import {
   confirmGroup,
   type ConfirmState,
 } from "./actions";
+import { generateInvoicesForGroup } from "@/app/(app)/admin/factures/actions";
 import { CancellationActions } from "@/app/(app)/admin/demandes/cancel-actions";
 
 export type RegView = {
@@ -113,11 +115,13 @@ export function GroupCard({
   group,
   members,
   pricingModel,
+  invoiced,
 }: {
   slotId: string;
   group: GroupView;
   members: RegView[];
   pricingModel: string;
+  invoiced: boolean;
 }) {
   const [state, confirmAction] = useActionState<ConfirmState, FormData>(
     confirmGroup.bind(null, slotId, group.id),
@@ -183,14 +187,27 @@ export function GroupCard({
       )}
 
       {confirmed ? (
-        <form
-          action={reopenGroup.bind(null, slotId, group.id)}
-          className="border-t pt-3"
-        >
-          <Button type="submit" variant="outline" size="sm">
-            Rouvrir le groupe
-          </Button>
-        </form>
+        <div className="flex flex-wrap items-center gap-3 border-t pt-3">
+          {invoiced ? (
+            <Link
+              href="/admin/factures"
+              className="text-sm underline underline-offset-4"
+            >
+              Facturé ✓ — voir les factures
+            </Link>
+          ) : (
+            <form action={generateInvoicesForGroup.bind(null, group.id, slotId)}>
+              <Button type="submit" size="sm">
+                Facturer ce groupe
+              </Button>
+            </form>
+          )}
+          <form action={reopenGroup.bind(null, slotId, group.id)}>
+            <Button type="submit" variant="outline" size="sm">
+              Rouvrir le groupe
+            </Button>
+          </form>
+        </div>
       ) : (
         <>
           <form

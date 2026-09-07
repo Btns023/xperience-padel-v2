@@ -246,3 +246,83 @@ export const GROUP_STATUS_LABEL: Record<GroupStatus, string> = {
   forming: "En constitution",
   confirmed: "Confirmé",
 };
+
+// --- Lot 4 : facturation --------------------------------------------
+
+export type InvoiceKind = "invoice" | "credit_note";
+export type InvoiceStatus = "draft" | "sent" | "paid" | "cancelled";
+
+export interface AppSettings {
+  id: string;
+  issuer_name: string;
+  issuer_legal_name: string;
+  issuer_address: string;
+  issuer_bce: string;
+  issuer_iban: string;
+  issuer_bic: string;
+  vat_note: string;
+  invoice_prefix: string;
+  credit_note_prefix: string;
+  payment_terms_days: number;
+  updated_at: string;
+}
+
+export interface PromoCode {
+  id: string;
+  code: string;
+  amount_cents: number;
+  product_id: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Invoice {
+  id: string;
+  kind: InvoiceKind;
+  number: string | null;
+  status: InvoiceStatus;
+  issued_on: string;
+  billed_to_profile_id: string;
+  billed_to_org_id: string | null;
+  group_id: string | null;
+  season_id: string | null;
+  parent_invoice_id: string | null;
+  issuer_snapshot: Record<string, string>;
+  recipient_snapshot: Record<string, string>;
+  vat_note: string;
+  structured_comm: string | null;
+  total_cents: number;
+  notes: string | null;
+  sent_at: string | null;
+  paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InvoiceLine {
+  id: string;
+  invoice_id: string;
+  registration_id: string | null;
+  description: string;
+  quantity: number;
+  unit_price_cents: number;
+  discount_cents: number;
+  promo_code: string | null;
+  amount_cents: number;
+  position: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export const INVOICE_STATUS_LABEL: Record<InvoiceStatus, string> = {
+  draft: "Brouillon",
+  sent: "Envoyée",
+  paid: "Payée",
+  cancelled: "Annulée",
+};
+
+export const INVOICE_KIND_LABEL: Record<InvoiceKind, string> = {
+  invoice: "Facture",
+  credit_note: "Note de crédit",
+};

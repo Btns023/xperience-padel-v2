@@ -58,6 +58,14 @@ export default async function GroupesPage({
         .order("label"),
     ]);
 
+  const { data: invRows } = await supabase
+    .from("invoices")
+    .select("group_id")
+    .eq("kind", "invoice")
+    .neq("status", "cancelled")
+    .not("group_id", "is", null);
+  const invoicedGroups = new Set((invRows ?? []).map((i) => i.group_id));
+
   if (!slotData) notFound();
   const slot = slotData as unknown as {
     weekday: number;
@@ -147,6 +155,7 @@ export default async function GroupesPage({
               group={g}
               members={membersByGroup.get(g.id) ?? []}
               pricingModel={pricingModel}
+              invoiced={invoicedGroups.has(g.id)}
             />
           ))
         )}

@@ -15,6 +15,7 @@ const schema = z.object({
   org_name: z.string().trim().optional(),
   org_address: z.string().trim().optional(),
   org_vat: z.string().trim().optional(),
+  promo_code: z.string().trim().optional(),
 });
 
 export async function createRegistrations(
@@ -30,12 +31,16 @@ export async function createRegistrations(
     org_name: formData.get("org_name") || undefined,
     org_address: formData.get("org_address") || undefined,
     org_vat: formData.get("org_vat") || undefined,
+    promo_code: formData.get("promo_code") || undefined,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Formulaire invalide" };
   }
   const { slot_id, player_ids, as_org, org_name, org_address, org_vat } =
     parsed.data;
+  const promoCode = parsed.data.promo_code
+    ? parsed.data.promo_code.toUpperCase()
+    : null;
 
   if (as_org && !org_name) {
     return { error: "Nom de l'entreprise requis." };
@@ -114,6 +119,7 @@ export async function createRegistrations(
       billed_to_profile_id: user.id,
       billed_to_org_id: orgId,
       level_mismatch: mismatch,
+      promo_code: promoCode,
     };
   });
 

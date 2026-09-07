@@ -124,6 +124,18 @@ export function RegisterForm({
         ) : null}
       </div>
 
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="promo_code">
+          Code promo <span className="text-muted-foreground">(facultatif)</span>
+        </Label>
+        <Input
+          id="promo_code"
+          name="promo_code"
+          placeholder="Ex. RENTREE25"
+          className="max-w-xs uppercase"
+        />
+      </div>
+
       {state.error ? (
         <p className="text-sm text-destructive" role="alert">
           {state.error}
