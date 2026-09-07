@@ -46,6 +46,18 @@ export function MetaForm({ invoice }: { invoice: Invoice }) {
           className="h-8"
         />
       </div>
+      <div className="flex flex-col gap-1">
+        <Label htmlFor="due_on" className="text-xs">
+          Date d&apos;échéance
+        </Label>
+        <Input
+          id="due_on"
+          name="due_on"
+          type="date"
+          defaultValue={invoice.due_on ?? ""}
+          className="h-8"
+        />
+      </div>
       <div className="flex flex-1 flex-col gap-1">
         <Label htmlFor="vat_note" className="text-xs">
           Mention TVA

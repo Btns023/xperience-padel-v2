@@ -260,7 +260,13 @@ export interface AppSettings {
   issuer_bce: string;
   issuer_iban: string;
   issuer_bic: string;
+  issuer_phone: string;
+  issuer_email: string;
+  issuer_bank: string;
+  logo_data_uri: string | null;
   vat_note: string;
+  footer_legal: string;
+  cgv_note: string;
   invoice_prefix: string;
   credit_note_prefix: string;
   payment_terms_days: number;
@@ -288,6 +294,7 @@ export interface Invoice {
   group_id: string | null;
   season_id: string | null;
   parent_invoice_id: string | null;
+  due_on: string | null;
   issuer_snapshot: Record<string, string>;
   recipient_snapshot: Record<string, string>;
   vat_note: string;

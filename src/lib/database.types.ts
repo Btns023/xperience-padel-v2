@@ -41,43 +41,61 @@ export type Database = {
     Tables: {
       app_settings: {
         Row: {
+          cgv_note: string
           credit_note_prefix: string
+          footer_legal: string
           id: string
           invoice_prefix: string
           issuer_address: string
+          issuer_bank: string
           issuer_bce: string
           issuer_bic: string
+          issuer_email: string
           issuer_iban: string
           issuer_legal_name: string
           issuer_name: string
+          issuer_phone: string
+          logo_data_uri: string | null
           payment_terms_days: number
           updated_at: string
           vat_note: string
         }
         Insert: {
+          cgv_note?: string
           credit_note_prefix?: string
+          footer_legal?: string
           id?: string
           invoice_prefix?: string
           issuer_address: string
+          issuer_bank?: string
           issuer_bce: string
           issuer_bic: string
+          issuer_email?: string
           issuer_iban: string
           issuer_legal_name: string
           issuer_name: string
+          issuer_phone?: string
+          logo_data_uri?: string | null
           payment_terms_days?: number
           updated_at?: string
           vat_note: string
         }
         Update: {
+          cgv_note?: string
           credit_note_prefix?: string
+          footer_legal?: string
           id?: string
           invoice_prefix?: string
           issuer_address?: string
+          issuer_bank?: string
           issuer_bce?: string
           issuer_bic?: string
+          issuer_email?: string
           issuer_iban?: string
           issuer_legal_name?: string
           issuer_name?: string
+          issuer_phone?: string
+          logo_data_uri?: string | null
           payment_terms_days?: number
           updated_at?: string
           vat_note?: string
@@ -265,6 +283,7 @@ export type Database = {
           billed_to_org_id: string | null
           billed_to_profile_id: string
           created_at: string
+          due_on: string | null
           group_id: string | null
           id: string
           issued_on: string
@@ -287,6 +306,7 @@ export type Database = {
           billed_to_org_id?: string | null
           billed_to_profile_id: string
           created_at?: string
+          due_on?: string | null
           group_id?: string | null
           id?: string
           issued_on?: string
@@ -309,6 +329,7 @@ export type Database = {
           billed_to_org_id?: string | null
           billed_to_profile_id?: string
           created_at?: string
+          due_on?: string | null
           group_id?: string | null
           id?: string
           issued_on?: string

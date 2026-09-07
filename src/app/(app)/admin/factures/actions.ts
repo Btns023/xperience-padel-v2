@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { parseEurosToCents } from "@/lib/format";
 import { commBaseFor, structuredCommunication } from "@/lib/belgium";
@@ -14,7 +14,7 @@ function refresh(invoiceId?: string) {
   if (invoiceId) revalidatePath(`/admin/factures/${invoiceId}`);
 }
 
-type Settings = {
+type Settings = Record<string, string> & {
   issuer_name: string;
   issuer_legal_name: string;
   issuer_address: string;
@@ -22,7 +22,19 @@ type Settings = {
   issuer_iban: string;
   issuer_bic: string;
   vat_note: string;
+  payment_terms_days: number;
 };
+
+function docNumber(kind: "invoice" | "credit_note", year: number, n: number) {
+  const seq = String(n).padStart(3, "0");
+  return kind === "credit_note" ? `NC ${year}-${seq}` : `${year}-${seq}`;
+}
+
+function addDays(iso: string, days: number): string {
+  const d = new Date(iso);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
 
 async function loadSettings(): Promise<Settings> {
   const supabase = await createClient();
@@ -108,15 +120,26 @@ export async function generateInvoicesForGroup(
         .select("first_name, last_name, address_line, postal_code, city")
         .eq("id", payerId)
         .single();
+      let email = "";
+      try {
+        const { data: u } = await createAdminClient().auth.admin.getUserById(
+          payerId,
+        );
+        email = u.user?.email ?? "";
+      } catch {
+        /* e-mail facultatif sur la facture */
+      }
       recipient = {
         name: `${prof?.first_name ?? ""} ${prof?.last_name ?? ""}`.trim(),
         address: [prof?.address_line, `${prof?.postal_code ?? ""} ${prof?.city ?? ""}`.trim()]
           .filter(Boolean)
           .join(", "),
+        email,
         type: "particulier",
       };
     }
 
+    const today = new Date().toISOString().slice(0, 10);
     const { data: invoice, error: invErr } = await supabase
       .from("invoices")
       .insert({
@@ -126,6 +149,8 @@ export async function generateInvoicesForGroup(
         billed_to_org_id: orgId,
         group_id: groupId,
         season_id: seasonId,
+        issued_on: today,
+        due_on: addDays(today, Number(settings.payment_terms_days) || 15),
         issuer_snapshot: { ...settings },
         recipient_snapshot: recipient,
         vat_note: settings.vat_note,
@@ -272,6 +297,7 @@ export async function updateInvoiceMeta(
     .from("invoices")
     .update({
       issued_on: String(formData.get("issued_on") ?? "") || undefined,
+      due_on: String(formData.get("due_on") ?? "") || null,
       vat_note: String(formData.get("vat_note") ?? ""),
       notes: String(formData.get("notes") ?? "").trim() || null,
     })
@@ -298,20 +324,25 @@ export async function issueInvoice(invoiceId: string): Promise<void> {
   if (nErr) throw new Error(nErr.message);
 
   const year = new Date().getFullYear();
-  const prefix =
-    inv.kind === "credit_note"
-      ? ((inv.issuer_snapshot as Record<string, string>)?.credit_note_prefix ??
-        "NCXP")
-      : ((inv.issuer_snapshot as Record<string, string>)?.invoice_prefix ??
-        "FXP");
-  const number = `${prefix}-${year}-${String(n).padStart(4, "0")}`;
+  const number = docNumber(inv.kind, year, n as number);
   const comm = structuredCommunication(commBaseFor(year, n as number));
+
+  const { data: full } = await supabase
+    .from("invoices")
+    .select("issued_on, due_on, issuer_snapshot")
+    .eq("id", invoiceId)
+    .single();
+  const terms =
+    Number(
+      (full?.issuer_snapshot as Record<string, string>)?.payment_terms_days,
+    ) || 15;
 
   const { error } = await supabase
     .from("invoices")
     .update({
       number,
       structured_comm: inv.kind === "invoice" ? comm : null,
+      due_on: full?.due_on ?? addDays(full?.issued_on ?? new Date().toISOString().slice(0, 10), terms),
       status: "sent",
       sent_at: new Date().toISOString(),
     })
@@ -379,10 +410,7 @@ export async function createCreditNote(invoiceId: string): Promise<void> {
   });
   if (nErr) throw new Error(nErr.message);
   const year = new Date().getFullYear();
-  const prefix =
-    (inv.issuer_snapshot as Record<string, string>)?.credit_note_prefix ??
-    "NCXP";
-  const number = `${prefix}-${year}-${String(n).padStart(4, "0")}`;
+  const number = docNumber("credit_note", year, n as number);
 
   const { data: cn, error: cnErr } = await supabase
     .from("invoices")
