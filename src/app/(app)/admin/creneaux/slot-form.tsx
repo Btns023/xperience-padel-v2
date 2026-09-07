@@ -54,6 +54,12 @@ function Field({
   );
 }
 
+/** Base UI : `items` (valeur → libellé) permet à <SelectValue> d'afficher le
+ *  libellé de l'option sélectionnée au lieu de la valeur brute. */
+function toItems(pairs: [string, string][]): Record<string, string> {
+  return Object.fromEntries(pairs);
+}
+
 export function SlotForm({
   action,
   slot,
@@ -76,11 +82,32 @@ export function SlotForm({
   const [state, formAction] = useActionState<FormState, FormData>(action, {});
   const fe = state.fieldErrors ?? {};
 
+  const seasonItems = toItems(seasons.map((s) => [s.id, s.name]));
+  const productItems = toItems(products.map((p) => [p.id, p.name]));
+  const locationItems = toItems([
+    ["", "—"],
+    ...locations.map((l) => [l.id, l.name] as [string, string]),
+  ]);
+  const coachItems = toItems([
+    ["", "—"],
+    ...coaches.map(
+      (c) => [c.id, `${c.first_name} ${c.last_name}`] as [string, string],
+    ),
+  ]);
+  const weekdayItems = toItems(
+    WEEKDAY_OPTIONS.map((d) => [String(d.value), d.label]),
+  );
+  const levelItems = toItems([
+    ["", "—"],
+    ...levels.map((l) => [l.code, l.label] as [string, string]),
+  ]);
+  const statusItems = SLOT_STATUS_LABEL as Record<string, string>;
+
   return (
     <form action={formAction} className="flex max-w-2xl flex-col gap-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Saison" htmlFor="season_id" error={fe.season_id}>
-          <Select name="season_id" defaultValue={slot?.season_id}>
+          <Select name="season_id" defaultValue={slot?.season_id} items={seasonItems}>
             <SelectTrigger id="season_id">
               <SelectValue placeholder="Choisir…" />
             </SelectTrigger>
@@ -95,7 +122,11 @@ export function SlotForm({
         </Field>
 
         <Field label="Produit" htmlFor="product_id" error={fe.product_id}>
-          <Select name="product_id" defaultValue={slot?.product_id}>
+          <Select
+            name="product_id"
+            defaultValue={slot?.product_id}
+            items={productItems}
+          >
             <SelectTrigger id="product_id">
               <SelectValue placeholder="Choisir…" />
             </SelectTrigger>
@@ -112,7 +143,11 @@ export function SlotForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Lieu" htmlFor="location_id">
-          <Select name="location_id" defaultValue={slot?.location_id ?? ""}>
+          <Select
+            name="location_id"
+            defaultValue={slot?.location_id ?? ""}
+            items={locationItems}
+          >
             <SelectTrigger id="location_id">
               <SelectValue placeholder="—" />
             </SelectTrigger>
@@ -128,7 +163,11 @@ export function SlotForm({
         </Field>
 
         <Field label="Coach" htmlFor="coach_id">
-          <Select name="coach_id" defaultValue={slot?.coach_id ?? ""}>
+          <Select
+            name="coach_id"
+            defaultValue={slot?.coach_id ?? ""}
+            items={coachItems}
+          >
             <SelectTrigger id="coach_id">
               <SelectValue placeholder="—" />
             </SelectTrigger>
@@ -149,6 +188,7 @@ export function SlotForm({
           <Select
             name="weekday"
             defaultValue={String(slot?.weekday ?? 2)}
+            items={weekdayItems}
           >
             <SelectTrigger id="weekday">
               <SelectValue />
@@ -173,7 +213,11 @@ export function SlotForm({
           />
         </Field>
 
-        <Field label="Durée (min)" htmlFor="duration_minutes" error={fe.duration_minutes}>
+        <Field
+          label="Durée (min)"
+          htmlFor="duration_minutes"
+          error={fe.duration_minutes}
+        >
           <Input
             id="duration_minutes"
             name="duration_minutes"
@@ -186,7 +230,11 @@ export function SlotForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field label="Nombre de séances" htmlFor="session_count" error={fe.session_count}>
+        <Field
+          label="Nombre de séances"
+          htmlFor="session_count"
+          error={fe.session_count}
+        >
           <Input
             id="session_count"
             name="session_count"
@@ -220,7 +268,11 @@ export function SlotForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Niveau min." htmlFor="min_level_code">
-          <Select name="min_level_code" defaultValue={slot?.min_level_code ?? ""}>
+          <Select
+            name="min_level_code"
+            defaultValue={slot?.min_level_code ?? ""}
+            items={levelItems}
+          >
             <SelectTrigger id="min_level_code">
               <SelectValue placeholder="—" />
             </SelectTrigger>
@@ -236,7 +288,11 @@ export function SlotForm({
         </Field>
 
         <Field label="Niveau max." htmlFor="max_level_code">
-          <Select name="max_level_code" defaultValue={slot?.max_level_code ?? ""}>
+          <Select
+            name="max_level_code"
+            defaultValue={slot?.max_level_code ?? ""}
+            items={levelItems}
+          >
             <SelectTrigger id="max_level_code">
               <SelectValue placeholder="—" />
             </SelectTrigger>
@@ -252,10 +308,7 @@ export function SlotForm({
         </Field>
       </div>
 
-      <Field
-        label="Étiquette de niveau (visible de tous)"
-        htmlFor="level_note"
-      >
+      <Field label="Étiquette de niveau (visible de tous)" htmlFor="level_note">
         <Input
           id="level_note"
           name="level_note"
@@ -265,7 +318,11 @@ export function SlotForm({
       </Field>
 
       <Field label="Statut" htmlFor="status">
-        <Select name="status" defaultValue={slot?.status ?? "draft"}>
+        <Select
+          name="status"
+          defaultValue={slot?.status ?? "draft"}
+          items={statusItems}
+        >
           <SelectTrigger id="status">
             <SelectValue />
           </SelectTrigger>

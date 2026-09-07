@@ -119,7 +119,11 @@ export function SeasonForm({
       </div>
 
       <Field name="status" label="Statut" error={fe.status}>
-        <Select name="status" defaultValue={season?.status ?? "draft"}>
+        <Select
+          name="status"
+          defaultValue={season?.status ?? "draft"}
+          items={SEASON_STATUS_LABEL as Record<string, string>}
+        >
           <SelectTrigger id="status">
             <SelectValue />
           </SelectTrigger>
