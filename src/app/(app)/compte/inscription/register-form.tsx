@@ -22,30 +22,17 @@ function Submit() {
 export function RegisterForm({
   slotId,
   players,
-  levelRank,
-  slotMinRank,
-  slotMaxRank,
+  warnByPlayer,
 }: {
   slotId: string;
   players: Player[];
-  levelRank: Record<string, number>;
-  slotMinRank: number | null;
-  slotMaxRank: number | null;
+  warnByPlayer: Record<string, boolean>;
 }) {
   const [state, formAction] = useActionState<RegState, FormData>(
     createRegistrations,
     {},
   );
   const [asOrg, setAsOrg] = useState(false);
-
-  function mismatch(p: Player) {
-    const r = levelRank[p.level_code];
-    if (r === undefined) return false;
-    return (
-      (slotMinRank !== null && r < slotMinRank) ||
-      (slotMaxRank !== null && r > slotMaxRank)
-    );
-  }
 
   if (players.length === 0) {
     return (
@@ -70,11 +57,15 @@ export function RegisterForm({
           Joueur(s) à inscrire sur ce créneau
         </legend>
         {players.map((p) => {
-          const warn = mismatch(p);
+          const warn = warnByPlayer[p.id];
           return (
             <label
               key={p.id}
-              className="flex items-start gap-3 rounded-md border p-3 text-sm"
+              className={`flex items-start gap-3 rounded-md border p-3 text-sm ${
+                warn
+                  ? "border-amber-400 bg-amber-50 dark:border-amber-500/50 dark:bg-amber-500/10"
+                  : ""
+              }`}
             >
               <input
                 type="checkbox"
@@ -90,9 +81,10 @@ export function RegisterForm({
                   · {p.level_code} · né(e) le {formatDate(p.birthdate)}
                 </span>
                 {warn ? (
-                  <span className="mt-1 block text-xs text-amber-600 dark:text-amber-500">
-                    Niveau hors de l&apos;étiquette du créneau — l&apos;inscription
-                    reste possible, l&apos;académie ajustera si besoin.
+                  <span className="mt-1 block font-medium text-amber-700 dark:text-amber-400">
+                    ⚠ Niveau hors de l&apos;étiquette du créneau (
+                    {p.level_code}). L&apos;inscription reste possible,
+                    l&apos;académie ajustera si besoin.
                   </span>
                 ) : null}
               </span>

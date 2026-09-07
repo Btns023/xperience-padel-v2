@@ -56,13 +56,22 @@ export default async function SlotInscriptionPage({
   const players = (playersData ?? []) as Player[];
   const levels = (levelsData ?? []) as PadelLevel[];
 
-  const rankByCode = Object.fromEntries(levels.map((l) => [l.code, l.rank]));
+  const rankByCode = new Map(levels.map((l) => [l.code, Number(l.rank)]));
   const minRank = slot.min_level_code
-    ? (rankByCode[slot.min_level_code] ?? null)
+    ? (rankByCode.get(slot.min_level_code) ?? null)
     : null;
   const maxRank = slot.max_level_code
-    ? (rankByCode[slot.max_level_code] ?? null)
+    ? (rankByCode.get(slot.max_level_code) ?? null)
     : null;
+
+  // Écart de niveau calculé côté serveur, une fois, par joueur.
+  const warnByPlayer: Record<string, boolean> = {};
+  for (const p of players) {
+    const r = rankByCode.get(p.level_code);
+    warnByPlayer[p.id] =
+      r !== undefined &&
+      ((minRank !== null && r < minRank) || (maxRank !== null && r > maxRank));
+  }
 
   const tiers = (slot.products?.price_tiers ?? []).filter((t) => t.active);
   const level =
@@ -115,9 +124,7 @@ export default async function SlotInscriptionPage({
       <RegisterForm
         slotId={slot.id}
         players={players}
-        levelRank={rankByCode}
-        slotMinRank={minRank}
-        slotMaxRank={maxRank}
+        warnByPlayer={warnByPlayer}
       />
     </div>
   );
