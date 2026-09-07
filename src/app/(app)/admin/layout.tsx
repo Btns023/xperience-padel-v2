@@ -5,6 +5,7 @@ const NAV = [
   { href: "/admin", label: "Tableau de bord", exact: true },
   { href: "/admin/demandes", label: "Demandes d'inscription" },
   { href: "/admin/factures", label: "Factures" },
+  { href: "/admin/relances", label: "Impayés & relances" },
   { href: "/admin/codes-promo", label: "Codes promo" },
   { href: "/admin/saisons", label: "Saisons" },
   { href: "/admin/produits", label: "Produits & tarifs" },

@@ -7,12 +7,15 @@ import {
   INVOICE_STATUS_LABEL,
   type Invoice,
   type InvoiceLine,
+  type Payment,
 } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import {
   MetaForm,
   LinesEditor,
   InvoiceActions,
+  PaymentsPanel,
+  DunningPanel,
 } from "../facture-editor";
 
 export const metadata = { title: "Facture" };
@@ -24,18 +27,28 @@ export default async function FactureDetailPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
-  const [{ data: invData }, { data: linesData }] = await Promise.all([
-    supabase.from("invoices").select("*").eq("id", id).single(),
-    supabase
-      .from("invoice_lines")
-      .select("*")
-      .eq("invoice_id", id)
-      .order("position"),
-  ]);
+  const [{ data: invData }, { data: linesData }, { data: pmtData }] =
+    await Promise.all([
+      supabase.from("invoices").select("*").eq("id", id).single(),
+      supabase
+        .from("invoice_lines")
+        .select("*")
+        .eq("invoice_id", id)
+        .order("position"),
+      supabase
+        .from("payments")
+        .select("*")
+        .eq("invoice_id", id)
+        .order("paid_on"),
+    ]);
   if (!invData) notFound();
   const invoice = invData as Invoice;
   const lines = (linesData ?? []) as InvoiceLine[];
+  const payments = (pmtData ?? []) as Payment[];
   const isDraft = invoice.status === "draft";
+  const showPayments =
+    invoice.kind === "invoice" &&
+    (invoice.status === "sent" || invoice.status === "paid");
 
   return (
     <div className="flex flex-col gap-6">
@@ -74,6 +87,13 @@ export default async function FactureDetailPage({
       </div>
 
       <InvoiceActions invoice={invoice} />
+
+      {showPayments ? (
+        <>
+          <PaymentsPanel invoice={invoice} payments={payments} />
+          <DunningPanel invoice={invoice} />
+        </>
+      ) : null}
 
       {isDraft ? (
         <>

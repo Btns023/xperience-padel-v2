@@ -36,10 +36,14 @@ export default async function AdminDashboardPage() {
       .gte("issued_on", since),
     supabase
       .from("invoices")
-      .select("total_cents")
+      .select("total_cents, dunning_count")
       .eq("kind", "invoice")
       .eq("status", "sent"),
   ]);
+
+  const flagged = (unpaidInvoices ?? []).filter(
+    (i) => (i.dunning_count ?? 0) >= 3,
+  ).length;
 
   const billedMonth = (monthInvoices ?? [])
     .filter((i) => i.kind === "invoice")
@@ -71,7 +75,12 @@ export default async function AdminDashboardPage() {
     {
       label: `Impayés (${(unpaidInvoices ?? []).length})`,
       value: formatEuros(unpaidTotal),
-      href: "/admin/factures",
+      href: "/admin/relances",
+    },
+    {
+      label: "Factures signalées",
+      value: String(flagged),
+      href: "/admin/relances",
     },
     {
       label: "Créneaux ouverts",

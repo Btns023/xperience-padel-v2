@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
-import { formatEuros } from "@/lib/format";
-import type { Invoice, InvoiceLine } from "@/lib/types";
+import { formatDate, formatEuros } from "@/lib/format";
+import type { Invoice, InvoiceLine, Payment } from "@/lib/types";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,11 +13,15 @@ import {
   deleteLine,
   updateInvoiceMeta,
   issueInvoice,
-  markPaid,
-  markUnpaid,
   deleteDraft,
   createCreditNote,
 } from "./actions";
+import {
+  recordPayment,
+  deletePayment,
+  toggleDunningPause,
+  dunOne,
+} from "./payment-actions";
 
 function Sm({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -191,36 +195,157 @@ export function InvoiceActions({ invoice }: { invoice: Invoice }) {
         </>
       ) : null}
 
-      {invoice.status === "sent" && invoice.kind === "invoice" ? (
-        <>
-          <form action={markPaid.bind(null, invoice.id)}>
-            <Sm label="Marquer payée" />
-          </form>
-          <form action={createCreditNote.bind(null, invoice.id)}>
-            <Button type="submit" variant="destructive" size="sm">
-              Note de crédit (annuler + rembourser)
-            </Button>
-          </form>
-        </>
+      {(invoice.status === "sent" || invoice.status === "paid") &&
+      invoice.kind === "invoice" ? (
+        <form action={createCreditNote.bind(null, invoice.id)}>
+          <Button type="submit" variant="destructive" size="sm">
+            Note de crédit (annuler + rembourser)
+          </Button>
+        </form>
+      ) : null}
+    </div>
+  );
+}
+
+export function PaymentsPanel({
+  invoice,
+  payments,
+}: {
+  invoice: Invoice;
+  payments: Payment[];
+}) {
+  const paid = payments.reduce((s, p) => s + p.amount_cents, 0);
+  const remaining = invoice.total_cents - paid;
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-sm font-medium">Paiements</p>
+        <p className="text-sm tabular-nums text-muted-foreground">
+          Réglé {formatEuros(paid)} / {formatEuros(invoice.total_cents)} ·{" "}
+          {remaining > 0 ? (
+            <span className="text-foreground">
+              reste {formatEuros(remaining)}
+            </span>
+          ) : (
+            <span className="text-foreground">soldé</span>
+          )}
+        </p>
+      </div>
+
+      {payments.length > 0 ? (
+        <ul className="flex flex-col gap-1.5 text-sm">
+          {payments.map((p) => (
+            <li
+              key={p.id}
+              className="flex flex-wrap items-center justify-between gap-2"
+            >
+              <span>
+                <span className="tabular-nums font-medium">
+                  {formatEuros(p.amount_cents)}
+                </span>{" "}
+                <span className="text-muted-foreground">
+                  · {formatDate(p.paid_on)} · {p.method}
+                  {p.reference ? ` · ${p.reference}` : ""}
+                </span>
+              </span>
+              <form action={deletePayment.bind(null, invoice.id, p.id)}>
+                <button
+                  type="submit"
+                  className="text-xs text-destructive underline-offset-4 hover:underline"
+                >
+                  Retirer
+                </button>
+              </form>
+            </li>
+          ))}
+        </ul>
       ) : null}
 
-      {invoice.status === "paid" ? (
-        <>
-          <form action={markUnpaid.bind(null, invoice.id)}>
-            <button
-              type="submit"
-              className="text-xs text-muted-foreground underline-offset-4 hover:underline"
-            >
-              Annuler le pointage du paiement
-            </button>
-          </form>
-          <form action={createCreditNote.bind(null, invoice.id)}>
-            <Button type="submit" variant="destructive" size="sm">
-              Note de crédit (rembourser)
-            </Button>
-          </form>
-        </>
+      <form
+        action={recordPayment.bind(null, invoice.id)}
+        className="flex flex-wrap items-end gap-3 border-t pt-3"
+      >
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-muted-foreground">Montant (€)</span>
+          <Input
+            name="amount"
+            inputMode="decimal"
+            defaultValue={
+              remaining > 0 ? (remaining / 100).toString() : ""
+            }
+            className="h-8 w-28"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-muted-foreground">Date</span>
+          <Input
+            name="paid_on"
+            type="date"
+            defaultValue={new Date().toISOString().slice(0, 10)}
+            className="h-8"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-muted-foreground">Moyen</span>
+          <Input name="method" defaultValue="virement" className="h-8 w-28" />
+        </div>
+        <div className="flex flex-1 flex-col gap-1">
+          <span className="text-xs text-muted-foreground">Référence</span>
+          <Input
+            name="reference"
+            defaultValue={invoice.structured_comm ?? invoice.number ?? ""}
+            className="h-8"
+          />
+        </div>
+        <Sm label="Pointer le paiement" />
+      </form>
+    </div>
+  );
+}
+
+export function DunningPanel({ invoice }: { invoice: Invoice }) {
+  const flagged = invoice.dunning_count >= 3;
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-lg border p-4">
+      <div className="flex flex-col text-sm">
+        <span className="font-medium">Relances</span>
+        <span className="text-muted-foreground">
+          {invoice.dunning_count} envoyée(s)
+          {invoice.last_dunned_at
+            ? ` · dernière le ${formatDate(invoice.last_dunned_at)}`
+            : ""}
+          {invoice.due_on ? ` · échéance ${formatDate(invoice.due_on)}` : ""}
+        </span>
+      </div>
+      {flagged ? (
+        <span className="rounded-full border border-transparent bg-orange-500/15 px-2 py-0.5 text-xs font-medium text-orange-700 dark:bg-orange-500/20 dark:text-orange-300">
+          signalée (≥ 3 relances)
+        </span>
       ) : null}
+      <div className="ml-auto flex items-center gap-3">
+        <form action={dunOne.bind(null, invoice.id)}>
+          <Button type="submit" variant="outline" size="sm">
+            Relancer maintenant
+          </Button>
+        </form>
+        <form
+          action={toggleDunningPause.bind(
+            null,
+            invoice.id,
+            !invoice.dunning_paused,
+          )}
+        >
+          <button
+            type="submit"
+            className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+          >
+            {invoice.dunning_paused
+              ? "Réactiver les relances"
+              : "Mettre les relances en pause"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

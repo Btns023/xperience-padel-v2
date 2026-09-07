@@ -284,11 +284,14 @@ export type Database = {
           billed_to_profile_id: string
           created_at: string
           due_on: string | null
+          dunning_count: number
+          dunning_paused: boolean
           group_id: string | null
           id: string
           issued_on: string
           issuer_snapshot: Json
           kind: Database["public"]["Enums"]["invoice_kind"]
+          last_dunned_at: string | null
           notes: string | null
           number: string | null
           paid_at: string | null
@@ -307,11 +310,14 @@ export type Database = {
           billed_to_profile_id: string
           created_at?: string
           due_on?: string | null
+          dunning_count?: number
+          dunning_paused?: boolean
           group_id?: string | null
           id?: string
           issued_on?: string
           issuer_snapshot?: Json
           kind?: Database["public"]["Enums"]["invoice_kind"]
+          last_dunned_at?: string | null
           notes?: string | null
           number?: string | null
           paid_at?: string | null
@@ -330,11 +336,14 @@ export type Database = {
           billed_to_profile_id?: string
           created_at?: string
           due_on?: string | null
+          dunning_count?: number
+          dunning_paused?: boolean
           group_id?: string | null
           id?: string
           issued_on?: string
           issuer_snapshot?: Json
           kind?: Database["public"]["Enums"]["invoice_kind"]
+          last_dunned_at?: string | null
           notes?: string | null
           number?: string | null
           paid_at?: string | null
@@ -471,6 +480,57 @@ export type Database = {
           rank?: number
         }
         Relationships: []
+      }
+      payments: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          id: string
+          invoice_id: string
+          method: string
+          note: string | null
+          paid_on: string
+          recorded_by: string | null
+          reference: string | null
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          id?: string
+          invoice_id: string
+          method?: string
+          note?: string | null
+          paid_on?: string
+          recorded_by?: string | null
+          reference?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          method?: string
+          note?: string | null
+          paid_on?: string
+          recorded_by?: string | null
+          reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       players: {
         Row: {

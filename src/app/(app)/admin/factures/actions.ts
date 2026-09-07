@@ -353,28 +353,6 @@ export async function issueInvoice(invoiceId: string): Promise<void> {
   refresh(invoiceId);
 }
 
-export async function markPaid(invoiceId: string): Promise<void> {
-  await requireRole("admin");
-  const supabase = await createClient();
-  await supabase
-    .from("invoices")
-    .update({ status: "paid", paid_at: new Date().toISOString() })
-    .eq("id", invoiceId)
-    .eq("status", "sent");
-  refresh(invoiceId);
-}
-
-export async function markUnpaid(invoiceId: string): Promise<void> {
-  await requireRole("admin");
-  const supabase = await createClient();
-  await supabase
-    .from("invoices")
-    .update({ status: "sent", paid_at: null })
-    .eq("id", invoiceId)
-    .eq("status", "paid");
-  refresh(invoiceId);
-}
-
 export async function deleteDraft(invoiceId: string): Promise<void> {
   await requireRole("admin");
   const supabase = await createClient();

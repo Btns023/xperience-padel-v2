@@ -18,8 +18,10 @@ type Row = {
   number: string | null;
   status: InvoiceStatus;
   issued_on: string;
+  due_on: string | null;
   total_cents: number;
   structured_comm: string | null;
+  payments: { amount_cents: number }[];
 };
 
 export default async function MesFacturesPage() {
@@ -27,7 +29,9 @@ export default async function MesFacturesPage() {
   // Le client ne voit que les documents émis (RLS + filtre statut).
   const { data, error } = await supabase
     .from("invoices")
-    .select("id, kind, number, status, issued_on, total_cents, structured_comm")
+    .select(
+      "id, kind, number, status, issued_on, due_on, total_cents, structured_comm, payments(amount_cents)",
+    )
     .neq("status", "draft")
     .order("issued_on", { ascending: false });
 
@@ -79,8 +83,27 @@ export default async function MesFacturesPage() {
                 <p className="text-sm text-muted-foreground tabular-nums">
                   {formatEuros(r.total_cents)} · émise le{" "}
                   {formatDate(r.issued_on)}
+                  {r.due_on && r.status !== "paid"
+                    ? ` · échéance ${formatDate(r.due_on)}`
+                    : ""}
                   {r.structured_comm ? ` · ${r.structured_comm}` : ""}
                 </p>
+                {(() => {
+                  const paid = r.payments.reduce(
+                    (s, p) => s + p.amount_cents,
+                    0,
+                  );
+                  const remaining = r.total_cents - paid;
+                  return r.kind === "invoice" &&
+                    r.status !== "cancelled" &&
+                    remaining > 0 &&
+                    paid > 0 ? (
+                    <p className="text-sm tabular-nums">
+                      Réglé {formatEuros(paid)} · reste{" "}
+                      {formatEuros(remaining)}
+                    </p>
+                  ) : null;
+                })()}
               </div>
               <Link
                 href={`/facture/${r.id}`}

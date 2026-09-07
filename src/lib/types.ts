@@ -303,8 +303,23 @@ export interface Invoice {
   notes: string | null;
   sent_at: string | null;
   paid_at: string | null;
+  dunning_paused: boolean;
+  dunning_count: number;
+  last_dunned_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Payment {
+  id: string;
+  invoice_id: string;
+  amount_cents: number;
+  paid_on: string;
+  method: string;
+  reference: string | null;
+  note: string | null;
+  recorded_by: string | null;
+  created_at: string;
 }
 
 export interface InvoiceLine {
