@@ -23,6 +23,8 @@ Contexte métier : voir `README.md` et le cahier des charges
 - `cn` est importé depuis le paquet `cn` (`src/lib/utils.ts` le ré-exporte).
 - Ajouter un composant : `pnpm dlx shadcn@latest add <nom> --yes`.
 - Icônes : `lucide-react`.
+- **Listes** : préférer des **cartes empilées** (`<ul><li class="rounded-lg border p-4">`) avec badges qui passent à la ligne, PAS de `<Table>` large qui force le scroll horizontal sur mobile. Réserver `<Table>` aux vraies grilles denses et courtes.
+- Base UI `<Select>` : toujours passer `items` (map valeur→libellé) sinon il affiche la valeur brute.
 
 ## Supabase
 
