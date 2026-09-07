@@ -114,13 +114,13 @@ export async function createTier(
   return { ok: true };
 }
 
-export async function deleteTier(formData: FormData): Promise<void> {
+export async function deleteTier(
+  productId: string,
+  tierId: string,
+): Promise<void> {
   await requireRole("admin");
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("price_tiers")
-    .delete()
-    .eq("id", String(formData.get("tier_id")));
+  const { error } = await supabase.from("price_tiers").delete().eq("id", tierId);
   if (error) throw new Error(error.message);
-  revalidatePath(`/admin/produits/${String(formData.get("product_id"))}`);
+  revalidatePath(`/admin/produits/${productId}`);
 }

@@ -6,7 +6,7 @@ import { useFormStatus } from "react-dom";
 import type { FormState } from "./actions";
 import type { Season } from "@/lib/types";
 import { SEASON_STATUS_LABEL } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -141,9 +141,12 @@ export function SeasonForm({
 
       <div className="flex gap-3">
         <Submit label={submitLabel} />
-        <Button type="button" variant="ghost" render={<Link href="/admin/saisons" />}>
+        <Link
+          href="/admin/saisons"
+          className={buttonVariants({ variant: "ghost" })}
+        >
           Annuler
-        </Button>
+        </Link>
       </div>
     </form>
   );

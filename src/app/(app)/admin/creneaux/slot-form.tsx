@@ -14,7 +14,7 @@ import type {
 import { SLOT_STATUS_LABEL } from "@/lib/types";
 import { WEEKDAY_OPTIONS } from "@/lib/format";
 import type { FormState } from "./actions";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -291,13 +291,12 @@ export function SlotForm({
 
       <div className="flex gap-3">
         <Submit label={submitLabel} />
-        <Button
-          type="button"
-          variant="ghost"
-          render={<Link href="/admin/creneaux" />}
+        <Link
+          href="/admin/creneaux"
+          className={buttonVariants({ variant: "ghost" })}
         >
           Annuler
-        </Button>
+        </Link>
       </div>
     </form>
   );

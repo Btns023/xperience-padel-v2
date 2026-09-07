@@ -68,13 +68,10 @@ export async function updateCoach(
   return { ok: true };
 }
 
-export async function deleteCoach(formData: FormData): Promise<void> {
+export async function deleteCoach(id: string): Promise<void> {
   await requireRole("admin");
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("coaches")
-    .delete()
-    .eq("id", String(formData.get("id")));
+  const { error } = await supabase.from("coaches").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/coachs");
 }

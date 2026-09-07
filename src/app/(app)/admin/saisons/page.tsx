@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/format";
 import { SEASON_STATUS_LABEL, type Season } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -34,7 +34,9 @@ export default async function SaisonsPage() {
             Une saison regroupe les créneaux et les inscriptions d&apos;une période.
           </p>
         </div>
-        <Button render={<Link href="/admin/saisons/nouvelle" />}>Nouvelle saison</Button>
+        <Link href="/admin/saisons/nouvelle" className={buttonVariants()}>
+          Nouvelle saison
+        </Link>
       </div>
 
       {error ? (

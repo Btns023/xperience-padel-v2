@@ -165,14 +165,11 @@ function TierRow({ tier }: { tier: PriceTier }) {
         <Status state={state} />
         <button
           type="submit"
-          formAction={deleteTier}
-          name="tier_id"
-          value={tier.id}
+          formAction={deleteTier.bind(null, tier.product_id, tier.id)}
           className="text-xs text-destructive underline-offset-4 hover:underline"
         >
           Suppr.
         </button>
-        <input type="hidden" name="product_id" value={tier.product_id} />
       </div>
     </form>
   );

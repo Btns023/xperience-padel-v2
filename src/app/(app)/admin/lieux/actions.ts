@@ -69,13 +69,10 @@ export async function updateLocation(
   return { ok: true };
 }
 
-export async function deleteLocation(formData: FormData): Promise<void> {
+export async function deleteLocation(id: string): Promise<void> {
   await requireRole("admin");
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("locations")
-    .delete()
-    .eq("id", String(formData.get("id")));
+  const { error } = await supabase.from("locations").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/lieux");
 }

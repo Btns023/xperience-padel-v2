@@ -122,9 +122,7 @@ export function CoachRow({ coach }: { coach: Coach }) {
           : "Pas encore de compte — l'invitation se fera au Lot 6."}
         <button
           type="submit"
-          formAction={deleteCoach}
-          name="id"
-          value={coach.id}
+          formAction={deleteCoach.bind(null, coach.id)}
           className="ml-3 text-destructive underline-offset-4 hover:underline"
         >
           Supprimer

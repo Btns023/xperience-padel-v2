@@ -120,9 +120,7 @@ export function LocationRow({ location }: { location: Location }) {
       <div className="border-t pt-3">
         <button
           type="submit"
-          formAction={deleteLocation}
-          name="id"
-          value={location.id}
+          formAction={deleteLocation.bind(null, location.id)}
           className="text-sm text-destructive underline-offset-4 hover:underline"
         >
           Supprimer ce lieu

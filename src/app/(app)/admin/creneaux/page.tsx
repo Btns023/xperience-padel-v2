@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatTime, weekdayLabel } from "@/lib/format";
 import { SLOT_STATUS_LABEL, type Slot } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -45,9 +45,9 @@ export default async function CreneauxPage() {
             son créneau ; l&apos;étiquette de niveau est visible de tous.
           </p>
         </div>
-        <Button render={<Link href="/admin/creneaux/nouveau" />}>
+        <Link href="/admin/creneaux/nouveau" className={buttonVariants()}>
           Nouveau créneau
-        </Button>
+        </Link>
       </div>
 
       {error ? (

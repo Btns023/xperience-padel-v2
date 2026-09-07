@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { getCurrentProfile, homePathForRole } from "@/lib/auth";
 
 export default async function Home() {
@@ -23,15 +23,23 @@ export default async function Home() {
 
       <div className="flex flex-wrap items-center justify-center gap-3">
         {profile ? (
-          <Button render={<Link href={homePathForRole(profile.role)} />}>
+          <Link
+            href={homePathForRole(profile.role)}
+            className={buttonVariants()}
+          >
             Accéder à mon espace
-          </Button>
+          </Link>
         ) : (
           <>
-            <Button render={<Link href="/inscription" />}>Créer un compte</Button>
-            <Button variant="outline" render={<Link href="/connexion" />}>
+            <Link href="/inscription" className={buttonVariants()}>
+              Créer un compte
+            </Link>
+            <Link
+              href="/connexion"
+              className={buttonVariants({ variant: "outline" })}
+            >
               Se connecter
-            </Button>
+            </Link>
           </>
         )}
       </div>
