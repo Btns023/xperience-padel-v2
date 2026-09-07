@@ -225,3 +225,24 @@ export const REGISTRATION_STATUS_LABEL: Record<RegistrationStatus, string> = {
   payee: "Payée",
   annulee: "Annulée",
 };
+
+export type GroupStatus = "forming" | "confirmed";
+
+export interface Group {
+  id: string;
+  slot_id: string;
+  label: string | null;
+  size: number | null;
+  status: GroupStatus;
+  coach_id: string | null;
+  starts_on: string | null;
+  confirmed_at: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const GROUP_STATUS_LABEL: Record<GroupStatus, string> = {
+  forming: "En constitution",
+  confirmed: "Confirmé",
+};

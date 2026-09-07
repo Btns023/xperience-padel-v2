@@ -19,6 +19,18 @@ export default async function EditCreneauPage({
   if (!data) notFound();
   const slot = data as Slot;
 
+  const [{ count: demandeCount }, { count: groupCount }] = await Promise.all([
+    supabase
+      .from("registrations")
+      .select("*", { count: "exact", head: true })
+      .eq("slot_id", id)
+      .neq("status", "annulee"),
+    supabase
+      .from("groups")
+      .select("*", { count: "exact", head: true })
+      .eq("slot_id", id),
+  ]);
+
   const formData = await loadSlotFormData();
   const action = updateSlot.bind(null, id) as (
     prev: FormState,
@@ -38,6 +50,17 @@ export default async function EditCreneauPage({
           Modifier le créneau
         </h1>
       </div>
+
+      <Link
+        href={`/admin/creneaux/${id}/groupes`}
+        className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:border-foreground/20"
+      >
+        <span className="text-sm font-medium">Constitution des groupes</span>
+        <span className="text-sm text-muted-foreground">
+          {demandeCount ?? 0} demande(s) · {groupCount ?? 0} groupe(s) →
+        </span>
+      </Link>
+
       <SlotForm
         action={action}
         slot={slot}

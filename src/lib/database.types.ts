@@ -80,6 +80,63 @@ export type Database = {
           },
         ]
       }
+      groups: {
+        Row: {
+          coach_id: string | null
+          confirmed_at: string | null
+          created_at: string
+          id: string
+          label: string | null
+          notes: string | null
+          size: number | null
+          slot_id: string
+          starts_on: string | null
+          status: Database["public"]["Enums"]["group_status"]
+          updated_at: string
+        }
+        Insert: {
+          coach_id?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          label?: string | null
+          notes?: string | null
+          size?: number | null
+          slot_id: string
+          starts_on?: string | null
+          status?: Database["public"]["Enums"]["group_status"]
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          label?: string | null
+          notes?: string | null
+          size?: number | null
+          slot_id?: string
+          starts_on?: string | null
+          status?: Database["public"]["Enums"]["group_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groups_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coaches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "groups_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       locations: {
         Row: {
           active: boolean
@@ -385,6 +442,7 @@ export type Database = {
           billed_to_profile_id: string
           cancel_requested_at: string | null
           created_at: string
+          group_id: string | null
           id: string
           level_mismatch: boolean
           notes: string | null
@@ -395,6 +453,7 @@ export type Database = {
           season_id: string
           slot_id: string
           status: Database["public"]["Enums"]["registration_status"]
+          unit_price_cents: number | null
           updated_at: string
         }
         Insert: {
@@ -402,6 +461,7 @@ export type Database = {
           billed_to_profile_id: string
           cancel_requested_at?: string | null
           created_at?: string
+          group_id?: string | null
           id?: string
           level_mismatch?: boolean
           notes?: string | null
@@ -412,6 +472,7 @@ export type Database = {
           season_id: string
           slot_id: string
           status?: Database["public"]["Enums"]["registration_status"]
+          unit_price_cents?: number | null
           updated_at?: string
         }
         Update: {
@@ -419,6 +480,7 @@ export type Database = {
           billed_to_profile_id?: string
           cancel_requested_at?: string | null
           created_at?: string
+          group_id?: string | null
           id?: string
           level_mismatch?: boolean
           notes?: string | null
@@ -429,6 +491,7 @@ export type Database = {
           season_id?: string
           slot_id?: string
           status?: Database["public"]["Enums"]["registration_status"]
+          unit_price_cents?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -444,6 +507,13 @@ export type Database = {
             columns: ["billed_to_profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
             referencedColumns: ["id"]
           },
           {
@@ -620,10 +690,19 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      group_roster: {
+        Args: { p_group_id: string }
+        Returns: {
+          first_name: string
+          level_code: string
+          level_mismatch: boolean
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "client" | "coach" | "admin"
+      group_status: "forming" | "confirmed"
       invitation_status: "none" | "pending" | "accepted"
       price_tier_kind: "group_size" | "duration" | "unit" | "flat"
       pricing_model: "per_group_size" | "per_duration" | "unit" | "flat"
@@ -773,6 +852,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["client", "coach", "admin"],
+      group_status: ["forming", "confirmed"],
       invitation_status: ["none", "pending", "accepted"],
       price_tier_kind: ["group_size", "duration", "unit", "flat"],
       pricing_model: ["per_group_size", "per_duration", "unit", "flat"],

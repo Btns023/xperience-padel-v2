@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatTime, weekdayLabel } from "@/lib/format";
 import {
@@ -14,6 +15,7 @@ type Row = {
   requested_at: string;
   cancel_requested_at: string | null;
   level_mismatch: boolean;
+  slot_id: string;
   players: { first_name: string; last_name: string; level_code: string } | null;
   slots:
     | {
@@ -31,7 +33,7 @@ export default async function DemandesPage() {
   const { data, error } = await supabase
     .from("registrations")
     .select(
-      "id, status, requested_at, cancel_requested_at, level_mismatch, players(first_name,last_name,level_code), slots(weekday,start_time,products(name)), billed_to:profiles(first_name,last_name), organizations(name)",
+      "id, status, requested_at, cancel_requested_at, level_mismatch, slot_id, players(first_name,last_name,level_code), slots(weekday,start_time,products(name)), billed_to:profiles(first_name,last_name), organizations(name)",
     )
     .order("requested_at", { ascending: false });
 
@@ -98,11 +100,18 @@ export default async function DemandesPage() {
                   ) : null}
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {r.slots
-                    ? `${weekdayLabel(r.slots.weekday)} ${formatTime(
-                        r.slots.start_time,
-                      )} · ${r.slots.products?.name ?? ""}`
-                    : "Créneau supprimé"}
+                  {r.slots ? (
+                    <Link
+                      href={`/admin/creneaux/${r.slot_id}/groupes`}
+                      className="underline-offset-4 hover:underline"
+                    >
+                      {weekdayLabel(r.slots.weekday)}{" "}
+                      {formatTime(r.slots.start_time)} ·{" "}
+                      {r.slots.products?.name ?? ""} → constituer le groupe
+                    </Link>
+                  ) : (
+                    "Créneau supprimé"
+                  )}
                 </p>
                 <p className="mt-0.5 text-sm text-muted-foreground">
                   Facturé à {billedTo} · demandé le{" "}
