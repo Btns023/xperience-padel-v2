@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { Coach } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
   deleteCoach,
   type FormState,
 } from "./actions";
+import { inviteCoach, revokeInvite } from "./invite-actions";
 
 function Save({ label = "Enregistrer" }: { label?: string }) {
   const { pending } = useFormStatus();
@@ -64,7 +65,15 @@ export function NewCoachForm() {
   );
 }
 
-export function CoachRow({ coach }: { coach: Coach }) {
+export function CoachRow({
+  coach,
+  invite,
+  siteUrl,
+}: {
+  coach: Coach;
+  invite: { id: string; token: string } | null;
+  siteUrl: string;
+}) {
   const action = updateCoach.bind(null, coach.id) as (
     prev: FormState,
     formData: FormData,
@@ -72,7 +81,8 @@ export function CoachRow({ coach }: { coach: Coach }) {
   const [state, formAction] = useActionState<FormState, FormData>(action, {});
 
   return (
-    <form action={formAction} className="flex flex-col gap-3 rounded-lg border p-4">
+    <div className="flex flex-col gap-3 rounded-lg border p-4">
+    <form action={formAction} className="flex flex-col gap-3">
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={`first-${coach.id}`}>Prénom</Label>
@@ -116,18 +126,71 @@ export function CoachRow({ coach }: { coach: Coach }) {
           <Save />
         </div>
       </div>
-      <div className="border-t pt-3 text-sm text-muted-foreground">
-        {coach.profile_id
-          ? "Compte coach lié."
-          : "Pas encore de compte — l'invitation se fera au Lot 6."}
-        <button
-          type="submit"
-          formAction={deleteCoach.bind(null, coach.id)}
-          className="ml-3 text-destructive underline-offset-4 hover:underline"
-        >
-          Supprimer
-        </button>
-      </div>
     </form>
+
+      <div className="flex flex-col gap-2 border-t pt-3 text-sm">
+        {coach.profile_id ? (
+          <span className="text-muted-foreground">Compte coach lié ✓</span>
+        ) : invite ? (
+          <div className="flex flex-col gap-2">
+            <span className="text-muted-foreground">
+              Invitation en attente — envoie ce lien au coach :
+            </span>
+            <CopyLink
+              url={`${siteUrl}/rejoindre-coach?token=${invite.token}`}
+            />
+            <form action={revokeInvite.bind(null, invite.id)}>
+              <button
+                type="submit"
+                className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+              >
+                Révoquer l&apos;invitation
+              </button>
+            </form>
+          </div>
+        ) : (
+          <form action={inviteCoach.bind(null, coach.id)}>
+            <Button type="submit" variant="outline" size="sm">
+              Inviter ce coach
+            </Button>
+          </form>
+        )}
+        <form action={deleteCoach.bind(null, coach.id)}>
+          <button
+            type="submit"
+            className="text-destructive underline-offset-4 hover:underline"
+          >
+            Supprimer le coach
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function CopyLink({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <code className="min-w-0 flex-1 truncate rounded bg-muted px-2 py-1 text-xs">
+        {url}
+      </code>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          } catch {
+            /* ignore */
+          }
+        }}
+      >
+        {copied ? "Copié" : "Copier"}
+      </Button>
+    </div>
   );
 }

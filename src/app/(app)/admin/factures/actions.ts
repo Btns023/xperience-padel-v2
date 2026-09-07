@@ -349,6 +349,24 @@ export async function issueInvoice(invoiceId: string): Promise<void> {
     .eq("id", invoiceId);
   if (error) throw new Error(error.message);
 
+  // Inscriptions rattachées → « Facturée ».
+  if (inv.kind === "invoice") {
+    const { data: ls } = await supabase
+      .from("invoice_lines")
+      .select("registration_id")
+      .eq("invoice_id", invoiceId);
+    const regIds = (ls ?? [])
+      .map((l) => l.registration_id)
+      .filter((v): v is string => !!v);
+    if (regIds.length > 0) {
+      await supabase
+        .from("registrations")
+        .update({ status: "facturee" })
+        .in("id", regIds)
+        .eq("status", "validee");
+    }
+  }
+
   // TODO Lot 7 : envoyer la facture PDF par e-mail au destinataire.
   refresh(invoiceId);
 }

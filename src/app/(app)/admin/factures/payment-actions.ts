@@ -29,6 +29,23 @@ async function recomputePaid(invoiceId: string) {
   const paid = (pmts ?? []).reduce((s, p) => s + p.amount_cents, 0);
   const fullyPaid = paid >= inv.total_cents && inv.total_cents > 0;
 
+  async function setRegStatus(from: string, to: string) {
+    const { data: ls } = await supabase
+      .from("invoice_lines")
+      .select("registration_id")
+      .eq("invoice_id", invoiceId);
+    const ids = (ls ?? [])
+      .map((l) => l.registration_id)
+      .filter((v): v is string => !!v);
+    if (ids.length > 0) {
+      await supabase
+        .from("registrations")
+        .update({ status: to })
+        .in("id", ids)
+        .eq("status", from);
+    }
+  }
+
   if (fullyPaid && inv.status === "sent") {
     const lastDate = (pmts ?? [])
       .map((p) => p.paid_on)
@@ -38,11 +55,13 @@ async function recomputePaid(invoiceId: string) {
       .from("invoices")
       .update({ status: "paid", paid_at: lastDate ?? new Date().toISOString() })
       .eq("id", invoiceId);
+    await setRegStatus("facturee", "payee");
   } else if (!fullyPaid && inv.status === "paid") {
     await supabase
       .from("invoices")
       .update({ status: "sent", paid_at: null })
       .eq("id", invoiceId);
+    await setRegStatus("payee", "facturee");
   }
 }
 

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { computeUnitPriceCents } from "@/lib/pricing";
+import { regenerateSessions } from "@/lib/sessions";
 import { parseEurosToCents } from "@/lib/format";
 import type { PriceTier, PricingModel } from "@/lib/types";
 
@@ -129,6 +130,7 @@ export async function reopenGroup(
     .update({ status: "forming", confirmed_at: null })
     .eq("id", groupId);
   if (error) throw new Error(error.message);
+  await supabase.from("sessions").delete().eq("group_id", groupId);
   refresh(slotId);
 }
 
@@ -220,6 +222,8 @@ export async function confirmGroup(
     })
     .eq("id", groupId);
   if (error) return { error: error.message };
+
+  await regenerateSessions(supabase, groupId);
 
   refresh(slotId);
   return { ok: true };

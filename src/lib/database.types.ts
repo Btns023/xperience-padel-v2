@@ -102,6 +102,103 @@ export type Database = {
         }
         Relationships: []
       }
+      attendance: {
+        Row: {
+          id: string
+          marked_by: string | null
+          present: boolean
+          registration_id: string
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          marked_by?: string | null
+          present: boolean
+          registration_id: string
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          marked_by?: string | null
+          present?: boolean
+          registration_id?: string
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_marked_by_fkey"
+            columns: ["marked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coach_invites: {
+        Row: {
+          accepted_at: string | null
+          coach_id: string
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          coach_id: string
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          token: string
+        }
+        Update: {
+          accepted_at?: string | null
+          coach_id?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_invites_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coaches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_invites_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coaches: {
         Row: {
           active: boolean
@@ -922,6 +1019,41 @@ export type Database = {
         }
         Relationships: []
       }
+      sessions: {
+        Row: {
+          created_at: string
+          date: string
+          group_id: string
+          id: string
+          seq: number
+          start_time: string | null
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          group_id: string
+          id?: string
+          seq: number
+          start_time?: string | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          group_id?: string
+          id?: string
+          seq?: number
+          start_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       slots: {
         Row: {
           capacity: number
@@ -1033,10 +1165,86 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_coach_invite: { Args: { p_token: string }; Returns: undefined }
+      coach_group_roster: {
+        Args: { p_group_id: string }
+        Returns: {
+          email: string
+          first_name: string
+          last_name: string
+          level_code: string
+          payment_status: string
+          phone: string
+          registration_id: string
+        }[]
+      }
+      coach_group_sessions: {
+        Args: { p_group_id: string }
+        Returns: {
+          date: string
+          marked_count: number
+          present_count: number
+          seq: number
+          session_id: string
+          start_time: string
+        }[]
+      }
+      coach_groups: {
+        Args: never
+        Returns: {
+          group_id: string
+          group_label: string
+          group_status: string
+          location_name: string
+          member_count: number
+          product_name: string
+          slot_id: string
+          start_time: string
+          weekday: number
+        }[]
+      }
+      coach_invite_info: {
+        Args: { p_token: string }
+        Returns: {
+          accepted: boolean
+          coach_name: string
+          email: string
+          valid: boolean
+        }[]
+      }
+      coach_mark_attendance: {
+        Args: {
+          p_present: boolean
+          p_registration_id: string
+          p_session_id: string
+        }
+        Returns: undefined
+      }
+      coach_session_attendance: {
+        Args: { p_session_id: string }
+        Returns: {
+          first_name: string
+          last_name: string
+          present: boolean
+          registration_id: string
+        }[]
+      }
+      coach_upcoming_sessions: {
+        Args: never
+        Returns: {
+          date: string
+          group_label: string
+          location_name: string
+          product_name: string
+          session_id: string
+          start_time: string
+        }[]
+      }
       current_app_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      current_coach_id: { Args: never; Returns: string }
       group_roster: {
         Args: { p_group_id: string }
         Returns: {
