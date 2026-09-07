@@ -5,7 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { computeUnitPriceCents } from "@/lib/pricing";
 import { regenerateSessions } from "@/lib/sessions";
-import { parseEurosToCents } from "@/lib/format";
+import { parseEurosToCents, weekdayLabel, formatTime } from "@/lib/format";
+import { sendEmail } from "@/lib/email";
+import { groupConfirmedMail } from "@/lib/emails";
+import { recipientForProfile, wantsNotif } from "@/lib/recipients";
 import type { PriceTier, PricingModel } from "@/lib/types";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -224,6 +227,55 @@ export async function confirmGroup(
   if (error) return { error: error.message };
 
   await regenerateSessions(supabase, groupId);
+
+  // E-mail « groupe constitué » aux payeurs (optionnel).
+  try {
+    const { data: g } = await supabase
+      .from("groups")
+      .select("label, slots(weekday, start_time, products(name))")
+      .eq("id", groupId)
+      .single();
+    const sl = g?.slots as unknown as {
+      weekday: number;
+      start_time: string;
+      products: { name: string } | null;
+    } | null;
+    const slotLabel = sl
+      ? `${weekdayLabel(sl.weekday)} ${formatTime(sl.start_time)} — ${sl.products?.name ?? ""}`.trim()
+      : "ton créneau";
+
+    const { data: mm } = await supabase
+      .from("registrations")
+      .select(
+        "billed_to_profile_id, unit_price_cents, players(first_name)",
+      )
+      .eq("group_id", groupId)
+      .eq("status", "validee");
+
+    const seen = new Set<string>();
+    for (const m of mm ?? []) {
+      if (seen.has(m.billed_to_profile_id)) continue;
+      seen.add(m.billed_to_profile_id);
+      const { email, prefs } = await recipientForProfile(
+        m.billed_to_profile_id,
+      );
+      if (email && wantsNotif(prefs, "groupe_constitue")) {
+        await sendEmail({
+          to: email,
+          ...groupConfirmedMail({
+            name:
+              (m.players as unknown as { first_name: string } | null)
+                ?.first_name ?? "",
+            slotLabel,
+            groupLabel: g?.label ?? "ton groupe",
+            unitPriceCents: m.unit_price_cents,
+          }),
+        });
+      }
+    }
+  } catch {
+    /* l'e-mail ne bloque pas la confirmation */
+  }
 
   refresh(slotId);
   return { ok: true };

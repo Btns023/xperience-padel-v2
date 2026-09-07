@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { randomBytes } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
+import { coachInviteMail } from "@/lib/emails";
 
 export async function inviteCoach(coachId: string): Promise<void> {
   const admin = await requireRole("admin");
@@ -34,7 +36,20 @@ export async function inviteCoach(coachId: string): Promise<void> {
   });
   if (error) throw new Error(error.message);
 
-  // TODO Lot 7 : envoyer le lien d'invitation par e-mail au coach.
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const { data: c } = await supabase
+    .from("coaches")
+    .select("first_name, last_name")
+    .eq("id", coachId)
+    .single();
+  await sendEmail({
+    to: coach.email,
+    ...coachInviteMail({
+      coachName: `${c?.first_name ?? ""} ${c?.last_name ?? ""}`.trim(),
+      url: `${site}/rejoindre-coach?token=${token}`,
+    }),
+  });
+
   revalidatePath("/admin/coachs");
 }
 

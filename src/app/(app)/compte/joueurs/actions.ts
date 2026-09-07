@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { requireUser } from "@/lib/auth";
+import { requireUser, getCurrentProfile } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
+import { playerAddedMail } from "@/lib/emails";
 
 export type FormState = { error?: string; fieldErrors?: Record<string, string> };
 
@@ -63,7 +65,17 @@ export async function createPlayer(
   });
   if (error) return { error: error.message };
 
-  // TODO Lot 7 : si !isSelf, envoyer l'e-mail d'invitation d'activation.
+  if (!isSelf) {
+    const me = await getCurrentProfile();
+    await sendEmail({
+      to: parsed.data.email,
+      ...playerAddedMail({
+        playerName: parsed.data.first_name,
+        addedBy: `${me?.first_name ?? ""} ${me?.last_name ?? ""}`.trim() ||
+          "Un membre",
+      }),
+    });
+  }
 
   revalidatePath("/compte/joueurs");
   redirect("/compte/joueurs");

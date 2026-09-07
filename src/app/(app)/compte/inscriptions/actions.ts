@@ -2,16 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
-import { requireUser } from "@/lib/auth";
+import { requireUser, getCurrentProfile } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
+import { cancellationRequestAdminMail } from "@/lib/emails";
+import { adminEmails } from "@/lib/recipients";
+import { weekdayLabel, formatTime } from "@/lib/format";
 
 export async function requestCancellation(registrationId: string): Promise<void> {
   const user = await requireUser();
 
-  // Vérifie que l'inscription appartient bien à l'utilisateur.
   const supabase = await createClient();
   const { data: reg } = await supabase
     .from("registrations")
-    .select("id, billed_to_profile_id, status")
+    .select(
+      "id, billed_to_profile_id, status, players(first_name,last_name), slots(weekday,start_time,products(name))",
+    )
     .eq("id", registrationId)
     .single();
 
@@ -20,8 +25,6 @@ export async function requestCancellation(registrationId: string): Promise<void>
   }
   if (reg.status === "annulee") return;
 
-  // L'écriture du champ passe par le client admin : les clients n'ont pas le
-  // droit de modifier une inscription (RLS), seulement d'en demander l'annulation.
   const admin = createAdminClient();
   const { error } = await admin
     .from("registrations")
@@ -29,7 +32,34 @@ export async function requestCancellation(registrationId: string): Promise<void>
     .eq("id", registrationId);
   if (error) throw new Error(error.message);
 
-  // TODO Lot 7 : notifier l'administrateur de la demande d'annulation.
+  // Notifie les administrateurs (indispensable).
+  try {
+    const to = await adminEmails();
+    if (to.length > 0) {
+      const pl = reg.players as unknown as {
+        first_name: string;
+        last_name: string;
+      } | null;
+      const sl = reg.slots as unknown as {
+        weekday: number;
+        start_time: string;
+        products: { name: string } | null;
+      } | null;
+      const me = await getCurrentProfile();
+      await sendEmail({
+        to,
+        ...cancellationRequestAdminMail({
+          playerName: `${pl?.first_name ?? ""} ${pl?.last_name ?? ""}`.trim(),
+          slotLabel: sl
+            ? `${weekdayLabel(sl.weekday)} ${formatTime(sl.start_time)} — ${sl.products?.name ?? ""}`.trim()
+            : "un créneau",
+          requester: `${me?.first_name ?? ""} ${me?.last_name ?? ""}`.trim(),
+        }),
+      });
+    }
+  } catch {
+    /* silencieux */
+  }
 
   revalidatePath("/compte/inscriptions");
 }

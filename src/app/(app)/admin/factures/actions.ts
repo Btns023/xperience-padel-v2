@@ -4,8 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
-import { parseEurosToCents } from "@/lib/format";
+import { parseEurosToCents, formatDate } from "@/lib/format";
 import { commBaseFor, structuredCommunication } from "@/lib/belgium";
+import { sendEmail } from "@/lib/email";
+import { invoiceIssuedMail } from "@/lib/emails";
+import { recipientForProfile } from "@/lib/recipients";
 
 function refresh(invoiceId?: string) {
   revalidatePath("/admin/factures");
@@ -367,7 +370,35 @@ export async function issueInvoice(invoiceId: string): Promise<void> {
     }
   }
 
-  // TODO Lot 7 : envoyer la facture PDF par e-mail au destinataire.
+  // E-mail « facture disponible » au destinataire (indispensable).
+  try {
+    const { data: iv } = await supabase
+      .from("invoices")
+      .select(
+        "kind, billed_to_profile_id, total_cents, due_on, structured_comm, issuer_snapshot",
+      )
+      .eq("id", invoiceId)
+      .single();
+    const { email } = await recipientForProfile(iv!.billed_to_profile_id);
+    const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    if (email && iv) {
+      const iss = iv.issuer_snapshot as Record<string, string>;
+      await sendEmail({
+        to: email,
+        ...invoiceIssuedMail({
+          number,
+          amountCents: iv.total_cents,
+          dueOn: iv.due_on ? formatDate(iv.due_on) : null,
+          comm: iv.structured_comm,
+          iban: iss?.issuer_iban ?? "",
+          url: `${site}/facture/${invoiceId}`,
+        }),
+      });
+    }
+  } catch {
+    /* l'e-mail ne bloque pas l'émission */
+  }
+
   refresh(invoiceId);
 }
 

@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { requireUser } from "@/lib/auth";
+import { requireUser, getCurrentProfile } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
+import { registrationReceivedMail } from "@/lib/emails";
+import { recipientForProfile, wantsNotif } from "@/lib/recipients";
+import { weekdayLabel, formatTime } from "@/lib/format";
 
 export type RegState = { error?: string };
 
@@ -128,7 +132,32 @@ export async function createRegistrations(
     .upsert(rows, { onConflict: "player_id,slot_id", ignoreDuplicates: true });
   if (error) return { error: error.message };
 
-  // TODO Lot 7 : e-mail « demande d'inscription bien reçue » au payeur.
+  // E-mail « demande reçue » au payeur (optionnel).
+  try {
+    const { email, prefs } = await recipientForProfile(user.id);
+    if (email && wantsNotif(prefs, "demande_recue")) {
+      const { data: s } = await supabase
+        .from("slots")
+        .select("weekday, start_time, products(name)")
+        .eq("id", slot_id)
+        .single();
+      const label = s
+        ? `${weekdayLabel(s.weekday)} ${formatTime(s.start_time)} — ${
+            (s.products as unknown as { name: string } | null)?.name ?? ""
+          }`.trim()
+        : "ton créneau";
+      const me = await getCurrentProfile();
+      await sendEmail({
+        to: email,
+        ...registrationReceivedMail({
+          name: me?.first_name ?? "",
+          slotLabel: label,
+        }),
+      });
+    }
+  } catch {
+    /* l'e-mail ne doit pas bloquer l'inscription */
+  }
 
   revalidatePath("/compte/inscriptions");
   revalidatePath("/compte");

@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { parseEurosToCents } from "@/lib/format";
 import { processDunning } from "@/lib/dunning";
+import { sendEmail } from "@/lib/email";
+import { paymentConfirmedMail } from "@/lib/emails";
+import { recipientForProfile, wantsNotif } from "@/lib/recipients";
 
 function refresh(invoiceId?: string) {
   revalidatePath("/admin/factures");
@@ -56,6 +59,28 @@ async function recomputePaid(invoiceId: string) {
       .update({ status: "paid", paid_at: lastDate ?? new Date().toISOString() })
       .eq("id", invoiceId);
     await setRegStatus("facturee", "payee");
+
+    try {
+      const { data: iv } = await supabase
+        .from("invoices")
+        .select("number, total_cents, billed_to_profile_id")
+        .eq("id", invoiceId)
+        .single();
+      const { email, prefs } = await recipientForProfile(
+        iv!.billed_to_profile_id,
+      );
+      if (email && iv && wantsNotif(prefs, "paiement_confirme")) {
+        await sendEmail({
+          to: email,
+          ...paymentConfirmedMail({
+            number: iv.number ?? "",
+            amountCents: iv.total_cents,
+          }),
+        });
+      }
+    } catch {
+      /* silencieux */
+    }
   } else if (!fullyPaid && inv.status === "paid") {
     await supabase
       .from("invoices")
