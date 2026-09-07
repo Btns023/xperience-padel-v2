@@ -5,14 +5,6 @@ import {
   type RegistrationStatus,
 } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 export const metadata = { title: "Demandes d'inscription" };
 
@@ -69,67 +61,51 @@ export default async function DemandesPage() {
       ) : rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">Aucune demande.</p>
       ) : (
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Joueur</TableHead>
-                <TableHead>Créneau</TableHead>
-                <TableHead>Facturé à</TableHead>
-                <TableHead>Demandé le</TableHead>
-                <TableHead>Statut</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="font-medium">
+        <ul className="flex flex-col gap-3">
+          {rows.map((r) => {
+            const billedTo = r.organizations
+              ? r.organizations.name
+              : `${r.billed_to?.first_name ?? ""} ${
+                  r.billed_to?.last_name ?? ""
+                }`.trim() || "—";
+            return (
+              <li key={r.id} className="rounded-lg border p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium">
                     {r.players?.first_name} {r.players?.last_name}
-                    <span className="ml-2 text-xs font-normal text-muted-foreground">
-                      {r.players?.level_code}
-                    </span>
-                    {r.level_mismatch ? (
-                      <Badge variant="outline" className="ml-2">
-                        écart de niveau
-                      </Badge>
-                    ) : null}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {r.slots
-                      ? `${weekdayLabel(r.slots.weekday)} ${formatTime(
-                          r.slots.start_time,
-                        )} · ${r.slots.products?.name ?? ""}`
-                      : "—"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {r.organizations
-                      ? r.organizations.name
-                      : `${r.billed_to?.first_name ?? ""} ${
-                          r.billed_to?.last_name ?? ""
-                        }`.trim() || "—"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(r.requested_at)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap items-center gap-1">
-                      <Badge
-                        variant={
-                          r.status === "demande_recue" ? "secondary" : "default"
-                        }
-                      >
-                        {REGISTRATION_STATUS_LABEL[r.status]}
-                      </Badge>
-                      {r.cancel_requested_at && r.status !== "annulee" ? (
-                        <Badge variant="outline">annulation demandée</Badge>
-                      ) : null}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {r.players?.level_code}
+                  </span>
+                  <Badge
+                    variant={
+                      r.status === "demande_recue" ? "secondary" : "default"
+                    }
+                  >
+                    {REGISTRATION_STATUS_LABEL[r.status]}
+                  </Badge>
+                  {r.level_mismatch ? (
+                    <Badge variant="outline">écart de niveau</Badge>
+                  ) : null}
+                  {r.cancel_requested_at && r.status !== "annulee" ? (
+                    <Badge variant="outline">annulation demandée</Badge>
+                  ) : null}
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {r.slots
+                    ? `${weekdayLabel(r.slots.weekday)} ${formatTime(
+                        r.slots.start_time,
+                      )} · ${r.slots.products?.name ?? ""}`
+                    : "Créneau supprimé"}
+                </p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  Facturé à {billedTo} · demandé le{" "}
+                  {formatDate(r.requested_at)}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );
