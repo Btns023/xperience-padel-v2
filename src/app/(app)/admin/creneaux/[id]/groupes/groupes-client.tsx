@@ -16,10 +16,12 @@ import {
   confirmGroup,
   type ConfirmState,
 } from "./actions";
+import { CancellationActions } from "@/app/(app)/admin/demandes/cancel-actions";
 
 export type RegView = {
   id: string;
   level_mismatch: boolean;
+  cancelRequested: boolean;
   unit_price_cents: number | null;
   player: string;
   level: string;
@@ -56,34 +58,44 @@ export function AssignForm({
 }) {
   const [target, setTarget] = useState("new");
   return (
-    <form
-      action={assignRegistration.bind(null, slotId, reg.id, target)}
-      className="flex flex-wrap items-center justify-between gap-3 rounded-md border p-3"
-    >
-      <div className="flex flex-wrap items-center gap-2 text-sm">
-        <span className="font-medium">{reg.player}</span>
-        <span className="text-muted-foreground">{reg.level}</span>
-        {reg.level_mismatch ? (
-          <Badge className={orangeBadge}>écart de niveau</Badge>
-        ) : null}
-        <span className="text-xs text-muted-foreground">· {reg.billedTo}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <select
-          value={target}
-          onChange={(e) => setTarget(e.target.value)}
-          className="h-8 rounded-md border bg-background px-2 text-sm"
+    <div className="flex flex-col gap-2 rounded-md border p-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="font-medium">{reg.player}</span>
+          <span className="text-muted-foreground">{reg.level}</span>
+          {reg.level_mismatch ? (
+            <Badge className={orangeBadge}>écart de niveau</Badge>
+          ) : null}
+          {reg.cancelRequested ? (
+            <Badge variant="destructive">annulation demandée</Badge>
+          ) : null}
+          <span className="text-xs text-muted-foreground">· {reg.billedTo}</span>
+        </div>
+        <form
+          action={assignRegistration.bind(null, slotId, reg.id, target)}
+          className="flex items-center gap-2"
         >
-          <option value="new">→ Nouveau groupe</option>
-          {groups.map((g) => (
-            <option key={g.id} value={g.id}>
-              → {g.label ?? "Groupe"}
-            </option>
-          ))}
-        </select>
-        <SubmitSm label="Assigner" />
+          <select
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+            className="h-8 rounded-md border bg-background px-2 text-sm"
+          >
+            <option value="new">→ Nouveau groupe</option>
+            {groups.map((g) => (
+              <option key={g.id} value={g.id}>
+                → {g.label ?? "Groupe"}
+              </option>
+            ))}
+          </select>
+          <SubmitSm label="Assigner" />
+        </form>
       </div>
-    </form>
+      {reg.cancelRequested ? (
+        <div className="border-t pt-2">
+          <CancellationActions registrationId={reg.id} slotId={slotId} />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -134,31 +146,36 @@ export function GroupCard({
       ) : (
         <ul className="flex flex-col gap-1.5">
           {members.map((m) => (
-            <li
-              key={m.id}
-              className="flex flex-wrap items-center justify-between gap-2 text-sm"
-            >
-              <span className="flex flex-wrap items-center gap-2">
-                <span className="font-medium">{m.player}</span>
-                <span className="text-muted-foreground">{m.level}</span>
-                {m.level_mismatch ? (
-                  <Badge className={orangeBadge}>écart</Badge>
+            <li key={m.id} className="flex flex-col gap-1.5 text-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium">{m.player}</span>
+                  <span className="text-muted-foreground">{m.level}</span>
+                  {m.level_mismatch ? (
+                    <Badge className={orangeBadge}>écart</Badge>
+                  ) : null}
+                  {m.cancelRequested ? (
+                    <Badge variant="destructive">annulation demandée</Badge>
+                  ) : null}
+                  {m.unit_price_cents != null ? (
+                    <span className="tabular-nums text-muted-foreground">
+                      {formatEuros(m.unit_price_cents)} / joueur
+                    </span>
+                  ) : null}
+                </span>
+                {!confirmed ? (
+                  <form action={unassignRegistration.bind(null, slotId, m.id)}>
+                    <button
+                      type="submit"
+                      className="text-xs text-destructive underline-offset-4 hover:underline"
+                    >
+                      Retirer
+                    </button>
+                  </form>
                 ) : null}
-                {m.unit_price_cents != null ? (
-                  <span className="tabular-nums text-muted-foreground">
-                    {formatEuros(m.unit_price_cents)} / joueur
-                  </span>
-                ) : null}
-              </span>
-              {!confirmed ? (
-                <form action={unassignRegistration.bind(null, slotId, m.id)}>
-                  <button
-                    type="submit"
-                    className="text-xs text-destructive underline-offset-4 hover:underline"
-                  >
-                    Retirer
-                  </button>
-                </form>
+              </div>
+              {m.cancelRequested ? (
+                <CancellationActions registrationId={m.id} slotId={slotId} />
               ) : null}
             </li>
           ))}

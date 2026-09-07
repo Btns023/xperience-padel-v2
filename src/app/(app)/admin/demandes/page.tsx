@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatTime, weekdayLabel } from "@/lib/format";
+import { CancellationActions } from "./cancel-actions";
 import {
   REGISTRATION_STATUS_LABEL,
   type RegistrationStatus,
@@ -117,6 +118,14 @@ export default async function DemandesPage() {
                   Facturé à {billedTo} · demandé le{" "}
                   {formatDate(r.requested_at)}
                 </p>
+                {r.cancel_requested_at && r.status !== "annulee" ? (
+                  <div className="mt-3 border-t pt-3">
+                    <CancellationActions
+                      registrationId={r.id}
+                      slotId={r.slot_id}
+                    />
+                  </div>
+                ) : null}
               </li>
             );
           })}
