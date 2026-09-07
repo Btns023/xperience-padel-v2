@@ -89,10 +89,7 @@ export default async function DemandesPage() {
                     {REGISTRATION_STATUS_LABEL[r.status]}
                   </Badge>
                   {r.level_mismatch ? (
-                    <Badge
-                      variant="outline"
-                      className="border-amber-400 text-amber-700 dark:border-amber-500/50 dark:text-amber-400"
-                    >
+                    <Badge className="border-transparent bg-orange-500/15 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300">
                       écart de niveau
                     </Badge>
                   ) : null}
