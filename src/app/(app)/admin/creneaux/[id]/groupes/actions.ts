@@ -88,11 +88,9 @@ export async function updateGroup(
   await requireRole("admin");
   const supabase = await createClient();
   const label = String(formData.get("label") ?? "").trim() || null;
-  const sizeRaw = formData.get("size");
-  const size = sizeRaw && sizeRaw !== "" ? Number(sizeRaw) : null;
   const { error } = await supabase
     .from("groups")
-    .update({ label, size })
+    .update({ label })
     .eq("id", groupId);
   if (error) throw new Error(error.message);
   refresh(slotId);
@@ -135,10 +133,11 @@ export async function reopenGroup(
 }
 
 /**
- * Confirme l'effectif d'un groupe : fige la taille, calcule le prix/joueur
- * selon la grille, et fait passer les inscriptions membres en « Validée ».
- * `overrides` : prix manuel (€) par inscription, pour les cas non couverts
- * par la grille (forfait, cours privé) ou les prorata.
+ * Confirme le groupe : l'effectif est le nombre de joueurs réellement
+ * assignés (Option A). Fige la taille, calcule le prix/joueur selon la
+ * grille, fait passer les inscriptions membres en « Validée ».
+ * Un prix manuel (€) par inscription reste possible (prorata, forfait,
+ * cours privé).
  */
 export type ConfirmState = { error?: string; ok?: boolean };
 
@@ -153,7 +152,7 @@ export async function confirmGroup(
 
   const { data: group } = await supabase
     .from("groups")
-    .select("id, slot_id, size")
+    .select("id, slot_id")
     .eq("id", groupId)
     .single();
   if (!group) return { error: "Groupe introuvable." };
@@ -176,14 +175,20 @@ export async function confirmGroup(
     return { error: "Le groupe ne contient aucun joueur." };
   }
 
-  const sizeRaw = formData.get("size");
-  const size =
-    sizeRaw && sizeRaw !== "" ? Number(sizeRaw) : (group.size ?? members.length);
+  // Option A : l'effectif = le nombre de joueurs assignés.
+  const size = members.length;
 
   const product = slot.products as unknown as {
     pricing_model: PricingModel;
     price_tiers: PriceTier[];
   } | null;
+
+  if (product?.pricing_model === "per_group_size" && size < 2) {
+    return {
+      error:
+        "Un cours collectif compte au moins 2 joueurs. Ajoute des joueurs au groupe, ou traite ce joueur en cours privé.",
+    };
+  }
 
   for (const m of members) {
     const override = parseEurosToCents(

@@ -134,8 +134,8 @@ export function GroupCard({
           {GROUP_STATUS_LABEL[group.status]}
         </Badge>
         <span className="text-xs text-muted-foreground">
-          {members.length} joueur(s)
-          {group.size ? ` · effectif ${group.size}` : ""}
+          effectif {confirmed && group.size ? group.size : members.length}{" "}
+          joueur(s)
         </span>
       </div>
 
@@ -199,26 +199,13 @@ export function GroupCard({
           >
             <div className="flex flex-col gap-1">
               <label className="text-xs" htmlFor={`label-${group.id}`}>
-                Nom
+                Nom du groupe
               </label>
               <Input
                 id={`label-${group.id}`}
                 name="label"
                 defaultValue={group.label ?? ""}
                 className="h-8 w-40"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs" htmlFor={`size-${group.id}`}>
-                Effectif
-              </label>
-              <Input
-                id={`size-${group.id}`}
-                name="size"
-                type="number"
-                min={1}
-                defaultValue={group.size ?? members.length}
-                className="h-8 w-20"
               />
             </div>
             <SubmitSm label="Enregistrer" />
@@ -229,15 +216,10 @@ export function GroupCard({
               action={confirmAction}
               className="flex flex-col gap-3 border-t pt-3"
             >
-              <input
-                type="hidden"
-                name="size"
-                value={group.size ?? members.length}
-              />
               <p className="text-xs text-muted-foreground">
                 {manual
                   ? "Ce produit n'a pas de grille par effectif — saisis le prix par joueur (€)."
-                  : "Prix par joueur calculé selon l'effectif et la grille. Laisse « auto », ou force un montant (prorata…)."}
+                  : `Effectif = ${members.length} joueur(s). Prix par joueur calculé automatiquement selon la grille ; laisse « auto », ou force un montant (prorata…).`}
               </p>
               <div className="flex flex-col gap-2">
                 {members.map((m) => (
