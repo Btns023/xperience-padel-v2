@@ -84,6 +84,34 @@ export default function InscriptionPage() {
             />
             <p className="text-xs text-muted-foreground">8 caractères minimum.</p>
           </div>
+          <label className="flex items-start gap-2 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              name="accept_terms"
+              value="on"
+              required
+              className="mt-0.5 size-4"
+            />
+            <span>
+              J&apos;accepte les{" "}
+              <Link
+                href="/conditions"
+                target="_blank"
+                className="underline underline-offset-2"
+              >
+                conditions d&apos;inscription
+              </Link>{" "}
+              et la{" "}
+              <Link
+                href="/confidentialite"
+                target="_blank"
+                className="underline underline-offset-2"
+              >
+                politique de confidentialité
+              </Link>
+              .
+            </span>
+          </label>
           {state.error ? (
             <p className="text-sm text-destructive" role="alert">
               {state.error}

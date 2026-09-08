@@ -92,6 +92,9 @@ export function SiteFooter() {
               info@padelxp.be
             </a>
             <span className="text-white/60">Padel Smash Gembloux</span>
+            <Link href="/conditions" className="text-white/60 hover:text-white">
+              Conditions d&apos;inscription
+            </Link>
             <Link href="/confidentialite" className="text-white/60 hover:text-white">
               Confidentialité
             </Link>

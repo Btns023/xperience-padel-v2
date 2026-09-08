@@ -1,56 +1,194 @@
 import { Section } from "../_components/ui";
 
 export const metadata = {
-  title: "Confidentialité",
+  title: "Politique de confidentialité",
   description:
-    "Politique de confidentialité de Xperience Padel Academy — traitement des données personnelles.",
+    "Comment Xperience Padel Academy (Padel XP ASBL) traite vos données personnelles : finalités, base légale, durées de conservation et vos droits.",
 };
+
+function Article({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-t border-white/10 pt-6">
+      <h2 className="text-lg font-semibold text-white">{title}</h2>
+      <div className="mt-3 space-y-3 text-sm leading-relaxed text-white/65">
+        {children}
+      </div>
+    </section>
+  );
+}
 
 export default function ConfidentialitePage() {
   return (
-    <Section className="prose-invert max-w-3xl">
-      <h1 className="text-3xl font-semibold text-white">
+    <Section className="max-w-3xl">
+      <h1 className="text-4xl font-semibold text-white">
         Politique de confidentialité
       </h1>
-      <div className="mt-6 space-y-4 text-sm leading-relaxed text-white/65">
-        <p>
-          <strong className="text-white">Responsable du traitement.</strong>{" "}
-          Padel XP ASBL (Xperience Padel Academy), Chaussée de Wavre 79, 5030
-          Gembloux — n° d&apos;entreprise BE 1031.094.162 — info@padelxp.be.
-        </p>
-        <p>
-          <strong className="text-white">Données collectées.</strong> Lors
-          d&apos;une inscription : identité, coordonnées, date de naissance et
-          niveau des joueurs, réponse au droit à l&apos;image. Pour les
-          entreprises : raison sociale, adresse et numéro de TVA éventuel.
-        </p>
-        <p>
-          <strong className="text-white">Finalités et base légale.</strong>{" "}
-          Gestion des inscriptions, constitution des groupes, facturation et
-          suivi des paiements — exécution du contrat. Le droit à l&apos;image
-          fait l&apos;objet d&apos;un consentement distinct, révocable à tout
-          moment.
-        </p>
-        <p>
-          <strong className="text-white">Conservation.</strong> Les données de
-          compte sont conservées pendant la durée de la relation puis 3 ans ;
-          les factures sont conservées 7 ans conformément à la législation
-          comptable belge.
-        </p>
-        <p>
-          <strong className="text-white">Vos droits.</strong> Accès,
-          rectification, effacement, limitation et opposition : par e-mail à
-          info@padelxp.be. Vous pouvez introduire une réclamation auprès de
-          l&apos;Autorité de protection des données (autoriteprotectiondonnees.be).
-        </p>
-        <p>
-          <strong className="text-white">Hébergement.</strong> Les données sont
-          hébergées au sein de l&apos;Union européenne.
-        </p>
-        <p className="text-white/40">
-          Document en cours de finalisation — version complète disponible sur
-          demande.
-        </p>
+      <p className="mt-3 text-sm text-white/45">
+        Dernière mise à jour : {new Date().toLocaleDateString("fr-BE")}.
+      </p>
+
+      <div className="mt-10 flex flex-col gap-8">
+        <Article title="1. Responsable du traitement">
+          <p>
+            <strong className="text-white">Padel XP ASBL</strong> — nom
+            commercial <em>Xperience Padel Academy</em>. Siège : Chaussée de
+            Wavre 79, 5030 Gembloux, Belgique. Numéro d&apos;entreprise BE
+            1031.094.162. Contact :{" "}
+            <a href="mailto:info@padelxp.be" className="text-[#c9a24b]">
+              info@padelxp.be
+            </a>{" "}
+            · 0473 / 607 207.
+          </p>
+        </Article>
+
+        <Article title="2. Données que nous collectons">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong className="text-white">Compte</strong> : nom, prénom,
+              adresse e-mail, téléphone, adresse postale.
+            </li>
+            <li>
+              <strong className="text-white">Joueurs inscrits</strong> : nom,
+              prénom, adresse e-mail, date de naissance, niveau de jeu, réponse
+              au droit à l&apos;image (oui / non).
+            </li>
+            <li>
+              <strong className="text-white">Entreprises clientes</strong> :
+              raison sociale, adresse, numéro de TVA éventuel.
+            </li>
+            <li>
+              <strong className="text-white">Inscriptions et facturation</strong>{" "}
+              : créneaux choisis, groupe, factures, paiements, communications
+              structurées.
+            </li>
+            <li>
+              <strong className="text-white">Présences</strong> (facultatif,
+              saisies par le coach) pour le suivi pédagogique.
+            </li>
+          </ul>
+          <p>
+            Nous ne collectons <strong className="text-white">aucune donnée de
+            santé</strong> (pas d&apos;information médicale ni de certificat).
+          </p>
+        </Article>
+
+        <Article title="3. Finalités et bases légales">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              Gestion des inscriptions, constitution des groupes, planning,
+              facturation et suivi des paiements —{" "}
+              <em>exécution du contrat</em> (art. 6.1.b RGPD).
+            </li>
+            <li>
+              Envoi des e-mails liés à votre dossier (accusé de réception,
+              facture, relances) — <em>exécution du contrat</em> ; les e-mails
+              non essentiels sont paramétrables dans votre espace.
+            </li>
+            <li>
+              Utilisation de photos ou vidéos à des fins de communication —{" "}
+              <em>consentement</em> distinct, donné joueur par joueur et
+              révocable à tout moment.
+            </li>
+            <li>
+              Respect de nos obligations comptables et fiscales —{" "}
+              <em>obligation légale</em>.
+            </li>
+          </ul>
+        </Article>
+
+        <Article title="4. Mineurs">
+          <p>
+            Les données des joueurs mineurs sont fournies et gérées par le
+            parent ou le responsable via son compte. Le consentement au droit à
+            l&apos;image pour un mineur est donné par ce représentant.
+          </p>
+        </Article>
+
+        <Article title="5. Destinataires et sous-traitants">
+          <p>
+            Vos données sont accessibles aux administrateurs de l&apos;ASBL et,
+            de façon limitée, à votre coach (liste de ses groupes, coordonnées,
+            statut payé / impayé — sans les montants). Nous faisons appel à :
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong className="text-white">Supabase</strong> — hébergement de
+              la base de données et de l&apos;authentification (région Union
+              européenne).
+            </li>
+            <li>
+              <strong className="text-white">Vercel</strong> — hébergement de
+              l&apos;application (région Union européenne).
+            </li>
+            <li>
+              <strong className="text-white">Resend</strong> — envoi des e-mails
+              transactionnels.
+            </li>
+          </ul>
+          <p>
+            Aucune donnée n&apos;est vendue ni transmise à des fins publicitaires.
+          </p>
+        </Article>
+
+        <Article title="6. Durées de conservation">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              Compte et joueurs : pendant la relation, puis{" "}
+              <strong className="text-white">3 ans</strong> après la dernière
+              activité.
+            </li>
+            <li>
+              Factures et pièces comptables :{" "}
+              <strong className="text-white">7 ans</strong> (obligation légale
+              belge).
+            </li>
+          </ul>
+        </Article>
+
+        <Article title="7. Cookies">
+          <p>
+            Le site n&apos;utilise que des cookies{" "}
+            <strong className="text-white">strictement nécessaires</strong> au
+            fonctionnement (session de connexion). Aucun cookie de mesure
+            d&apos;audience ni de publicité — aucune bannière de consentement
+            n&apos;est donc requise.
+          </p>
+        </Article>
+
+        <Article title="8. Vos droits">
+          <p>
+            Vous disposez d&apos;un droit d&apos;accès, de rectification,
+            d&apos;effacement, de limitation, d&apos;opposition et de
+            portabilité. Pour l&apos;exercer, écrivez à{" "}
+            <a href="mailto:info@padelxp.be" className="text-[#c9a24b]">
+              info@padelxp.be
+            </a>
+            . Vous pouvez aussi introduire une réclamation auprès de
+            l&apos;Autorité de protection des données (
+            <a
+              href="https://www.autoriteprotectiondonnees.be"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[#c9a24b]"
+            >
+              autoriteprotectiondonnees.be
+            </a>
+            ).
+          </p>
+        </Article>
+
+        <Article title="9. Sécurité">
+          <p>
+            L&apos;accès aux données est protégé par authentification et par des
+            règles de séparation par rôle. Les échanges sont chiffrés (HTTPS).
+          </p>
+        </Article>
       </div>
     </Section>
   );

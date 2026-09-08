@@ -52,6 +52,10 @@ const signUpSchema = z
     phone: z.string().min(6, "Téléphone requis"),
     email: z.string().email("Adresse e-mail invalide"),
     password: z.string().min(8, "8 caractères minimum"),
+    accept_terms: z.literal("on", {
+      message:
+        "Merci d'accepter les conditions d'inscription et la politique de confidentialité.",
+    }),
   })
   .strict();
 
@@ -65,6 +69,7 @@ export async function signUp(
     phone: formData.get("phone"),
     email: formData.get("email"),
     password: formData.get("password"),
+    accept_terms: formData.get("accept_terms"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Formulaire invalide" };
