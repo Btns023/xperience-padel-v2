@@ -208,8 +208,8 @@
     10px 16px 34px rgba(200, 168, 75, 0.22);
 }
 
-/* Barre de progression du récit */
-.story-bar {
+/* Barre de progression de lecture */
+.scroll-bar {
   position: fixed;
   left: 0;
   top: 0;
@@ -223,34 +223,6 @@
   box-shadow: 0 0 12px rgba(200, 168, 75, 0.6);
   transform-origin: 0 50%;
   will-change: transform;
-}
-
-/* Pastille de chapitre */
-.chapter-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  border: 1px solid rgba(200, 168, 75, 0.4);
-  background: rgba(200, 168, 75, 0.08);
-  border-radius: var(--radius);
-  padding: 0.3rem 0.7rem;
-  color: var(--gold);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  backdrop-filter: blur(4px);
-}
-
-/* Rail vertical du fil narratif */
-.story-rail {
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(200, 168, 75, 0.5) 12%,
-    rgba(200, 168, 75, 0.5) 88%,
-    transparent
-  );
 }
 
 /* Entrée du hero */

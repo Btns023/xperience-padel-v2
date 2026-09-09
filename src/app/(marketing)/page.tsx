@@ -9,8 +9,15 @@ import {
   PriceCard,
   Section,
   SectionHead,
-  StoryTimeline,
 } from "./_components/ui";
+
+const OFFERS = [
+  { href: "/cours-adultes", k: "Adultes", t: "Cycles collectifs", d: "9 séances de 1h30, groupes de niveau. Dès 230 € / joueur." },
+  { href: "/cours-enfants", k: "6–18 ans", t: "Cours enfants & ados", d: "Mercredis après-midi et samedis matin, groupes par âge. Dès 150 €." },
+  { href: "/cours-prives", k: "Solo ou duo", t: "Cours privés", d: "Un coach rien que pour vous, 7 j/7. Solo 60 € / 1h." },
+  { href: "/stages-ete", k: "Juillet–Août", t: "Stages d'été", d: "3 × 2h sur une semaine, en soirée. Dès 105 € / personne." },
+  { href: "/ete-indien", k: "Interclubs", t: "Été indien", d: "5 cours pour préparer la saison d'équipe. Offre équipe 400 €." },
+];
 
 export const metadata = {
   title: "Cours & stages de padel à Gembloux",
@@ -29,6 +36,7 @@ const COACHES = [
   { name: "Nicolas Bertholet", role: "Co-fondateur · P1000", text: "Lecture du terrain chirurgicale, schémas tactiques offensifs." },
   { name: "Stéphane Stellings", role: "Co-fondateur · P700", text: "Prof de tennis certifié. Technique, régularité, progression structurée." },
   { name: "Antonin Hulster", role: "Coach adultes · P500", text: "Automatismes, corrections, développement du jeu offensif." },
+  { name: "Andréa Maronet", role: "Coach enfants · P300", text: "Éducatrice physique. Motricité, coordination et bases techniques pour les 6–18 ans." },
 ];
 
 const MONTHS = ["Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
@@ -57,8 +65,8 @@ export default function HomePage() {
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 <CtaLink href="/inscription">Réserver un cours</CtaLink>
-                <CtaLink href="#le-fil" variant="ghost">
-                  Suivre l&apos;histoire
+                <CtaLink href="#formules" variant="ghost">
+                  Voir les formules
                 </CtaLink>
               </div>
             </div>
@@ -104,20 +112,38 @@ export default function HomePage() {
         <hr className="rule-gold" />
       </div>
 
-      {/* Le fil — le récit, chapitre par chapitre */}
-      <Section id="le-fil">
+      {/* Formules */}
+      <Section id="formules">
         <SectionHead
-          eyebrow="Le fil XPA · 7 chapitres"
-          title={
-            <>
-              Votre histoire,
-              <br />
-              <span className="gold">chapitre après chapitre</span>
-            </>
-          }
-          lead="Du premier échange à la préparation des interclubs, chaque page raconte une étape du parcours. Suivez-les dans l'ordre, ou entrez par celle qui vous ressemble."
+          eyebrow="Nos formules"
+          title="Trouvez la vôtre"
+          lead="Cinq façons de progresser, du cours à l'unité au cycle interclubs. Terrain, matériel et coaching toujours compris."
         />
-        <StoryTimeline />
+        <div className="scene mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {OFFERS.map((o, i) => (
+            <Reveal key={o.href} delay={i * 50}>
+              <Tilt max={7}>
+                <Link
+                  href={o.href}
+                  className="card group flex h-full flex-col p-6"
+                >
+                  <span className="pop flex h-full flex-col">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
+                      {o.k}
+                    </span>
+                    <span className="d mt-2 text-2xl">{o.t}</span>
+                    <span className="mt-3 flex-1 text-sm leading-relaxed text-[var(--ink-55)]">
+                      {o.d}
+                    </span>
+                    <span className="mt-5 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--ink-40)] transition-colors group-hover:text-[var(--gold-bright)]">
+                      En savoir plus →
+                    </span>
+                  </span>
+                </Link>
+              </Tilt>
+            </Reveal>
+          ))}
+        </div>
       </Section>
 
       {/* Calendrier de la saison */}
@@ -186,9 +212,9 @@ export default function HomePage() {
           <SectionHead
             eyebrow="L'équipe encadrante"
             title="Des coachs qui jouent vraiment"
-            lead="P1000, P700, P500 — ils pratiquent à haut niveau. Ce qu'ils transmettent, ils le vivent sur le court."
+            lead="P1000, P700, P500, P300 — ils pratiquent à haut niveau. Ce qu'ils transmettent, ils le vivent sur le court."
           />
-          <div className="scene mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="scene mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {COACHES.map((c, i) => (
               <Reveal key={c.name} delay={i * 60}>
                 <Tilt max={6}>
@@ -245,8 +271,7 @@ export default function HomePage() {
           <Tilt max={3}>
             <div className="card card--gold px-6 py-14 text-center">
               <div className="pop">
-                <span className="chapter-badge">Épilogue · à vous d&apos;écrire</span>
-                <h2 className="d extrude mt-5 text-4xl sm:text-5xl">
+                <h2 className="d extrude text-4xl sm:text-5xl">
                   Prêt à jouer ?
                 </h2>
                 <p className="mx-auto mt-3 max-w-lg text-[var(--ink-55)]">

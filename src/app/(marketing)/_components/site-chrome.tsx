@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { StoryProgress } from "./depth";
+import { ScrollProgress } from "./depth";
 
 type NavItem =
   | { href: string; label: string }
@@ -82,7 +82,7 @@ export function SiteHeader() {
           : "border-b border-transparent"
       }`}
     >
-      <StoryProgress />
+      <ScrollProgress />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-2.5">
         <Link
           href="/"
@@ -191,7 +191,7 @@ export function SiteFooter() {
           />
           <p className="mt-4 text-sm text-[var(--ink-40)]">
             Cours et stages de padel à Gembloux. Encadrement par des joueurs
-            classés P1000, P700 et P500.
+            classés P1000, P700, P500 et P300.
           </p>
         </div>
 

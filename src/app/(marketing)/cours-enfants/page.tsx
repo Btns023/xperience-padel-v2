@@ -6,7 +6,6 @@ import {
   PriceCard,
   Section,
   SectionHead,
-  StoryNav,
 } from "../_components/ui";
 
 export const metadata = {
@@ -67,14 +66,13 @@ export default function CoursEnfantsPage() {
   return (
     <>
       <PageHero
-        story="/cours-enfants"
         eyebrow="Mercredi après-midi & samedi matin · Padel Smash Gembloux"
         title={
           <>
             Offrez-leur la passion <span className="gold">du padel</span>
           </>
         }
-        lead="Des cours adaptés par tranche d'âge, dans une ambiance dynamique et bienveillante. Votre enfant progresse à son rythme, avec des coachs formés pour les jeunes."
+        lead="Des cours adaptés par tranche d'âge, dans une ambiance dynamique et bienveillante. Votre enfant progresse à son rythme, encadré par Andréa Maronet, joueuse P300 et éducatrice physique."
         primary={{ href: "/inscription", label: "Inscrire mon enfant" }}
         secondary={{ href: "/coachs", label: "Voir les coachs" }}
       />
@@ -150,8 +148,6 @@ export default function CoursEnfantsPage() {
           </div>
         </Section>
       </div>
-
-      <StoryNav story="/cours-enfants" />
     </>
   );
 }

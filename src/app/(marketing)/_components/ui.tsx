@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "./motion";
 import { Parallax, Tilt } from "./depth";
-import { CHAPTERS, chapterOf, neighbours } from "./story";
 
 /** Titre Bebas Neue. `parts` : chaque segment avec sa variante de couleur. */
 export function Display({
@@ -184,18 +183,13 @@ export function PageHero({
   lead,
   primary,
   secondary,
-  story,
 }: {
   eyebrow: string;
   title: React.ReactNode;
   lead: string;
   primary?: { href: string; label: string };
   secondary?: { href: string; label: string };
-  /** Chemin de la page, pour afficher son numéro de chapitre. */
-  story?: string;
 }) {
-  const chapter = story ? chapterOf(story) : undefined;
-
   return (
     <div className="relative overflow-hidden border-b border-[var(--line)]">
       <CourtBackdrop />
@@ -203,15 +197,7 @@ export function PageHero({
       <div className="scene relative z-10 mx-auto max-w-4xl px-5 py-24 text-center sm:py-32">
         <Parallax speed={-0.06}>
           <div className="hero-rise flex flex-col items-center gap-6">
-            {chapter ? (
-              <span className="chapter-badge">
-                Chapitre {chapter.n}
-                <span className="text-[var(--ink-40)]">·</span>
-                <span className="text-[var(--ink-70)]">{chapter.title}</span>
-              </span>
-            ) : (
-              <Eyebrow>{eyebrow}</Eyebrow>
-            )}
+            <Eyebrow>{eyebrow}</Eyebrow>
             <h1 className="d extrude text-5xl leading-[0.9] sm:text-7xl">
               {title}
             </h1>
@@ -231,114 +217,6 @@ export function PageHero({
           </div>
         </Parallax>
       </div>
-    </div>
-  );
-}
-
-/* ===========================================================================
-   Le fil du récit
-   =========================================================================== */
-
-/** Fin de page : d'où l'on vient, où l'on va dans l'histoire. */
-export function StoryNav({ story }: { story: string }) {
-  const { prev, next } = neighbours(story);
-  if (!prev && !next) return null;
-
-  return (
-    <div className="border-t border-[var(--line)] bg-[var(--bg-2)]">
-      <div className="mx-auto max-w-6xl px-5 py-14">
-        <div className="flex items-center justify-between gap-4">
-          <Eyebrow left>Suite du récit</Eyebrow>
-          <Link
-            href="/#le-fil"
-            className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--ink-40)] transition-colors hover:text-[var(--gold-bright)]"
-          >
-            Tout le fil →
-          </Link>
-        </div>
-
-        <div className="scene mt-6 grid gap-4 md:grid-cols-2">
-          {prev ? <StoryCard chapter={prev} direction="prev" /> : <div />}
-          {next ? <StoryCard chapter={next} direction="next" /> : null}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StoryCard({
-  chapter,
-  direction,
-}: {
-  chapter: { n: string; href: string; title: string; teaser: string };
-  direction: "prev" | "next";
-}) {
-  const isNext = direction === "next";
-  return (
-    <Tilt max={5}>
-      <Link
-        href={chapter.href}
-        className={`card group flex h-full flex-col p-6 ${isNext ? "card--gold" : ""}`}
-      >
-        <div className={`pop flex h-full flex-col ${isNext ? "items-end text-right" : ""}`}>
-          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--ink-40)]">
-            {isNext ? "Chapitre suivant" : "Chapitre précédent"}
-          </span>
-          <span className="d mt-2 text-3xl">
-            <span className="gold">{chapter.n}</span> — {chapter.title}
-          </span>
-          <span className="mt-3 flex-1 text-sm leading-relaxed text-[var(--ink-55)]">
-            {chapter.teaser}
-          </span>
-          <span className="mt-5 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--gold)] transition-colors group-hover:text-[var(--gold-bright)]">
-            {isNext ? "Lire la suite →" : "← Revenir"}
-          </span>
-        </div>
-      </Link>
-    </Tilt>
-  );
-}
-
-/** Accueil : le récit complet, en profondeur. */
-export function StoryTimeline() {
-  return (
-    <div className="scene relative mt-12">
-      {/* Rail doré */}
-      <div className="story-rail absolute left-[15px] top-0 hidden h-full w-px sm:block" />
-
-      <ol className="flex flex-col gap-4">
-        {CHAPTERS.filter((c) => c.href !== "/").map((c, i) => (
-          <li key={c.href} className="relative sm:pl-14">
-            <span
-              aria-hidden="true"
-              className="absolute left-[9px] top-8 hidden h-3.5 w-3.5 rounded-full border border-[var(--gold)] bg-[#070707] sm:block"
-            />
-            <Reveal delay={i * 45}>
-              <Tilt max={4}>
-                <Link href={c.href} className="card group flex h-full gap-5 p-6">
-                  <div className="pop flex flex-1 flex-col sm:flex-row sm:items-center sm:gap-6">
-                    <span className="d text-4xl leading-none text-[var(--ink-40)] transition-colors group-hover:text-[var(--gold)] sm:w-16">
-                      {c.n}
-                    </span>
-                    <div className="mt-2 flex-1 sm:mt-0">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
-                        {c.tag}
-                      </span>
-                      <h3 className="d mt-1 text-2xl">{c.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-[var(--ink-55)]">
-                        {c.teaser}
-                      </p>
-                    </div>
-                    <span className="mt-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--ink-40)] transition-colors group-hover:text-[var(--gold-bright)] sm:mt-0">
-                      Lire →
-                    </span>
-                  </div>
-                </Link>
-              </Tilt>
-            </Reveal>
-          </li>
-        ))}
-      </ol>
     </div>
   );
 }

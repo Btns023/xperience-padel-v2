@@ -35,17 +35,24 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+
+  /**
+   * Vrai si le chemin est cette racine ou l'un de ses sous-chemins.
+   * Comparaison par segment : "/coach" ne doit pas capter "/coachs",
+   * qui est la page publique de présentation des coachs.
+   */
+  const under = (root: string) =>
+    pathname === root || pathname.startsWith(`${root}/`);
+
   const isAuthRoute =
-    pathname.startsWith("/connexion") ||
-    pathname.startsWith("/inscription") ||
-    pathname.startsWith("/auth");
+    under("/connexion") || under("/inscription") || under("/auth");
 
   // Espaces protégés
   const isProtected =
-    pathname.startsWith("/compte") ||
-    pathname.startsWith("/coach") ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/facture");
+    under("/compte") ||
+    under("/coach") ||
+    under("/admin") ||
+    under("/facture");
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
@@ -54,7 +61,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthRoute && !pathname.startsWith("/auth")) {
+  if (user && isAuthRoute && !under("/auth")) {
     const url = request.nextUrl.clone();
     url.pathname = "/compte";
     url.search = "";

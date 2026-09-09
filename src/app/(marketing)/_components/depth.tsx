@@ -137,8 +137,8 @@ export function Parallax({
   );
 }
 
-/** Filet doré en haut de page : avancée dans le chapitre en cours. */
-export function StoryProgress() {
+/** Filet doré en haut de page : avancée dans la lecture. */
+export function ScrollProgress() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -169,7 +169,7 @@ export function StoryProgress() {
     <div
       ref={ref}
       aria-hidden="true"
-      className="story-bar w-full"
+      className="scroll-bar w-full"
       style={{ transform: "scaleX(0)" }}
     />
   );
