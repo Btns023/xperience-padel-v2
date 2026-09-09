@@ -6,6 +6,7 @@ import {
   PriceCard,
   Section,
   SectionHead,
+  StoryNav,
 } from "../_components/ui";
 
 export const metadata = {
@@ -66,6 +67,7 @@ export default function CoursEnfantsPage() {
   return (
     <>
       <PageHero
+        story="/cours-enfants"
         eyebrow="Mercredi après-midi & samedi matin · Padel Smash Gembloux"
         title={
           <>
@@ -148,6 +150,8 @@ export default function CoursEnfantsPage() {
           </div>
         </Section>
       </div>
+
+      <StoryNav story="/cours-enfants" />
     </>
   );
 }

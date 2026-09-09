@@ -1,5 +1,11 @@
 import { Reveal } from "../_components/motion";
-import { CtaLink, PageHero, Section, SectionHead } from "../_components/ui";
+import {
+  CtaLink,
+  PageHero,
+  Section,
+  SectionHead,
+  StoryNav,
+} from "../_components/ui";
 
 export const metadata = {
   title: "Nos coachs de padel",
@@ -29,6 +35,7 @@ export default function CoachsPage() {
   return (
     <>
       <PageHero
+        story="/coachs"
         eyebrow="Équipe encadrante · Xperience Padel Academy"
         title={
           <>
@@ -80,6 +87,8 @@ export default function CoachsPage() {
           </div>
         </Section>
       </div>
+
+      <StoryNav story="/coachs" />
     </>
   );
 }

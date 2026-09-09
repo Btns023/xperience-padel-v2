@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { Reveal } from "./_components/motion";
+import { Parallax, Tilt } from "./_components/depth";
 import {
+  CourtBackdrop,
   CtaLink,
   Eyebrow,
   FeatureCard,
   PriceCard,
   Section,
   SectionHead,
+  StoryTimeline,
 } from "./_components/ui";
 
 export const metadata = {
@@ -14,14 +17,6 @@ export const metadata = {
   description:
     "Xperience Padel Academy — cours collectifs adultes et enfants, cours privés, stages d'été et préparation interclubs à Gembloux. Coachs P1000, P700, P500.",
 };
-
-const OFFERS = [
-  { href: "/cours-adultes", k: "Adultes", t: "Cycles collectifs", d: "9 séances de 1h30, groupes de niveau. Dès 230 € / joueur." },
-  { href: "/cours-enfants", k: "6–18 ans", t: "Cours enfants & ados", d: "Mercredis après-midi et samedis matin, groupes par âge. Dès 150 €." },
-  { href: "/cours-prives", k: "Solo ou duo", t: "Cours privés", d: "Un coach rien que pour vous, 7 j/7. Solo 60 € / 1h." },
-  { href: "/stages-ete", k: "Juillet–Août", t: "Stages d'été", d: "3 × 2h sur une semaine, en soirée. Dès 105 € / personne." },
-  { href: "/ete-indien", k: "Interclubs", t: "Été indien", d: "5 cours pour préparer la saison d'équipe. Offre équipe 400 €." },
-];
 
 const CALENDAR = [
   { period: "Juillet – Août", title: "Stages adultes", text: "Formule courte et intensive : 3 × 2h en une semaine.", href: "/stages-ete" },
@@ -43,37 +38,31 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <div className="relative overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/court-bg.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-[#070707]/72" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#070707]/30 via-[#070707]/40 to-[#070707]" />
+        <CourtBackdrop opacity={72} />
 
-        <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-5 py-28 text-center sm:py-40">
-          <div className="hero-rise flex flex-col items-center gap-7">
-            <Eyebrow>Xperience Padel Academy · Gembloux, Belgique</Eyebrow>
-            <h1 className="d text-[3.5rem] leading-[0.86] sm:text-[7.5rem]">
-              Élevez
-              <br />
-              <span className="gold">votre</span>{" "}
-              <span className="out">jeu</span>
-            </h1>
-            <p className="max-w-lg text-pretty text-[var(--ink-55)]">
-              Que vous découvriez le padel ou que vous souhaitiez perfectionner
-              votre technique, nous vous accompagnons pour progresser
-              efficacement.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <CtaLink href="/inscription">Réserver un cours</CtaLink>
-              <CtaLink href="#formules" variant="ghost">
-                En savoir plus
-              </CtaLink>
+        <div className="scene relative z-10 mx-auto flex max-w-4xl flex-col items-center px-5 py-28 text-center sm:py-40">
+          <Parallax speed={-0.08}>
+            <div className="hero-rise flex flex-col items-center gap-7">
+              <Eyebrow>Xperience Padel Academy · Gembloux, Belgique</Eyebrow>
+              <h1 className="d extrude text-[3.5rem] leading-[0.86] sm:text-[7.5rem]">
+                Élevez
+                <br />
+                <span className="gold extrude-gold">votre</span>{" "}
+                <span className="out">jeu</span>
+              </h1>
+              <p className="max-w-lg text-pretty text-[var(--ink-55)]">
+                Que vous découvriez le padel ou que vous souhaitiez perfectionner
+                votre technique, nous vous accompagnons pour progresser
+                efficacement.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <CtaLink href="/inscription">Réserver un cours</CtaLink>
+                <CtaLink href="#le-fil" variant="ghost">
+                  Suivre l&apos;histoire
+                </CtaLink>
+              </div>
             </div>
-          </div>
+          </Parallax>
         </div>
       </div>
 
@@ -115,31 +104,20 @@ export default function HomePage() {
         <hr className="rule-gold" />
       </div>
 
-      {/* Formules */}
-      <Section id="formules">
+      {/* Le fil — le récit, chapitre par chapitre */}
+      <Section id="le-fil">
         <SectionHead
-          eyebrow="Nos formules"
-          title="Trouvez la vôtre"
-          lead="Cinq façons de progresser, du cours à l'unité au cycle interclubs. Terrain, matériel et coaching toujours compris."
+          eyebrow="Le fil XPA · 7 chapitres"
+          title={
+            <>
+              Votre histoire,
+              <br />
+              <span className="gold">chapitre après chapitre</span>
+            </>
+          }
+          lead="Du premier échange à la préparation des interclubs, chaque page raconte une étape du parcours. Suivez-les dans l'ordre, ou entrez par celle qui vous ressemble."
         />
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {OFFERS.map((o, i) => (
-            <Reveal key={o.href} delay={i * 50}>
-              <Link href={o.href} className="card group flex h-full flex-col p-6">
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
-                  {o.k}
-                </span>
-                <span className="d mt-2 text-2xl">{o.t}</span>
-                <span className="mt-3 flex-1 text-sm leading-relaxed text-[var(--ink-55)]">
-                  {o.d}
-                </span>
-                <span className="mt-5 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--ink-40)] transition-colors group-hover:text-[var(--gold-bright)]">
-                  En savoir plus →
-                </span>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
+        <StoryTimeline />
       </Section>
 
       {/* Calendrier de la saison */}
@@ -165,18 +143,22 @@ export default function HomePage() {
               </span>
             ))}
           </div>
-          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="scene mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {CALENDAR.map((c, i) => (
               <Reveal key={c.title} delay={i * 50}>
-                <Link href={c.href} className="card flex h-full flex-col p-6">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--gold)]">
-                    {c.period}
-                  </span>
-                  <span className="d mt-2 text-xl">{c.title}</span>
-                  <span className="mt-3 flex-1 text-sm leading-relaxed text-[var(--ink-55)]">
-                    {c.text}
-                  </span>
-                </Link>
+                <Tilt max={7}>
+                  <Link href={c.href} className="card flex h-full flex-col p-6">
+                    <span className="pop flex h-full flex-col">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--gold)]">
+                        {c.period}
+                      </span>
+                      <span className="d mt-2 text-xl">{c.title}</span>
+                      <span className="mt-3 flex-1 text-sm leading-relaxed text-[var(--ink-55)]">
+                        {c.text}
+                      </span>
+                    </span>
+                  </Link>
+                </Tilt>
               </Reveal>
             ))}
           </div>
@@ -206,18 +188,22 @@ export default function HomePage() {
             title="Des coachs qui jouent vraiment"
             lead="P1000, P700, P500 — ils pratiquent à haut niveau. Ce qu'ils transmettent, ils le vivent sur le court."
           />
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="scene mt-10 grid gap-4 sm:grid-cols-3">
             {COACHES.map((c, i) => (
               <Reveal key={c.name} delay={i * 60}>
-                <div className="card h-full p-6">
-                  <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--gold)]">
-                    {c.role}
+                <Tilt max={6}>
+                  <div className="card h-full p-6">
+                    <div className="pop">
+                      <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--gold)]">
+                        {c.role}
+                      </div>
+                      <div className="d mt-2 text-xl">{c.name}</div>
+                      <p className="mt-3 text-sm leading-relaxed text-[var(--ink-55)]">
+                        {c.text}
+                      </p>
+                    </div>
                   </div>
-                  <div className="d mt-2 text-xl">{c.name}</div>
-                  <p className="mt-3 text-sm leading-relaxed text-[var(--ink-55)]">
-                    {c.text}
-                  </p>
-                </div>
+                </Tilt>
               </Reveal>
             ))}
           </div>
@@ -255,15 +241,24 @@ export default function HomePage() {
 
       {/* CTA final */}
       <Section className="pt-0">
-        <div className="card card--gold px-6 py-14 text-center">
-          <h2 className="d text-4xl sm:text-5xl">Prêt à jouer ?</h2>
-          <p className="mx-auto mt-3 max-w-lg text-[var(--ink-55)]">
-            Crée ton compte, choisis un créneau, on te recontacte pour former ton
-            groupe. Paiement par virement, aucune surprise.
-          </p>
-          <div className="mt-7 flex justify-center">
-            <CtaLink href="/inscription">Réserver ma place</CtaLink>
-          </div>
+        <div className="scene">
+          <Tilt max={3}>
+            <div className="card card--gold px-6 py-14 text-center">
+              <div className="pop">
+                <span className="chapter-badge">Épilogue · à vous d&apos;écrire</span>
+                <h2 className="d extrude mt-5 text-4xl sm:text-5xl">
+                  Prêt à jouer ?
+                </h2>
+                <p className="mx-auto mt-3 max-w-lg text-[var(--ink-55)]">
+                  Crée ton compte, choisis un créneau, on te recontacte pour
+                  former ton groupe. Paiement par virement, aucune surprise.
+                </p>
+                <div className="mt-7 flex justify-center">
+                  <CtaLink href="/inscription">Réserver ma place</CtaLink>
+                </div>
+              </div>
+            </div>
+          </Tilt>
         </div>
       </Section>
     </>

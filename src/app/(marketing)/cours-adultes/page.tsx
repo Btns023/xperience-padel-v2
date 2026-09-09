@@ -6,6 +6,7 @@ import {
   PriceCard,
   Section,
   SectionHead,
+  StoryNav,
 } from "../_components/ui";
 
 export const metadata = {
@@ -24,6 +25,7 @@ export default function CoursAdultesPage() {
   return (
     <>
       <PageHero
+        story="/cours-adultes"
         eyebrow="Padel Smash Gembloux · Saison 2026"
         title={
           <>
@@ -81,6 +83,8 @@ export default function CoursAdultesPage() {
           </CtaLink>
         </div>
       </Section>
+
+      <StoryNav story="/cours-adultes" />
     </>
   );
 }

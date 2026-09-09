@@ -1,4 +1,4 @@
-import { PageHero, Section, SectionHead } from "../_components/ui";
+import { PageHero, Section, SectionHead, StoryNav } from "../_components/ui";
 
 export const metadata = {
   title: "Sponsors & partenaires",
@@ -15,6 +15,7 @@ export default function SponsorsPage() {
   return (
     <>
       <PageHero
+        story="/sponsors"
         eyebrow="Ils croient au projet XPA"
         title={
           <>
@@ -66,6 +67,8 @@ export default function SponsorsPage() {
           </div>
         </Section>
       </div>
+
+      <StoryNav story="/sponsors" />
     </>
   );
 }

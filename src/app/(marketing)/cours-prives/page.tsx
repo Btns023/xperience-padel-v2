@@ -6,6 +6,7 @@ import {
   PriceCard,
   Section,
   SectionHead,
+  StoryNav,
 } from "../_components/ui";
 
 export const metadata = {
@@ -38,6 +39,7 @@ export default function CoursPrivesPage() {
   return (
     <>
       <PageHero
+        story="/cours-prives"
         eyebrow="Disponible toute l'année · solo ou duo"
         title={
           <>
@@ -122,6 +124,8 @@ export default function CoursPrivesPage() {
           </div>
         </Section>
       </div>
+
+      <StoryNav story="/cours-prives" />
     </>
   );
 }

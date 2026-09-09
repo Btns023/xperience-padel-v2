@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { StoryProgress } from "./depth";
 
 type NavItem =
   | { href: string; label: string }
@@ -81,6 +82,7 @@ export function SiteHeader() {
           : "border-b border-transparent"
       }`}
     >
+      <StoryProgress />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-2.5">
         <Link
           href="/"

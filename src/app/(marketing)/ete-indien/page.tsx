@@ -6,6 +6,7 @@ import {
   PriceCard,
   Section,
   SectionHead,
+  StoryNav,
 } from "../_components/ui";
 
 export const metadata = {
@@ -24,6 +25,7 @@ export default function EteIndienPage() {
   return (
     <>
       <PageHero
+        story="/ete-indien"
         eyebrow="Fin août – septembre 2026 · interclubs"
         title={
           <>
@@ -76,6 +78,8 @@ export default function EteIndienPage() {
           <CtaLink href="/inscription">Réserver l&apos;été indien</CtaLink>
         </div>
       </Section>
+
+      <StoryNav story="/ete-indien" />
     </>
   );
 }
