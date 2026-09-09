@@ -81,6 +81,13 @@ const PHASE_TAG: Record<Phase, string> = {
   avenir: "À venir",
 };
 
+const PRIVE_POINTS: [string, string][] = [
+  ["Quand vous voulez", "7 j/7, l'horaire se fixe directement avec le coach."],
+  ["Seul ou à deux", "À deux, vous partagez le court et le tarif."],
+  ["1 h ou 1 h 30", "La séance longue laisse le temps de vraiment travailler."],
+  ["Tout compris", "Location du terrain et matériel inclus dans le prix."],
+];
+
 const COACHES = [
   { name: "Nicolas Bertholet", role: "Co-fondateur · P1000", text: "Lecture du terrain chirurgicale, schémas tactiques offensifs." },
   { name: "Stéphane Stellings", role: "Co-fondateur · P700", text: "Prof de tennis certifié. Technique, régularité, progression structurée." },
@@ -323,23 +330,62 @@ export default function HomePage() {
         <SectionHead
           eyebrow="Sans engagement"
           title="Cours privés à la carte"
-          lead="Un coach pour vous seul ou à deux, 7 j/7. Terrain et matériel compris."
+          lead="La formule sans cycle ni groupe à constituer : vous réservez une séance quand vous en avez besoin."
         />
         <Reveal className="mt-10">
-          <PriceTable
-            columns={["1 h", "1 h 30"]}
-            rows={[
-              { label: "Solo", prices: ["60 €", "90 €"] },
-              { label: "À deux", hint: "prix total", prices: ["70 €", "105 €"] },
-            ]}
-            note="Horaire à convenir directement avec le coach."
-          />
+          <div className="card grid gap-10 p-6 sm:p-10 lg:grid-cols-2 lg:gap-16">
+            <div>
+              <h3 className="d text-2xl sm:text-3xl">
+                Un coach rien que <span className="gold">pour vous</span>
+              </h3>
+              <p className="mt-4 text-[var(--ink-55)]">
+                Pas de groupe à attendre, pas de compromis sur le contenu :
+                toute la séance est construite autour de votre jeu, de vos
+                objectifs et de votre niveau. C&apos;est la formule la plus
+                directe pour débloquer un geste qui résiste, partir sur de
+                bonnes bases avant un cycle, ou préparer une échéance précise.
+              </p>
+              <ul className="mt-7 flex flex-col gap-4">
+                {PRIVE_POINTS.map(([t, d]) => (
+                  <li key={t} className="flex gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="mt-2 h-px w-4 shrink-0 bg-[var(--gold)]"
+                    />
+                    <span className="text-sm leading-relaxed">
+                      <span className="font-semibold text-white">{t}</span>
+                      <span className="text-[var(--ink-55)]"> — {d}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-8">
+                <CtaLink href="/inscription">Réserver un cours privé</CtaLink>
+              </div>
+            </div>
+
+            <div className="lg:border-l lg:border-[var(--line)] lg:pl-16">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
+                Les tarifs
+              </span>
+              <div className="mt-4">
+                <PriceTable
+                  bare
+                  columns={["1 h", "1 h 30"]}
+                  rows={[
+                    { label: "Solo", prices: ["60 €", "90 €"] },
+                    {
+                      label: "À deux",
+                      hint: "prix total, pas par joueur",
+                      prices: ["70 €", "105 €"],
+                    },
+                  ]}
+                  note="Facturation après confirmation, par virement. Aucun paiement en ligne."
+                />
+              </div>
+            </div>
+          </div>
         </Reveal>
-        <div className="mt-8">
-          <CtaLink href="/cours-prives" variant="ghost">
-            En savoir plus
-          </CtaLink>
-        </div>
       </Section>
 
       {/* Coachs */}

@@ -138,19 +138,24 @@ export function PriceTable({
   columns,
   rows,
   note,
+  bare = false,
 }: {
   columns: string[];
   rows: { label: string; hint?: string; prices: string[] }[];
   note?: string;
+  /** Sans bordure ni fond, pour l'imbriquer dans une carte existante. */
+  bare?: boolean;
 }) {
   const grid = {
     gridTemplateColumns: `1.5fr repeat(${columns.length}, minmax(0, 1fr))`,
   };
+  // Imbriquée, la grille hérite du rembourrage de la carte hôte.
+  const pad = bare ? "" : "px-5 sm:px-6";
 
   return (
-    <div className="card max-w-2xl">
+    <div className={bare ? "" : "card"}>
       <div
-        className="grid items-baseline gap-3 border-b border-[var(--line)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--ink-40)] sm:px-6"
+        className={`grid items-baseline gap-3 border-b border-[var(--line)] py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--ink-40)] ${pad}`}
         style={grid}
       >
         <span />
@@ -164,7 +169,7 @@ export function PriceTable({
       {rows.map((r) => (
         <div
           key={r.label}
-          className="grid items-baseline gap-3 border-b border-[var(--line)] px-5 py-4 last:border-b-0 sm:px-6"
+          className={`grid items-baseline gap-3 border-b border-[var(--line)] py-4 last:border-b-0 ${pad}`}
           style={grid}
         >
           <span>
@@ -187,7 +192,7 @@ export function PriceTable({
       ))}
 
       {note ? (
-        <p className="border-t border-[var(--line)] px-5 py-3 text-xs text-[var(--ink-40)] sm:px-6">
+        <p className={`border-t border-[var(--line)] py-3 text-xs text-[var(--ink-40)] ${pad}`}>
           {note}
         </p>
       ) : null}
