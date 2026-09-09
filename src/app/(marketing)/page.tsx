@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Reveal } from "./_components/motion";
 import { Parallax, Tilt } from "./_components/depth";
+import { FormuleFinder } from "./_components/formule-finder";
+import { RENTREE, SEASON_YEAR } from "./_components/season";
 import {
   CourtBackdrop,
   CtaLink,
@@ -22,15 +24,62 @@ const OFFERS = [
 export const metadata = {
   title: "Cours & stages de padel à Gembloux",
   description:
-    "Xperience Padel Academy — cours collectifs adultes et enfants, cours privés, stages d'été et préparation interclubs à Gembloux. Coachs P1000, P700, P500.",
+    "Xperience Padel Academy — cours collectifs adultes et enfants, cours privés, stages d'été et préparation interclubs à Gembloux. Coachs P1000, P700, P500, P300.",
 };
 
+/** Le calendrier se met à jour tout seul : re-rendu toutes les heures. */
+export const revalidate = 3600;
+
 const CALENDAR = [
-  { period: "Juillet – Août", title: "Stages adultes", text: "Formule courte et intensive : 3 × 2h en une semaine.", href: "/stages-ete" },
-  { period: "Fin août – Septembre", title: "Été indien", text: "5 cours pour préparer les interclubs. Offre équipe dédiée.", href: "/ete-indien" },
-  { period: "Septembre – Décembre", title: "Cycles d'automne", text: "Cycle complet de 9 séances, adultes & enfants.", href: "/cours-adultes" },
-  { period: "Septembre – Juin", title: "Cycles enfants", text: "À l'année, dégressif : 9, 18 ou 27 cours.", href: "/cours-enfants" },
+  {
+    start: "2026-07-01",
+    end: "2026-08-31",
+    period: "Juillet – Août",
+    title: "Stages adultes",
+    text: "Formule courte et intensive : 3 × 2h en une semaine.",
+    href: "/stages-ete",
+  },
+  {
+    start: "2026-08-24",
+    end: "2026-09-30",
+    period: "Fin août – Septembre",
+    title: "Été indien",
+    text: "5 cours pour préparer les interclubs. Offre équipe dédiée.",
+    href: "/ete-indien",
+  },
+  {
+    start: RENTREE.enfants.iso,
+    end: "2027-06-30",
+    period: "Septembre 2026 – juin 2027",
+    title: "Cycles enfants",
+    date: RENTREE.enfants.label,
+    text: "À l'année, dégressif : 9, 18 ou 27 cours.",
+    href: "/cours-enfants",
+  },
+  {
+    start: RENTREE.adultes.iso,
+    end: "2026-12-31",
+    period: "Octobre – Décembre",
+    title: "Cycle adultes",
+    date: RENTREE.adultes.label,
+    text: "Cycle complet de 9 séances de 1h30, en groupes de niveau.",
+    href: "/cours-adultes",
+  },
 ];
+
+type Phase = "passe" | "encours" | "avenir";
+
+function phaseOf(start: string, end: string, today: string): Phase {
+  if (today > end) return "passe";
+  if (today >= start) return "encours";
+  return "avenir";
+}
+
+const PHASE_TAG: Record<Phase, string> = {
+  passe: "Terminé",
+  encours: "En cours",
+  avenir: "À venir",
+};
 
 const COACHES = [
   { name: "Nicolas Bertholet", role: "Co-fondateur · P1000", text: "Lecture du terrain chirurgicale, schémas tactiques offensifs." },
@@ -39,9 +88,24 @@ const COACHES = [
   { name: "Andréa Maronet", role: "Coach enfants · P300", text: "Éducatrice physique. Motricité, coordination et bases techniques pour les 6–18 ans." },
 ];
 
-const MONTHS = ["Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
+/** Les 7 mois de la saison, avec leur numéro (1 = janvier). */
+const MONTHS: [string, number][] = [
+  ["Juin", 6],
+  ["Juil", 7],
+  ["Août", 8],
+  ["Sept", 9],
+  ["Oct", 10],
+  ["Nov", 11],
+  ["Déc", 12],
+];
 
 export default function HomePage() {
+  // Date du jour à Bruxelles, au format AAAA-MM-JJ (comparable tel quel).
+  const today = new Intl.DateTimeFormat("fr-CA", {
+    timeZone: "Europe/Brussels",
+  }).format(new Date());
+  const [yearNow, monthNow] = today.split("-").map(Number);
+
   return (
     <>
       {/* Hero */}
@@ -65,8 +129,8 @@ export default function HomePage() {
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 <CtaLink href="/inscription">Réserver un cours</CtaLink>
-                <CtaLink href="#formules" variant="ghost">
-                  Voir les formules
+                <CtaLink href="#guide" variant="ghost">
+                  Trouver ma formule
                 </CtaLink>
               </div>
             </div>
@@ -112,11 +176,31 @@ export default function HomePage() {
         <hr className="rule-gold" />
       </div>
 
+      {/* Guide — trouve ta formule */}
+      <Section id="guide">
+        <SectionHead
+          eyebrow="En trois questions"
+          title={
+            <>
+              Trouvez <span className="gold">votre formule</span>
+            </>
+          }
+          lead="Vous ne savez pas par où commencer ? Répondez à trois questions, on vous oriente vers le bon cours."
+        />
+        <Reveal className="mt-10">
+          <FormuleFinder />
+        </Reveal>
+      </Section>
+
+      <div className="mx-auto max-w-6xl px-5">
+        <hr className="rule-gold" />
+      </div>
+
       {/* Formules */}
       <Section id="formules">
         <SectionHead
-          eyebrow="Nos formules"
-          title="Trouvez la vôtre"
+          eyebrow="Toutes nos formules"
+          title="Le détail, formule par formule"
           lead="Cinq façons de progresser, du cours à l'unité au cycle interclubs. Terrain, matériel et coaching toujours compris."
         />
         <div className="scene mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -159,26 +243,68 @@ export default function HomePage() {
               </>
             }
           />
-          <div className="mt-10 flex gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--ink-40)]">
-            {MONTHS.map((m) => (
-              <span
-                key={m}
-                className="flex-1 border-t border-[var(--line-3)] pt-2"
-              >
-                {m}
-              </span>
-            ))}
+          <div className="mt-10 flex gap-2 text-[11px] font-semibold uppercase tracking-[0.2em]">
+            {MONTHS.map(([label, m]) => {
+              const past =
+                yearNow > SEASON_YEAR ||
+                (yearNow === SEASON_YEAR && monthNow > m);
+              const now = yearNow === SEASON_YEAR && monthNow === m;
+              return (
+                <span
+                  key={label}
+                  className={`flex-1 border-t pt-2 ${
+                    now
+                      ? "border-[var(--gold)] text-[var(--gold)]"
+                      : past
+                        ? "border-[var(--line)] text-white/20"
+                        : "border-[var(--line-3)] text-[var(--ink-40)]"
+                  }`}
+                >
+                  {label}
+                  {now ? (
+                    <span className="ml-1.5 hidden text-[9px] tracking-normal sm:inline">
+                      • en cours
+                    </span>
+                  ) : null}
+                </span>
+              );
+            })}
           </div>
           <div className="scene mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {CALENDAR.map((c, i) => (
+            {CALENDAR.map((c, i) => {
+              const phase = phaseOf(c.start, c.end, today);
+              return (
               <Reveal key={c.title} delay={i * 50}>
                 <Tilt max={7}>
-                  <Link href={c.href} className="card flex h-full flex-col p-6">
+                  <Link
+                    href={c.href}
+                    className={`card flex h-full flex-col p-6 ${
+                      phase === "passe"
+                        ? "opacity-45 grayscale transition-opacity hover:opacity-80"
+                        : ""
+                    } ${phase === "encours" ? "card--gold" : ""}`}
+                  >
                     <span className="pop flex h-full flex-col">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--gold)]">
-                        {c.period}
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--gold)]">
+                          {c.period}
+                        </span>
+                        <span
+                          className={`shrink-0 rounded-[2px] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] ${
+                            phase === "encours"
+                              ? "bg-[var(--gold)] text-black"
+                              : "border border-[var(--line-2)] text-[var(--ink-40)]"
+                          }`}
+                        >
+                          {PHASE_TAG[phase]}
+                        </span>
                       </span>
                       <span className="d mt-2 text-xl">{c.title}</span>
+                      {c.date ? (
+                        <span className="mt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-white">
+                          {c.date}
+                        </span>
+                      ) : null}
                       <span className="mt-3 flex-1 text-sm leading-relaxed text-[var(--ink-55)]">
                         {c.text}
                       </span>
@@ -186,7 +312,8 @@ export default function HomePage() {
                   </Link>
                 </Tilt>
               </Reveal>
-            ))}
+              );
+            })}
           </div>
         </Section>
       </div>
