@@ -8,7 +8,7 @@ import {
   CtaLink,
   Eyebrow,
   FeatureCard,
-  PriceCard,
+  PriceTable,
   Section,
   SectionHead,
 } from "./_components/ui";
@@ -323,13 +323,22 @@ export default function HomePage() {
         <SectionHead
           eyebrow="Sans engagement"
           title="Cours privés à la carte"
-          lead="En solo ou en duo. Séance 1h standard, 1h30 possible (×1,5). Terrain et matériel compris."
+          lead="Un coach pour vous seul ou à deux, 7 j/7. Terrain et matériel compris."
         />
-        <div className="mt-10 grid gap-4 sm:grid-cols-4">
-          <PriceCard label="Solo · 1h" price="60 €" />
-          <PriceCard label="Solo · 1h30" price="90 €" />
-          <PriceCard label="Duo · 1h" price="70 €" note="prix total" />
-          <PriceCard label="Duo · 1h30" price="105 €" note="prix total" />
+        <Reveal className="mt-10">
+          <PriceTable
+            columns={["1 h", "1 h 30"]}
+            rows={[
+              { label: "Solo", prices: ["60 €", "90 €"] },
+              { label: "À deux", hint: "prix total", prices: ["70 €", "105 €"] },
+            ]}
+            note="Horaire à convenir directement avec le coach."
+          />
+        </Reveal>
+        <div className="mt-8">
+          <CtaLink href="/cours-prives" variant="ghost">
+            En savoir plus
+          </CtaLink>
         </div>
       </Section>
 

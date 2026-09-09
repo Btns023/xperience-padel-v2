@@ -130,6 +130,71 @@ export function PriceCard({
   );
 }
 
+/**
+ * Petite grille tarifaire compacte : une ligne par formule,
+ * une colonne par durée. Plus sobre que plusieurs PriceCard côte à côte.
+ */
+export function PriceTable({
+  columns,
+  rows,
+  note,
+}: {
+  columns: string[];
+  rows: { label: string; hint?: string; prices: string[] }[];
+  note?: string;
+}) {
+  const grid = {
+    gridTemplateColumns: `1.5fr repeat(${columns.length}, minmax(0, 1fr))`,
+  };
+
+  return (
+    <div className="card max-w-2xl">
+      <div
+        className="grid items-baseline gap-3 border-b border-[var(--line)] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--ink-40)] sm:px-6"
+        style={grid}
+      >
+        <span />
+        {columns.map((c) => (
+          <span key={c} className="text-right">
+            {c}
+          </span>
+        ))}
+      </div>
+
+      {rows.map((r) => (
+        <div
+          key={r.label}
+          className="grid items-baseline gap-3 border-b border-[var(--line)] px-5 py-4 last:border-b-0 sm:px-6"
+          style={grid}
+        >
+          <span>
+            <span className="d text-lg leading-none">{r.label}</span>
+            {r.hint ? (
+              <span className="mt-1 block text-xs text-[var(--ink-40)]">
+                {r.hint}
+              </span>
+            ) : null}
+          </span>
+          {r.prices.map((p, i) => (
+            <span
+              key={columns[i]}
+              className="d text-right text-2xl tabular-nums sm:text-3xl"
+            >
+              {p}
+            </span>
+          ))}
+        </div>
+      ))}
+
+      {note ? (
+        <p className="border-t border-[var(--line)] px-5 py-3 text-xs text-[var(--ink-40)] sm:px-6">
+          {note}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export function FeatureCard({
   title,
   text,
