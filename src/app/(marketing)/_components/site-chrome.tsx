@@ -16,14 +16,14 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-2.5">
         <Link
           href="/"
-          className="-ml-1 flex items-center p-1"
+          className="flex items-center"
           aria-label="Xperience Padel Academy — accueil"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo-mark.svg"
+            src="/logo-white.svg"
             alt="Xperience Padel Academy"
-            className="h-14 w-14"
+            className="h-9 w-auto"
           />
         </Link>
 
@@ -63,13 +63,12 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-white/10 bg-[#0b0b0c]">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-14 sm:flex-row sm:justify-between">
         <div className="max-w-xs">
-          <div className="flex items-center gap-2.5">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-mark.svg" alt="" className="h-11 w-11" />
-            <span className="text-sm font-semibold tracking-[0.14em] text-white">
-              XPERIENCE PADEL ACADEMY
-            </span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-white.svg"
+            alt="Xperience Padel Academy"
+            className="h-8 w-auto"
+          />
           <p className="mt-3 text-sm text-white/55">
             Cours et stages de padel à Gembloux. Encadrement par des joueurs
             classés P1000, P700 et P500.
