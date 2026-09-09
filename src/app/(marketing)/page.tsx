@@ -69,8 +69,10 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <div className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[url(/court-bg.jpg)] bg-cover bg-center" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0b0b0c]/75 via-[#0b0b0c]/85 to-[#0b0b0c]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_0%,rgba(201,162,75,0.22),transparent_65%)]" />
-        <div className="relative mx-auto flex max-w-6xl flex-col items-center px-5 py-24 text-center sm:py-32">
+        <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center px-5 py-24 text-center sm:py-32">
           <Eyebrow>Xperience Padel Academy · Gembloux, Belgique</Eyebrow>
           <h1 className="mt-6 text-6xl text-white sm:text-8xl">
             <Display>

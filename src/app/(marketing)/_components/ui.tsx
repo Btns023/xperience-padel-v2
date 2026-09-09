@@ -129,8 +129,10 @@ export function PageHero({
 }) {
   return (
     <div className="relative overflow-hidden border-b border-white/10">
+      <div className="pointer-events-none absolute inset-0 bg-[url(/court-bg.jpg)] bg-cover bg-center" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0b0b0c]/80 via-[#0b0b0c]/88 to-[#0b0b0c]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(201,162,75,0.18),transparent_70%)]" />
-      <div className="relative mx-auto max-w-6xl px-5 py-20 text-center sm:py-28">
+      <div className="relative z-10 mx-auto max-w-6xl px-5 py-20 text-center sm:py-28">
         <Eyebrow>{eyebrow}</Eyebrow>
         <h1 className="mx-auto mt-5 max-w-4xl text-balance text-5xl text-white sm:text-7xl">
           <Display>{title}</Display>
