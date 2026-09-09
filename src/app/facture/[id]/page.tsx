@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth";
 import { formatEuros } from "@/lib/format";
 import { type Invoice, type InvoiceLine } from "@/lib/types";
+import { CGV_ARTICLES, CGV_TITLE } from "@/lib/cgv";
 import { PrintButton } from "./print-button";
 
 export const metadata = { title: "Document" };
@@ -93,10 +94,17 @@ export default async function FactureDocumentPage({
                  font-style: italic; text-align: right; font-size: 12px; color: #333; }
         .pagefoot { text-align: center; margin-top: 40px; font-size: 12px; color: #444; }
 
+        .cgv { margin-top: 48px; border-top: 3px solid var(--ink); padding-top: 22px; }
+        .cgv h2 { text-align: center; font-size: 20px; margin: 0 0 18px; }
+        .cgv article { margin-bottom: 12px; }
+        .cgv h3 { font-size: 13px; font-weight: 700; margin: 0 0 3px; }
+        .cgv p { font-size: 11.5px; line-height: 1.4; margin: 0 0 2px; color: #222; }
+
         @media print {
           .toolbar { display: none !important; }
           .sheet { padding: 0; max-width: none; }
           @page { margin: 18mm 16mm; }
+          .cgv { page-break-before: always; margin-top: 0; border-top: 0; }
         }
       `}</style>
 
@@ -229,6 +237,23 @@ export default async function FactureDocumentPage({
       ) : null}
 
       <div className="pagefoot">{s.issuer_legal_name}</div>
+
+      {!isCredit ? (
+        <div className="cgv">
+          <h2>{CGV_TITLE}</h2>
+          {CGV_ARTICLES.map((a) => (
+            <article key={a.n}>
+              <h3>
+                {a.n}. {a.title}
+              </h3>
+              {a.body.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </article>
+          ))}
+          <div className="pagefoot">{s.issuer_legal_name}</div>
+        </div>
+      ) : null}
     </div>
   );
 }
