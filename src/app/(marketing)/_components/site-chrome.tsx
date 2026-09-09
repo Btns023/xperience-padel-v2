@@ -14,12 +14,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0b0b0c]/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/" className="flex items-center" aria-label="Xperience Padel Academy — accueil">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="" className="h-8 w-8 invert" />
-          <span className="text-sm font-semibold tracking-[0.14em] text-white">
-            XPERIENCE
-          </span>
+          <img src="/logo-mark.svg" alt="Xperience Padel Academy" className="h-10 w-10" />
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex">
@@ -60,7 +57,7 @@ export function SiteFooter() {
         <div className="max-w-xs">
           <div className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.svg" alt="" className="h-7 w-7 invert" />
+            <img src="/logo-mark.svg" alt="" className="h-9 w-9" />
             <span className="text-sm font-semibold tracking-[0.14em] text-white">
               XPERIENCE PADEL ACADEMY
             </span>
