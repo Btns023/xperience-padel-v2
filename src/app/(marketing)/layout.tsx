@@ -1,15 +1,14 @@
-import { Archivo, Archivo_Black } from "next/font/google";
+import { Bebas_Neue, Inter } from "next/font/google";
 import { SiteHeader, SiteFooter } from "./_components/site-chrome";
 import "./marketing.css";
 
-const body = Archivo({
+const body = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   variable: "--font-body",
   display: "swap",
 });
 
-const display = Archivo_Black({
+const display = Bebas_Neue({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-display",

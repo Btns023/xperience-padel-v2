@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Parallax, Reveal } from "./motion";
+import { Reveal } from "./motion";
 
+/** Titre Bebas Neue. `parts` : chaque segment avec sa variante de couleur. */
 export function Display({
   children,
   className = "",
@@ -8,29 +9,18 @@ export function Display({
   children: React.ReactNode;
   className?: string;
 }) {
-  return (
-    <span
-      className={`font-[family-name:var(--font-display)] uppercase leading-[0.88] tracking-[-0.01em] ${className}`}
-      style={{ textWrap: "balance" }}
-    >
-      {children}
-    </span>
-  );
+  return <span className={`d ${className}`}>{children}</span>;
 }
 
 export function Eyebrow({
-  n,
   children,
+  left,
 }: {
-  n?: string;
   children: React.ReactNode;
+  left?: boolean;
 }) {
   return (
-    <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--gold)]">
-      {n ? <span className="tabular-nums text-[var(--ink-faint)]">{n}</span> : null}
-      <span className="h-px w-6 bg-[var(--gold-deep)]" />
-      {children}
-    </p>
+    <span className={`eyebrow ${left ? "eyebrow--left" : ""}`}>{children}</span>
   );
 }
 
@@ -38,24 +28,14 @@ export function CtaLink({
   href,
   children,
   variant = "gold",
-  className = "",
 }: {
   href: string;
   children: React.ReactNode;
   variant?: "gold" | "ghost";
-  className?: string;
 }) {
-  const cls =
-    variant === "gold"
-      ? "bg-[var(--gold)] text-[#0a0a0b] hover:bg-[var(--gold-bright)]"
-      : "border border-[var(--line-strong)] text-[var(--ink)] hover:border-[var(--gold)] hover:text-[var(--gold-bright)]";
   return (
-    <Link
-      href={href}
-      className={`group inline-flex items-center gap-2 rounded-md px-5 py-3 text-sm font-semibold uppercase tracking-wide transition-colors ${cls} ${className}`}
-    >
+    <Link href={href} className={`btn btn--${variant}`}>
       {children}
-      <span className="transition-transform group-hover:translate-x-1">→</span>
     </Link>
   );
 }
@@ -72,7 +52,7 @@ export function Section({
   return (
     <section
       id={id}
-      className={`mx-auto max-w-6xl px-5 py-20 sm:py-28 ${className}`}
+      className={`mx-auto max-w-6xl px-5 py-16 sm:py-24 ${className}`}
     >
       {children}
     </section>
@@ -80,38 +60,30 @@ export function Section({
 }
 
 export function SectionHead({
-  n,
   eyebrow,
   title,
   lead,
+  center,
 }: {
-  n?: string;
   eyebrow: string;
   title: React.ReactNode;
   lead?: string;
+  center?: boolean;
 }) {
   return (
-    <Reveal className="flex flex-col gap-4">
-      <Eyebrow n={n}>{eyebrow}</Eyebrow>
-      <h2 className="max-w-3xl text-4xl text-[var(--ink)] sm:text-6xl">
-        <Display>{title}</Display>
+    <Reveal className={`flex flex-col gap-4 ${center ? "items-center text-center" : ""}`}>
+      <Eyebrow left={!center}>{eyebrow}</Eyebrow>
+      <h2 className="d max-w-3xl text-[2.75rem] leading-[0.9] sm:text-6xl">
+        {title}
       </h2>
       {lead ? (
-        <p className="max-w-2xl text-pretty text-[var(--ink-dim)]">{lead}</p>
+        <p
+          className={`text-pretty text-[var(--ink-55)] ${center ? "max-w-2xl" : "max-w-xl"}`}
+        >
+          {lead}
+        </p>
       ) : null}
     </Reveal>
-  );
-}
-
-export function XWatermark({ className = "" }: { className?: string }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/logo-mark.svg"
-      alt=""
-      aria-hidden="true"
-      className={`x-watermark ${className}`}
-    />
   );
 }
 
@@ -129,54 +101,39 @@ export function PriceCard({
   note?: string;
 }) {
   return (
-    <div
-      className={`flex flex-col rounded-xl border p-6 transition-colors ${
-        highlight
-          ? "border-[var(--gold)]/60 bg-[var(--gold-glow)]"
-          : "border-[var(--line)] bg-white/[0.03] hover:border-[var(--line-strong)]"
-      }`}
-    >
+    <div className={`flex flex-col p-6 ${highlight ? "card card--gold" : "card"}`}>
       {highlight ? (
-        <span className="mb-3 w-fit rounded-full bg-[var(--gold)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#0a0a0b]">
+        <span className="mb-3 w-fit rounded-[2px] bg-[var(--gold)] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-black">
           {highlight}
         </span>
       ) : null}
-      <span className="text-sm text-[var(--ink-dim)]">{label}</span>
-      <span className="mt-3 font-[family-name:var(--font-display)] text-4xl text-[var(--ink)] tabular-nums">
+      <span className="text-sm text-[var(--ink-55)]">{label}</span>
+      <span className="d mt-3 text-5xl tabular-nums">
         {price}
         {unit ? (
-          <span className="ml-1.5 text-sm font-normal text-[var(--ink-faint)]">
+          <span className="ml-1.5 align-baseline text-sm font-normal not-italic tracking-normal text-[var(--ink-40)] [font-family:var(--font-body)]">
             {unit}
           </span>
         ) : null}
       </span>
       {note ? (
-        <span className="mt-2 text-xs text-[var(--ink-faint)]">{note}</span>
+        <span className="mt-2 text-xs text-[var(--ink-40)]">{note}</span>
       ) : null}
     </div>
   );
 }
 
 export function FeatureCard({
-  n,
   title,
   text,
 }: {
-  n?: string;
   title: string;
   text: string;
 }) {
   return (
-    <div className="rounded-xl border border-[var(--line)] bg-white/[0.03] p-6 transition-colors hover:border-[var(--gold)]/40">
-      {n ? (
-        <div className="font-[family-name:var(--font-display)] text-3xl text-[var(--gold)]">
-          {n}
-        </div>
-      ) : null}
-      <h3 className="mt-2 text-sm font-semibold uppercase tracking-wide text-[var(--ink)]">
-        {title}
-      </h3>
-      <p className="mt-2 text-sm leading-relaxed text-[var(--ink-dim)]">{text}</p>
+    <div className="card p-6">
+      <h3 className="d text-xl leading-none">{title}</h3>
+      <p className="mt-3 text-sm leading-relaxed text-[var(--ink-55)]">{text}</p>
     </div>
   );
 }
@@ -196,20 +153,21 @@ export function PageHero({
 }) {
   return (
     <div className="relative overflow-hidden border-b border-[var(--line)]">
-      <div className="absolute inset-0 overflow-hidden">
-        <Parallax className="bg-[url(/court-bg.jpg)] bg-cover bg-center" />
-      </div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0a0a0b]/82 via-[#0a0a0b]/90 to-[var(--bg)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(58%_48%_at_50%_0%,var(--gold-glow),transparent_70%)]" />
-      <XWatermark className="left-1/2 top-1/2 w-[min(90vw,640px)] -translate-x-1/2 -translate-y-1/2" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/court-bg.jpg"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-[#070707]/78" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#070707]/40 to-[#070707]" />
 
-      <div className="relative z-10 mx-auto max-w-5xl px-5 py-24 text-center sm:py-32">
+      <div className="relative z-10 mx-auto max-w-4xl px-5 py-24 text-center sm:py-32">
         <div className="hero-rise flex flex-col items-center gap-6">
           <Eyebrow>{eyebrow}</Eyebrow>
-          <h1 className="text-5xl text-[var(--ink)] sm:text-7xl">
-            <Display>{title}</Display>
-          </h1>
-          <p className="max-w-2xl text-pretty text-[var(--ink-dim)]">{lead}</p>
+          <h1 className="d text-5xl leading-[0.9] sm:text-7xl">{title}</h1>
+          <p className="max-w-xl text-pretty text-[var(--ink-55)]">{lead}</p>
           {primary || secondary ? (
             <div className="flex flex-wrap justify-center gap-3">
               {primary ? (

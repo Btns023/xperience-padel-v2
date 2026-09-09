@@ -28,7 +28,7 @@ export function SiteHeader() {
     <header
       className={`sticky top-0 z-50 transition-colors duration-300 ${
         scrolled
-          ? "border-b border-[var(--line)] bg-[var(--bg)]/85 backdrop-blur"
+          ? "border-b border-[var(--line)] bg-[#070707]/90 backdrop-blur"
           : "border-b border-transparent"
       }`}
     >
@@ -46,12 +46,12 @@ export function SiteHeader() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex">
+        <nav className="hidden items-center gap-x-5 gap-y-1 xl:flex">
           {NAV.map((n) => (
             <Link
               key={n.href}
               href={n.href}
-              className="text-[13px] font-medium uppercase tracking-wide text-[var(--ink-dim)] transition-colors hover:text-[var(--ink)]"
+              className="whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)] transition-colors hover:text-white"
             >
               {n.label}
             </Link>
@@ -61,21 +61,18 @@ export function SiteHeader() {
         <div className="flex items-center gap-3">
           <Link
             href="/connexion"
-            className="hidden text-[13px] font-medium uppercase tracking-wide text-[var(--ink-dim)] transition-colors hover:text-[var(--ink)] sm:inline"
+            className="hidden text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-55)] transition-colors hover:text-white sm:inline"
           >
             Se connecter
           </Link>
-          <Link
-            href="/inscription"
-            className="rounded-md bg-[var(--gold)] px-4 py-2 text-[13px] font-bold uppercase tracking-wide text-[#0a0a0b] transition-colors hover:bg-[var(--gold-bright)]"
-          >
+          <Link href="/inscription" className="btn btn--gold">
             Réserver
           </Link>
           <button
             type="button"
             aria-label="Menu"
             onClick={() => setOpen((v) => !v)}
-            className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--line-strong)] text-[var(--ink)] lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-[2px] border border-[var(--line-3)] text-white xl:hidden"
           >
             <span className="text-lg leading-none">{open ? "✕" : "≡"}</span>
           </button>
@@ -83,14 +80,14 @@ export function SiteHeader() {
       </div>
 
       {open ? (
-        <nav className="border-t border-[var(--line)] bg-[var(--bg)] px-5 py-3 lg:hidden">
+        <nav className="border-t border-[var(--line)] bg-[#070707] px-5 py-3 xl:hidden">
           <ul className="flex flex-col">
             {NAV.map((n) => (
               <li key={n.href}>
                 <Link
                   href={n.href}
                   onClick={() => setOpen(false)}
-                  className="block py-2 text-sm uppercase tracking-wide text-[var(--ink-dim)]"
+                  className="block py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ink-55)]"
                 >
                   {n.label}
                 </Link>
@@ -105,15 +102,8 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="relative mt-24 overflow-hidden border-t border-[var(--line)] bg-[var(--bg-2)]">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/logo-mark.svg"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-24 -right-16 w-[420px] opacity-[0.04] [filter:brightness(0)_invert(1)]"
-      />
-      <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-5 py-16 sm:flex-row sm:justify-between">
+    <footer className="mt-20 border-t border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-14 sm:flex-row sm:justify-between">
         <div className="max-w-xs">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -121,7 +111,7 @@ export function SiteFooter() {
             alt="Xperience Padel Academy"
             className="h-9 w-auto"
           />
-          <p className="mt-4 text-sm text-[var(--ink-faint)]">
+          <p className="mt-4 text-sm text-[var(--ink-40)]">
             Cours et stages de padel à Gembloux. Encadrement par des joueurs
             classés P1000, P700 et P500.
           </p>
@@ -129,52 +119,52 @@ export function SiteFooter() {
 
         <div className="grid grid-cols-2 gap-10 text-sm">
           <div className="flex flex-col gap-2.5">
-            <span className="text-xs font-semibold uppercase tracking-widest text-[var(--gold)]">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
               Formules
             </span>
             {NAV.slice(0, 5).map((n) => (
               <Link
                 key={n.href}
                 href={n.href}
-                className="text-[var(--ink-faint)] hover:text-[var(--ink)]"
+                className="text-[var(--ink-40)] hover:text-white"
               >
                 {n.label}
               </Link>
             ))}
           </div>
           <div className="flex flex-col gap-2.5">
-            <span className="text-xs font-semibold uppercase tracking-widest text-[var(--gold)]">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
               Contact
             </span>
             <a
               href="tel:+32473607207"
-              className="text-[var(--ink-faint)] hover:text-[var(--ink)]"
+              className="text-[var(--ink-40)] hover:text-white"
             >
               0473 / 607 207
             </a>
             <a
               href="mailto:info@padelxp.be"
-              className="text-[var(--ink-faint)] hover:text-[var(--ink)]"
+              className="text-[var(--ink-40)] hover:text-white"
             >
               info@padelxp.be
             </a>
-            <span className="text-[var(--ink-faint)]">Padel Smash Gembloux</span>
+            <span className="text-[var(--ink-40)]">Padel Smash Gembloux</span>
             <Link
               href="/conditions"
-              className="text-[var(--ink-faint)] hover:text-[var(--ink)]"
+              className="text-[var(--ink-40)] hover:text-white"
             >
               Conditions générales
             </Link>
             <Link
               href="/confidentialite"
-              className="text-[var(--ink-faint)] hover:text-[var(--ink)]"
+              className="text-[var(--ink-40)] hover:text-white"
             >
               Confidentialité
             </Link>
           </div>
         </div>
       </div>
-      <div className="relative border-t border-[var(--line)] px-5 py-5 text-center text-xs text-[var(--ink-faint)]">
+      <div className="border-t border-[var(--line)] px-5 py-5 text-center text-xs text-[var(--ink-40)]">
         © {new Date().getFullYear()} Xperience Padel Academy · Gembloux, Belgique
       </div>
     </footer>

@@ -1,110 +1,147 @@
 /* ===========================================================================
-   Vitrine — système de design (noir + doré, énergique)
+   Vitrine — système de design, calé sur le site actuel
+   Bebas Neue (display) + Inter (body) · fond #070707 · doré #c8a84b
+   Angles quasi droits (2px) · effet mot plein / doré / contour
    =========================================================================== */
 
 .mkt {
-  --bg: #09090a;
-  --bg-2: #101012;
-  --surface: #151517;
-  --line: #ffffff14;
-  --line-strong: #ffffff26;
-  --ink: #f5f4f1;
-  --ink-dim: #ffffffa6;
-  --ink-faint: #ffffff66;
-  --gold: #c9a24b;
-  --gold-bright: #e7c877;
-  --gold-deep: #7c6127;
-  --gold-glow: #c9a24b33;
+  --bg: #070707;
+  --bg-2: #0c0c0c;
+  --surface: rgba(255, 255, 255, 0.04);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.16);
+  --line-3: rgba(255, 255, 255, 0.24);
+  --ink: #ffffff;
+  --ink-70: rgba(255, 255, 255, 0.7);
+  --ink-55: rgba(255, 255, 255, 0.55);
+  --ink-40: rgba(255, 255, 255, 0.4);
+  --gold: #c8a84b;
+  --gold-bright: #e8c96a;
+  --gold-tint: rgba(200, 168, 75, 0.1);
+  --radius: 2px;
 
   background: var(--bg);
   color: var(--ink);
-  position: relative;
-  isolation: isolate;
 }
 
-/* grain léger sur toute la vitrine */
-.mkt::before {
+/* Titres — Bebas Neue */
+.d {
+  font-family: var(--font-display), "Bebas Neue", Impact, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+/* Mot "en contour" (comme "JEU") */
+.out {
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.32);
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.gold {
+  color: var(--gold);
+}
+
+/* Eyebrow doré avec filets */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--gold);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+.eyebrow::before,
+.eyebrow::after {
   content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
 }
-.mkt > * {
-  position: relative;
-  z-index: 1;
+.eyebrow--left::after {
+  display: none;
 }
 
-/* ligne de court : filet doré fin en séparateur */
-.court-rule {
+/* Boutons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.72rem 1.4rem;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+.btn--gold {
+  background: var(--gold);
+  color: #000;
+}
+.btn--gold:hover {
+  background: var(--gold-bright);
+}
+.btn--ghost {
+  border: 1px solid var(--line-3);
+  color: var(--ink);
+}
+.btn--ghost:hover {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+
+/* Cartes */
+.card {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  transition: border-color 0.2s;
+}
+.card:hover {
+  border-color: var(--line-2);
+}
+.card--gold {
+  border-color: rgba(200, 168, 75, 0.45);
+  background: var(--gold-tint);
+}
+
+/* Filet doré séparateur */
+.rule-gold {
   height: 1px;
   border: 0;
   background: linear-gradient(
     90deg,
     transparent,
-    var(--gold-deep) 20%,
-    var(--gold) 50%,
-    var(--gold-deep) 80%,
+    rgba(200, 168, 75, 0.45) 50%,
     transparent
   );
-  opacity: 0.5;
 }
 
-/* ---- Marquee ---- */
-.marquee {
-  overflow: hidden;
-  border-block: 1px solid var(--line);
-  background: var(--bg-2);
-  padding-block: 0.9rem;
-}
-.marquee__track {
-  display: inline-flex;
-  gap: 3rem;
-  white-space: nowrap;
-  will-change: transform;
-  animation: marquee 32s linear infinite;
-}
-.marquee:hover .marquee__track {
-  animation-play-state: paused;
-}
-.marquee__item {
-  font-family: var(--font-display), system-ui, sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: clamp(1rem, 2.6vw, 1.6rem);
-  color: var(--ink);
-}
-.marquee__item::after {
-  content: "✕";
-  margin-left: 3rem;
-  color: var(--gold);
-}
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* ---- Reveal au scroll ---- */
+/* Apparition au scroll (discrète) */
 .reveal {
   opacity: 0;
-  transform: translateY(22px);
+  transform: translateY(16px);
   transition:
-    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.6s ease,
+    transform 0.6s ease;
 }
 .reveal.is-in {
   opacity: 1;
   transform: none;
 }
 
-/* ---- Entrée du hero ---- */
+/* Entrée du hero */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -113,36 +150,22 @@
 }
 .hero-rise > * {
   opacity: 0;
-  animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: rise 0.8s ease forwards;
 }
 .hero-rise > *:nth-child(1) {
   animation-delay: 0.05s;
 }
 .hero-rise > *:nth-child(2) {
-  animation-delay: 0.18s;
+  animation-delay: 0.16s;
 }
 .hero-rise > *:nth-child(3) {
-  animation-delay: 0.32s;
+  animation-delay: 0.3s;
 }
 .hero-rise > *:nth-child(4) {
-  animation-delay: 0.46s;
-}
-.hero-rise > *:nth-child(5) {
-  animation-delay: 0.6s;
-}
-
-/* ---- Filigrane X ---- */
-.x-watermark {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0.05;
-  filter: brightness(0) invert(1);
+  animation-delay: 0.42s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee__track {
-    animation: none;
-  }
   .reveal {
     opacity: 1;
     transform: none;
