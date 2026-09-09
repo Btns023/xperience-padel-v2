@@ -1,9 +1,17 @@
-import { Anton } from "next/font/google";
+import { Archivo, Archivo_Black } from "next/font/google";
 import { SiteHeader, SiteFooter } from "./_components/site-chrome";
+import "./marketing.css";
 
-const display = Anton({
-  weight: "400",
+const body = Archivo({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
+  display: "swap",
+});
+
+const display = Archivo_Black({
+  subsets: ["latin"],
+  weight: "400",
   variable: "--font-display",
   display: "swap",
 });
@@ -15,7 +23,8 @@ export default function MarketingLayout({
 }) {
   return (
     <div
-      className={`${display.variable} flex min-h-dvh flex-col bg-[#0b0b0c] text-white`}
+      className={`mkt ${body.variable} ${display.variable} flex min-h-dvh flex-col`}
+      style={{ fontFamily: "var(--font-body), system-ui, sans-serif" }}
     >
       <SiteHeader />
       <main className="flex-1">{children}</main>
