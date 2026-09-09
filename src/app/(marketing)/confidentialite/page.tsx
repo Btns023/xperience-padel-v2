@@ -14,9 +14,9 @@ function Article({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-white/10 pt-6">
-      <h2 className="text-lg font-semibold text-white">{title}</h2>
-      <div className="mt-3 space-y-3 text-sm leading-relaxed text-white/65">
+    <section className="border-t border-[var(--line)] pt-6">
+      <h2 className="d text-lg">{title}</h2>
+      <div className="mt-3 space-y-3 text-sm leading-relaxed text-[var(--ink-55)]">
         {children}
       </div>
     </section>
@@ -26,10 +26,10 @@ function Article({
 export default function ConfidentialitePage() {
   return (
     <Section className="max-w-3xl">
-      <h1 className="text-4xl font-semibold text-white">
+      <h1 className="d text-5xl">
         Politique de confidentialité
       </h1>
-      <p className="mt-3 text-sm text-white/45">
+      <p className="mt-3 text-sm text-[var(--ink-40)]">
         Dernière mise à jour : {new Date().toLocaleDateString("fr-BE")}.
       </p>
 
@@ -40,7 +40,7 @@ export default function ConfidentialitePage() {
             commercial <em>Xperience Padel Academy</em>. Siège : Chaussée de
             Wavre 79, 5030 Gembloux, Belgique. Numéro d&apos;entreprise BE
             1031.094.162. Contact :{" "}
-            <a href="mailto:info@padelxp.be" className="text-[#c9a24b]">
+            <a href="mailto:info@padelxp.be" className="text-[var(--gold)]">
               info@padelxp.be
             </a>{" "}
             · 0473 / 607 207.
@@ -166,7 +166,7 @@ export default function ConfidentialitePage() {
             Vous disposez d&apos;un droit d&apos;accès, de rectification,
             d&apos;effacement, de limitation, d&apos;opposition et de
             portabilité. Pour l&apos;exercer, écrivez à{" "}
-            <a href="mailto:info@padelxp.be" className="text-[#c9a24b]">
+            <a href="mailto:info@padelxp.be" className="text-[var(--gold)]">
               info@padelxp.be
             </a>
             . Vous pouvez aussi introduire une réclamation auprès de
@@ -175,7 +175,7 @@ export default function ConfidentialitePage() {
               href="https://www.autoriteprotectiondonnees.be"
               target="_blank"
               rel="noreferrer"
-              className="text-[#c9a24b]"
+              className="text-[var(--gold)]"
             >
               autoriteprotectiondonnees.be
             </a>

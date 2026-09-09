@@ -1,11 +1,11 @@
+import { Reveal } from "../_components/motion";
 import {
   CtaLink,
-  Display,
-  Eyebrow,
   FeatureCard,
   PageHero,
   PriceCard,
   Section,
+  SectionHead,
 } from "../_components/ui";
 
 export const metadata = {
@@ -13,6 +13,19 @@ export const metadata = {
   description:
     "Cours privés de padel à Gembloux : solo 60 € / 1h, duo 70 € / 1h. Coaching individuel avec P1000, P700, P500. Horaires flexibles, terrain inclus.",
 };
+
+const WHY = [
+  ["Attention totale du coach", "Chaque correction, chaque conseil vous est adressé — rien n'est dilué dans un groupe."],
+  ["Vous choisissez l'horaire", "À convenir directement avec votre coach, flexible 7 j/7 selon les disponibilités."],
+  ["Résultats en 1 séance", "Un point technique ciblé, travaillé en profondeur. Les progrès se voient immédiatement."],
+];
+
+const FOR_YOU = [
+  ["Vous débutez", "Partir sur de bonnes bases avant de rejoindre un collectif."],
+  ["Vous avez un point à corriger", "Coup droit, lob, service, placement — une séance ciblée suffit."],
+  ["Vous préparez un tournoi", "Monter en intensité rapidement avant une compétition ou des interclubs."],
+  ["Vos horaires ne collent pas", "Le cours privé s'adapte à vous, pas l'inverse."],
+];
 
 const STEPS = [
   ["01", "Vous nous contactez", "Par e-mail avec votre niveau, vos objectifs et vos disponibilités."],
@@ -26,17 +39,21 @@ export default function CoursPrivesPage() {
     <>
       <PageHero
         eyebrow="Disponible toute l'année · solo ou duo"
-        title={<>Progressez 3× plus vite</>}
+        title={
+          <>
+            Progressez <span className="gold">3× plus vite</span>
+          </>
+        }
         lead="Un coach rien que pour vous. Pas de groupe, pas de compromis : chaque séance est construite autour de votre jeu, vos objectifs, votre niveau."
         primary={{ href: "/inscription", label: "Réserver un cours privé" }}
         secondary={{ href: "/coachs", label: "Voir nos coachs" }}
       />
 
       <Section>
-        <Eyebrow>Tarifs clairs, sans surprise</Eyebrow>
-        <h2 className="mt-4 text-4xl text-white sm:text-5xl">
-          <Display>Choisissez votre formule</Display>
-        </h2>
+        <SectionHead
+          eyebrow="Tarifs clairs, sans surprise"
+          title="Choisissez votre formule"
+        />
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <PriceCard
             label="Cours solo · 1 joueur · coaching 100 % personnalisé"
@@ -51,75 +68,60 @@ export default function CoursPrivesPage() {
             note="105 € / 1h30 (×1,5)"
           />
         </div>
-        <p className="mt-4 text-xs text-white/45">
+        <p className="mt-4 text-xs text-[var(--ink-40)]">
           Terrain, matériel et coaching compris.
         </p>
       </Section>
 
-      <Section className="pt-0">
-        <Eyebrow>Pourquoi un cours privé ?</Eyebrow>
-        <h2 className="mt-4 text-4xl text-white sm:text-5xl">
-          <Display>Ce que vous ne trouvez pas en collectif</Display>
-        </h2>
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          <FeatureCard
-            title="Attention totale du coach"
-            text="Chaque correction, chaque conseil vous est adressé — rien n'est dilué dans un groupe."
+      <div className="border-y border-[var(--line)] bg-[var(--bg-2)]">
+        <Section>
+          <SectionHead
+            eyebrow="Pourquoi un cours privé ?"
+            title={
+              <>
+                Ce que vous ne trouvez pas <span className="out">en collectif</span>
+              </>
+            }
           />
-          <FeatureCard
-            title="Vous choisissez l'horaire"
-            text="À convenir directement avec votre coach, flexible 7 j/7 selon les disponibilités."
-          />
-          <FeatureCard
-            title="Résultats en 1 séance"
-            text="Un point technique ciblé, travaillé en profondeur. Les progrès se voient immédiatement."
-          />
-        </div>
-      </Section>
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {WHY.map(([t, d], i) => (
+              <Reveal key={t} delay={i * 60}>
+                <FeatureCard title={t} text={d} />
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+      </div>
 
-      <Section className="pt-0">
-        <Eyebrow>C&apos;est fait pour vous si…</Eyebrow>
-        <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-          {[
-            ["Vous débutez", "Partir sur de bonnes bases avant de rejoindre un collectif."],
-            ["Vous avez un point à corriger", "Coup droit, lob, service, placement — une séance ciblée suffit."],
-            ["Vous préparez un tournoi", "Monter en intensité rapidement avant une compétition ou des interclubs."],
-            ["Vos horaires ne collent pas", "Le cours privé s'adapte à vous, pas l'inverse."],
-          ].map(([t, d]) => (
-            <li
-              key={t}
-              className="rounded-xl border border-white/10 bg-white/[0.03] p-5"
-            >
-              <div className="text-sm font-semibold text-white">{t}</div>
-              <div className="mt-1 text-sm text-white/60">{d}</div>
+      <Section>
+        <SectionHead eyebrow="C'est fait pour vous si…" title="Un besoin, une séance" />
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+          {FOR_YOU.map(([t, d]) => (
+            <li key={t} className="card p-5">
+              <div className="d text-base">{t}</div>
+              <div className="mt-1 text-sm text-[var(--ink-55)]">{d}</div>
             </li>
           ))}
         </ul>
       </Section>
 
-      <Section className="pt-0">
-        <Eyebrow>En 4 étapes</Eyebrow>
-        <h2 className="mt-4 text-4xl text-white sm:text-5xl">
-          <Display>Comment ça se passe ?</Display>
-        </h2>
-        <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map(([n, t, d]) => (
-            <li
-              key={n}
-              className="rounded-xl border border-white/10 bg-white/[0.03] p-6"
-            >
-              <div className="font-[family-name:var(--font-display)] text-3xl text-[#c9a24b]">
-                {n}
-              </div>
-              <div className="mt-2 text-sm font-semibold text-white">{t}</div>
-              <div className="mt-1 text-sm text-white/60">{d}</div>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-8">
-          <CtaLink href="/inscription">Demander mon cours privé</CtaLink>
-        </div>
-      </Section>
+      <div className="border-t border-[var(--line)] bg-[var(--bg-2)]">
+        <Section>
+          <SectionHead eyebrow="En 4 étapes" title="Comment ça se passe ?" />
+          <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map(([n, t, d]) => (
+              <li key={n} className="card p-6">
+                <div className="d text-3xl text-[var(--gold)]">{n}</div>
+                <div className="d mt-2 text-lg">{t}</div>
+                <div className="mt-1 text-sm text-[var(--ink-55)]">{d}</div>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8">
+            <CtaLink href="/inscription">Demander mon cours privé</CtaLink>
+          </div>
+        </Section>
+      </div>
     </>
   );
 }

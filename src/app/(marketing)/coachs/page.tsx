@@ -1,4 +1,5 @@
-import { CtaLink, Display, Eyebrow, PageHero, Section } from "../_components/ui";
+import { Reveal } from "../_components/motion";
+import { CtaLink, PageHero, Section, SectionHead } from "../_components/ui";
 
 export const metadata = {
   title: "Nos coachs de padel",
@@ -29,55 +30,56 @@ export default function CoachsPage() {
     <>
       <PageHero
         eyebrow="Équipe encadrante · Xperience Padel Academy"
-        title={<>Des coachs qui jouent vraiment</>}
+        title={
+          <>
+            Des coachs qui <span className="gold">jouent vraiment</span>
+          </>
+        }
         lead="P1000, P700, P500 — nos coachs ne parlent pas de padel en théorie, ils le pratiquent à haut niveau. Ce qu'ils vous transmettent, ils le vivent sur le court."
         primary={{ href: "/inscription", label: "Réserver un cours privé" }}
       />
 
       <Section>
-        <Eyebrow>L&apos;équipe adultes</Eyebrow>
+        <SectionHead eyebrow="L'équipe adultes" title="Trois profils, une méthode" />
         <div className="mt-8 flex flex-col gap-4">
-          {COACHES.map((c) => (
-            <div
-              key={c.name}
-              className="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8"
-            >
-              <div className="text-xs font-semibold uppercase tracking-wider text-[#c9a24b]">
-                {c.role}
+          {COACHES.map((c, i) => (
+            <Reveal key={c.name} delay={i * 60}>
+              <div className="card p-6 sm:p-8">
+                <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--gold)]">
+                  {c.role}
+                </div>
+                <h2 className="d mt-2 text-3xl">{c.name}</h2>
+                <p className="mt-3 max-w-2xl text-[var(--ink-55)]">{c.text}</p>
               </div>
-              <h2 className="mt-2 text-2xl font-semibold text-white">
-                {c.name}
-              </h2>
-              <p className="mt-3 max-w-2xl text-white/65">{c.text}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </Section>
 
-      <Section className="pt-0">
-        <Eyebrow>Encadrement kids</Eyebrow>
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-8">
-          <h2 className="text-2xl text-white">
-            <Display>Poste coach kids — recrutement ouvert</Display>
-          </h2>
-          <p className="mt-3 max-w-2xl text-white/65">
-            Nous recherchons un coach passionné et diplômé pour encadrer nos
-            jeunes talents. Vous avez l&apos;expérience, l&apos;énergie et le goût
-            du travail bien fait ?
-          </p>
-          <p className="mt-4">
+      <div className="border-t border-[var(--line)] bg-[var(--bg-2)]">
+        <Section>
+          <SectionHead
+            eyebrow="Encadrement kids"
+            title={
+              <>
+                Poste <span className="gold">coach kids</span> — recrutement ouvert
+              </>
+            }
+            lead="Nous recherchons un coach passionné et diplômé pour encadrer nos jeunes talents. Vous avez l'expérience, l'énergie et le goût du travail bien fait ?"
+          />
+          <p className="mt-6">
             <a
               href="mailto:info@padelxp.be?subject=Candidature%20Coach%20Padel%20Kids%20XPA"
-              className="text-sm font-semibold text-[#c9a24b] hover:underline"
+              className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--gold)] hover:text-[var(--gold-bright)]"
             >
               Postuler → info@padelxp.be
             </a>
           </p>
-        </div>
-        <div className="mt-8">
-          <CtaLink href="/inscription">Réserver un cours privé</CtaLink>
-        </div>
-      </Section>
+          <div className="mt-8">
+            <CtaLink href="/inscription">Réserver un cours privé</CtaLink>
+          </div>
+        </Section>
+      </div>
     </>
   );
 }

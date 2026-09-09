@@ -10,16 +10,16 @@ export const metadata = {
 export default function ConditionsPage() {
   return (
     <Section className="max-w-3xl">
-      <h1 className="text-4xl font-semibold text-white">{CGV_TITLE}</h1>
-      <p className="mt-3 text-sm text-white/45">Padel XP ASBL · Xperience Padel Academy</p>
+      <h1 className="d text-5xl">{CGV_TITLE}</h1>
+      <p className="mt-3 text-sm text-[var(--ink-40)]">Padel XP ASBL · Xperience Padel Academy</p>
 
       <div className="mt-10 flex flex-col gap-8">
         {CGV_ARTICLES.map((a) => (
-          <section key={a.n} className="border-t border-white/10 pt-6">
-            <h2 className="text-lg font-semibold text-white">
+          <section key={a.n} className="border-t border-[var(--line)] pt-6">
+            <h2 className="d text-lg">
               {a.n}. {a.title}
             </h2>
-            <div className="mt-3 space-y-2 text-sm leading-relaxed text-white/65">
+            <div className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--ink-55)]">
               {a.body.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
@@ -28,9 +28,9 @@ export default function ConditionsPage() {
         ))}
       </div>
 
-      <p className="mt-10 text-sm text-white/50">
+      <p className="mt-10 text-sm text-[var(--ink-40)]">
         Voir aussi la{" "}
-        <a href="/confidentialite" className="text-[#c9a24b]">
+        <a href="/confidentialite" className="text-[var(--gold)]">
           politique de confidentialité
         </a>
         .

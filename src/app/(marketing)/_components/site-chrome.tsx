@@ -3,15 +3,64 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const NAV = [
-  { href: "/cours-adultes", label: "Cours adultes" },
-  { href: "/cours-enfants", label: "Cours enfants" },
-  { href: "/cours-prives", label: "Cours privés" },
+type NavItem =
+  | { href: string; label: string }
+  | { label: string; children: { href: string; label: string }[] };
+
+const NAV: NavItem[] = [
+  {
+    label: "Cours",
+    children: [
+      { href: "/cours-adultes", label: "Cours adultes" },
+      { href: "/cours-enfants", label: "Cours enfants" },
+      { href: "/cours-prives", label: "Cours privés" },
+    ],
+  },
   { href: "/stages-ete", label: "Stages été" },
   { href: "/ete-indien", label: "Été indien" },
   { href: "/coachs", label: "Coachs" },
   { href: "/sponsors", label: "Sponsors" },
 ];
+
+const LINK_CLS =
+  "whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)] transition-colors hover:text-white";
+
+function DesktopDropdown({ label, items }: { label: string; items: { href: string; label: string }[] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        className={`${LINK_CLS} flex items-center gap-1`}
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        {label}
+        <span className="text-[9px]">▾</span>
+      </button>
+      {open ? (
+        <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
+          <ul className="min-w-[190px] rounded-[2px] border border-[var(--line-2)] bg-[#070707] p-1.5 shadow-xl shadow-black/40">
+            {items.map((c) => (
+              <li key={c.href}>
+                <Link
+                  href={c.href}
+                  className="block rounded-[2px] px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)] transition-colors hover:bg-white/[0.06] hover:text-white"
+                >
+                  {c.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
@@ -46,22 +95,22 @@ export function SiteHeader() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-x-5 gap-y-1 xl:flex">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className="whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)] transition-colors hover:text-white"
-            >
-              {n.label}
-            </Link>
-          ))}
+        <nav className="hidden items-center gap-x-6 lg:flex">
+          {NAV.map((n) =>
+            "children" in n ? (
+              <DesktopDropdown key={n.label} label={n.label} items={n.children} />
+            ) : (
+              <Link key={n.href} href={n.href} className={LINK_CLS}>
+                {n.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         <div className="flex items-center gap-3">
           <Link
             href="/connexion"
-            className="hidden text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-55)] transition-colors hover:text-white sm:inline"
+            className="hidden text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)] transition-colors hover:text-white sm:inline"
           >
             Se connecter
           </Link>
@@ -72,7 +121,7 @@ export function SiteHeader() {
             type="button"
             aria-label="Menu"
             onClick={() => setOpen((v) => !v)}
-            className="flex h-9 w-9 items-center justify-center rounded-[2px] border border-[var(--line-3)] text-white xl:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-[2px] border border-[var(--line-3)] text-white lg:hidden"
           >
             <span className="text-lg leading-none">{open ? "✕" : "≡"}</span>
           </button>
@@ -80,19 +129,46 @@ export function SiteHeader() {
       </div>
 
       {open ? (
-        <nav className="border-t border-[var(--line)] bg-[#070707] px-5 py-3 xl:hidden">
+        <nav className="border-t border-[var(--line)] bg-[#070707] px-5 py-3 lg:hidden">
           <ul className="flex flex-col">
-            {NAV.map((n) => (
-              <li key={n.href}>
-                <Link
-                  href={n.href}
-                  onClick={() => setOpen(false)}
-                  className="block py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--ink-55)]"
-                >
-                  {n.label}
-                </Link>
-              </li>
-            ))}
+            {NAV.map((n) =>
+              "children" in n ? (
+                <li key={n.label} className="py-1">
+                  <span className="block py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
+                    {n.label}
+                  </span>
+                  {n.children.map((c) => (
+                    <Link
+                      key={c.href}
+                      href={c.href}
+                      onClick={() => setOpen(false)}
+                      className="block py-2 pl-3 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)]"
+                    >
+                      {c.label}
+                    </Link>
+                  ))}
+                </li>
+              ) : (
+                <li key={n.href}>
+                  <Link
+                    href={n.href}
+                    onClick={() => setOpen(false)}
+                    className="block py-2 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)]"
+                  >
+                    {n.label}
+                  </Link>
+                </li>
+              ),
+            )}
+            <li>
+              <Link
+                href="/connexion"
+                onClick={() => setOpen(false)}
+                className="block py-2 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)]"
+              >
+                Se connecter
+              </Link>
+            </li>
           </ul>
         </nav>
       ) : null}
@@ -122,15 +198,21 @@ export function SiteFooter() {
             <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
               Formules
             </span>
-            {NAV.slice(0, 5).map((n) => (
-              <Link
-                key={n.href}
-                href={n.href}
-                className="text-[var(--ink-40)] hover:text-white"
-              >
-                {n.label}
-              </Link>
-            ))}
+            <Link href="/cours-adultes" className="text-[var(--ink-40)] hover:text-white">
+              Cours adultes
+            </Link>
+            <Link href="/cours-enfants" className="text-[var(--ink-40)] hover:text-white">
+              Cours enfants
+            </Link>
+            <Link href="/cours-prives" className="text-[var(--ink-40)] hover:text-white">
+              Cours privés
+            </Link>
+            <Link href="/stages-ete" className="text-[var(--ink-40)] hover:text-white">
+              Stages été
+            </Link>
+            <Link href="/ete-indien" className="text-[var(--ink-40)] hover:text-white">
+              Été indien
+            </Link>
           </div>
           <div className="flex flex-col gap-2.5">
             <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
