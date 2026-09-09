@@ -888,6 +888,7 @@ export type Database = {
           created_at: string
           group_id: string | null
           id: string
+          late_cancellation: boolean
           level_mismatch: boolean
           notes: string | null
           player_id: string
@@ -907,6 +908,7 @@ export type Database = {
           created_at?: string
           group_id?: string | null
           id?: string
+          late_cancellation?: boolean
           level_mismatch?: boolean
           notes?: string | null
           player_id: string
@@ -926,6 +928,7 @@ export type Database = {
           created_at?: string
           group_id?: string | null
           id?: string
+          late_cancellation?: boolean
           level_mismatch?: boolean
           notes?: string | null
           player_id?: string

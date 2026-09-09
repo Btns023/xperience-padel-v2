@@ -208,6 +208,7 @@ export interface Registration {
   billed_to_profile_id: string;
   billed_to_org_id: string | null;
   level_mismatch: boolean;
+  late_cancellation: boolean;
   promo_code: string | null;
   prorata_sessions: number | null;
   notes: string | null;

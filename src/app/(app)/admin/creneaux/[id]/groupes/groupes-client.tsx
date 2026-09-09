@@ -24,6 +24,7 @@ export type RegView = {
   id: string;
   level_mismatch: boolean;
   cancelRequested: boolean;
+  lateCancellation: boolean;
   unit_price_cents: number | null;
   player: string;
   level: string;
@@ -70,6 +71,9 @@ export function AssignForm({
           ) : null}
           {reg.cancelRequested ? (
             <Badge variant="destructive">annulation demandée</Badge>
+          ) : null}
+          {reg.lateCancellation ? (
+            <Badge variant="outline">annulation tardive — dû</Badge>
           ) : null}
           <span className="text-xs text-muted-foreground">· {reg.billedTo}</span>
         </div>
@@ -160,6 +164,9 @@ export function GroupCard({
                   ) : null}
                   {m.cancelRequested ? (
                     <Badge variant="destructive">annulation demandée</Badge>
+                  ) : null}
+                  {m.lateCancellation ? (
+                    <Badge variant="outline">tardive — dû</Badge>
                   ) : null}
                   {m.unit_price_cents != null ? (
                     <span className="tabular-nums text-muted-foreground">

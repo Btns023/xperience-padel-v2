@@ -16,6 +16,7 @@ type Row = {
   status: RegistrationStatus;
   requested_at: string;
   cancel_requested_at: string | null;
+  late_cancellation: boolean;
   level_mismatch: boolean;
   group_id: string | null;
   unit_price_cents: number | null;
@@ -43,7 +44,7 @@ export default async function InscriptionsPage({
   const { data, error } = await supabase
     .from("registrations")
     .select(
-      "id, status, requested_at, cancel_requested_at, level_mismatch, group_id, unit_price_cents, players(first_name,last_name), slots(weekday, start_time, products(name), locations(name)), organizations(name)",
+      "id, status, requested_at, cancel_requested_at, late_cancellation, level_mismatch, group_id, unit_price_cents, players(first_name,last_name), slots(weekday, start_time, products(name), locations(name)), organizations(name)",
     )
     .order("requested_at", { ascending: false });
 
@@ -148,6 +149,11 @@ function RegList({
                 {r.cancel_requested_at && r.status !== "annulee" ? (
                   <Badge variant="outline">Annulation demandée</Badge>
                 ) : null}
+                {r.late_cancellation ? (
+                  <Badge variant="outline">
+                    Annulation tardive — montant dû
+                  </Badge>
+                ) : null}
               </div>
               <p className="text-sm text-muted-foreground">
                 {r.slots
@@ -172,7 +178,8 @@ function RegList({
             </div>
             {r.status !== "annulee" &&
             r.status !== "facturee" &&
-            r.status !== "payee" ? (
+            r.status !== "payee" &&
+            !r.late_cancellation ? (
               <CancelButton
                 registrationId={r.id}
                 alreadyRequested={!!r.cancel_requested_at}

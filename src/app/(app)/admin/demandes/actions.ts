@@ -11,23 +11,35 @@ function refresh(slotId?: string) {
   revalidatePath("/compte/inscriptions");
 }
 
-/** Valide la demande d'annulation : l'inscription passe en « Annulée » et
- *  quitte son groupe éventuel. (V1 : remboursement intégral — la note de
- *  crédit sera gérée au Lot 4 si une facture existe déjà.) */
+/**
+ * Traite une demande d'annulation (CGV art. 6).
+ * - `late = false` (dans les délais, ≥ 48 h avant le cours) : l'inscription
+ *   passe « Annulée », quitte son groupe, prix effacé. Si une facture existe,
+ *   l'admin émet ensuite une note de crédit.
+ * - `late = true` (annulation tardive / absence non justifiée) : l'inscription
+ *   est marquée annulée par le joueur mais **le cours reste dû** — le statut
+ *   et la facturation sont conservés.
+ */
 export async function confirmCancellation(
   registrationId: string,
+  late: boolean,
   slotId?: string,
 ): Promise<void> {
   await requireRole("admin");
   const supabase = await createClient();
+
+  const patch = late
+    ? { late_cancellation: true, cancel_requested_at: null }
+    : {
+        status: "annulee" as const,
+        group_id: null,
+        unit_price_cents: null,
+        cancel_requested_at: null,
+      };
+
   const { error } = await supabase
     .from("registrations")
-    .update({
-      status: "annulee",
-      group_id: null,
-      unit_price_cents: null,
-      cancel_requested_at: null,
-    })
+    .update(patch)
     .eq("id", registrationId);
   if (error) throw new Error(error.message);
   refresh(slotId);

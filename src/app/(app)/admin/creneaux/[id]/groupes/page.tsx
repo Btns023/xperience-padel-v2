@@ -19,6 +19,7 @@ type RegRow = {
   status: string;
   level_mismatch: boolean;
   cancel_requested_at: string | null;
+  late_cancellation: boolean;
   group_id: string | null;
   unit_price_cents: number | null;
   players: { first_name: string; last_name: string; level_code: string } | null;
@@ -47,7 +48,7 @@ export default async function GroupesPage({
       supabase
         .from("registrations")
         .select(
-          "id, status, level_mismatch, cancel_requested_at, group_id, unit_price_cents, players(first_name,last_name,level_code), billed_to:profiles(first_name,last_name), organizations(name)",
+          "id, status, level_mismatch, cancel_requested_at, late_cancellation, group_id, unit_price_cents, players(first_name,last_name,level_code), billed_to:profiles(first_name,last_name), organizations(name)",
         )
         .eq("slot_id", slotId)
         .neq("status", "annulee"),
@@ -83,6 +84,7 @@ export default async function GroupesPage({
     id: r.id,
     level_mismatch: r.level_mismatch,
     cancelRequested: !!r.cancel_requested_at,
+    lateCancellation: r.late_cancellation,
     unit_price_cents: r.unit_price_cents,
     player: `${r.players?.first_name ?? ""} ${r.players?.last_name ?? ""}`.trim(),
     level: r.players?.level_code ?? "",

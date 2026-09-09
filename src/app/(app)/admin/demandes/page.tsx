@@ -16,6 +16,7 @@ type Row = {
   requested_at: string;
   cancel_requested_at: string | null;
   level_mismatch: boolean;
+  late_cancellation: boolean;
   slot_id: string;
   players: { first_name: string; last_name: string; level_code: string } | null;
   slots:
@@ -34,7 +35,7 @@ export default async function DemandesPage() {
   const { data, error } = await supabase
     .from("registrations")
     .select(
-      "id, status, requested_at, cancel_requested_at, level_mismatch, slot_id, players(first_name,last_name,level_code), slots(weekday,start_time,products(name)), billed_to:profiles(first_name,last_name), organizations(name)",
+      "id, status, requested_at, cancel_requested_at, level_mismatch, late_cancellation, slot_id, players(first_name,last_name,level_code), slots(weekday,start_time,products(name)), billed_to:profiles(first_name,last_name), organizations(name)",
     )
     .order("requested_at", { ascending: false });
 
@@ -98,6 +99,9 @@ export default async function DemandesPage() {
                   ) : null}
                   {r.cancel_requested_at && r.status !== "annulee" ? (
                     <Badge variant="destructive">annulation demandée</Badge>
+                  ) : null}
+                  {r.late_cancellation ? (
+                    <Badge variant="outline">annulation tardive — montant dû</Badge>
                   ) : null}
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">
