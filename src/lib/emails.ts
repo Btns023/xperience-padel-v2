@@ -227,3 +227,60 @@ export function adminWeeklyDigestMail(o: {
     ),
   };
 }
+
+export function extensionOfferMail(o: {
+  name: string;
+  playerName: string;
+  slotLabel: string;
+  currentCount: number;
+  endDate: string;
+  options: { count: number; extraCents: number; toDate: string | null }[];
+}): Mail {
+  return {
+    subject: `Prolonger le cycle de ${o.playerName} ?`,
+    html: layout(
+      "Le cycle touche à sa fin",
+      p(`Bonjour ${o.name},`) +
+        p(
+          `Les ${o.currentCount} cours de <strong>${o.playerName}</strong> (${o.slotLabel}) se terminent le <strong>${o.endDate}</strong>.`,
+        ) +
+        p("Pour continuer avec le même groupe, tu peux prolonger dès maintenant — tu ne paies que la différence :") +
+        `<ul style="margin:0 0 12px;padding-left:18px">${o.options
+          .map(
+            (x) =>
+              `<li style="margin-bottom:4px"><strong>${x.count} cours</strong>${x.toDate ? ` (jusqu'au ${x.toDate})` : ""} : + ${formatEuros(x.extraCents)}</li>`,
+          )
+          .join("")}</ul>` +
+        p("Les places libérées sont ensuite proposées aux nouveaux inscrits.") +
+        `<p style="margin:18px 0">${btn(`${SITE}/compte/inscriptions`, "Prolonger")}</p>`,
+    ),
+  };
+}
+
+export function extensionAdminMail(o: {
+  playerName: string;
+  slotLabel: string;
+  from: number;
+  to: number;
+  extraCents: number;
+  invoiced: boolean;
+}): Mail {
+  return {
+    subject: `Prolongation : ${o.playerName} passe à ${o.to} cours`,
+    html: layout(
+      "Prolongation demandée",
+      p(
+        `<strong>${o.playerName}</strong> (${o.slotLabel}) passe de ${o.from} à ${o.to} cours — supplément ${formatEuros(o.extraCents)}.`,
+      ) +
+        p(
+          o.invoiced
+            ? "Une facture complémentaire a été créée en brouillon : relis-la puis émets-la."
+            : "L'inscription n'était pas encore facturée : le nouveau montant sera repris sur la facture du groupe.",
+        ) +
+        `<p style="margin:18px 0">${btn(
+          `${SITE}/admin/${o.invoiced ? "factures" : "demandes"}`,
+          o.invoiced ? "Voir les factures" : "Voir les demandes",
+        )}</p>`,
+    ),
+  };
+}

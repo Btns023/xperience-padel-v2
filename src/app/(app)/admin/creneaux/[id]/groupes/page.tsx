@@ -2,7 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
-import { formatTime, weekdayLabel } from "@/lib/format";
+import { formatTime, todayInBrussels, weekdayLabel } from "@/lib/format";
+import { engagementRange, extensionOptions } from "@/lib/engagement";
+import { slotCycle } from "@/lib/slot-cycle";
+import { PeriodOccupancy } from "../../period-occupancy";
 import { createGroup } from "./actions";
 import {
   AssignForm,
@@ -22,6 +25,8 @@ type RegRow = {
   late_cancellation: boolean;
   group_id: string | null;
   unit_price_cents: number | null;
+  first_session: number;
+  session_count: number | null;
   players: { first_name: string; last_name: string; level_code: string } | null;
   billed_to: { first_name: string | null; last_name: string | null } | null;
   organizations: { name: string } | null;
@@ -41,14 +46,14 @@ export default async function GroupesPage({
       supabase
         .from("slots")
         .select(
-          "id, weekday, start_time, capacity, session_count, level_note, products(name, pricing_model), locations(name)",
+          "id, weekday, start_time, capacity, min_capacity, session_count, starts_on, level_note, products(name, pricing_model, price_tiers(kind, session_count, amount_cents, active)), locations(name)",
         )
         .eq("id", slotId)
         .single(),
       supabase
         .from("registrations")
         .select(
-          "id, status, level_mismatch, cancel_requested_at, late_cancellation, group_id, unit_price_cents, players(first_name,last_name,level_code), billed_to:profiles(first_name,last_name), organizations(name)",
+          "id, status, level_mismatch, cancel_requested_at, late_cancellation, group_id, unit_price_cents, first_session, session_count, players(first_name,last_name,level_code), billed_to:profiles(first_name,last_name), organizations(name)",
         )
         .eq("slot_id", slotId)
         .neq("status", "annulee"),
@@ -72,16 +77,43 @@ export default async function GroupesPage({
     weekday: number;
     start_time: string;
     capacity: number;
+    min_capacity: number | null;
     session_count: number;
+    starts_on: string | null;
     level_note: string | null;
-    products: { name: string; pricing_model: string } | null;
+    products: {
+      name: string;
+      pricing_model: string;
+      price_tiers: {
+        kind: string;
+        session_count: number | null;
+        amount_cents: number;
+        active: boolean;
+      }[];
+    } | null;
     locations: { name: string } | null;
   };
   const regs = (regData ?? []) as unknown as RegRow[];
   const groups = (groupData ?? []) as GroupView[];
 
+  // Cycle à durée choisie : effectif par période (les annulées sont exclues
+  // de la requête), durée de chaque inscrit et prolongations possibles.
+  const cycle = slotCycle(slot, regs, todayInBrussels());
+  const tiers = slot.products?.price_tiers ?? [];
+  const periodOf = (first: number) =>
+    cycle.periods.find((p) => first >= p.first && first <= p.last)?.index ?? 1;
+
   const toView = (r: RegRow): RegView => ({
     id: r.id,
+    engagement: cycle.byDuration
+      ? (() => {
+          const e = engagementRange(r, slot.session_count);
+          return `${e.count} cours${e.first > 1 ? ` · dès P${periodOf(e.first)}` : ""}`;
+        })()
+      : null,
+    extensions: cycle.byDuration
+      ? extensionOptions(r, tiers, slot.session_count, slot.starts_on)
+      : [],
     level_mismatch: r.level_mismatch,
     cancelRequested: !!r.cancel_requested_at,
     lateCancellation: r.late_cancellation,
@@ -123,6 +155,17 @@ export default async function GroupesPage({
           {slot.locations ? ` · ${slot.locations.name}` : ""} · capacité{" "}
           {slot.capacity} · {slot.session_count} séances
         </p>
+        {cycle.byDuration ? (
+          <div className="mt-3">
+            <PeriodOccupancy
+              periods={cycle.periods}
+              occupancy={cycle.occupancy}
+              capacity={slot.capacity}
+              minCapacity={slot.min_capacity}
+              startsOn={slot.starts_on}
+            />
+          </div>
+        ) : null}
       </div>
 
       <section className="flex flex-col gap-3">

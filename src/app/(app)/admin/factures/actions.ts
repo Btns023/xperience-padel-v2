@@ -2,13 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { parseEurosToCents, formatDate } from "@/lib/format";
 import { commBaseFor, structuredCommunication } from "@/lib/belgium";
 import { sendEmail } from "@/lib/email";
 import { invoiceIssuedMail } from "@/lib/emails";
 import { recipientForProfile } from "@/lib/recipients";
+import {
+  addDays,
+  lineDescription,
+  loadInvoiceSettings,
+  recipientSnapshot,
+} from "@/lib/invoicing";
+import { engagementRange } from "@/lib/engagement";
 
 function refresh(invoiceId?: string) {
   revalidatePath("/admin/factures");
@@ -17,36 +24,9 @@ function refresh(invoiceId?: string) {
   if (invoiceId) revalidatePath(`/admin/factures/${invoiceId}`);
 }
 
-type Settings = Record<string, string> & {
-  issuer_name: string;
-  issuer_legal_name: string;
-  issuer_address: string;
-  issuer_bce: string;
-  issuer_iban: string;
-  issuer_bic: string;
-  vat_note: string;
-  payment_terms_days: number;
-};
-
 function docNumber(kind: "invoice" | "credit_note", year: number, n: number) {
   const seq = String(n).padStart(3, "0");
   return kind === "credit_note" ? `NC ${year}-${seq}` : `${year}-${seq}`;
-}
-
-function addDays(iso: string, days: number): string {
-  const d = new Date(iso);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
-}
-
-async function loadSettings(): Promise<Settings> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("app_settings")
-    .select("*")
-    .eq("id", "default")
-    .single();
-  return data as Settings;
 }
 
 /**
@@ -59,7 +39,7 @@ export async function generateInvoicesForGroup(
 ): Promise<void> {
   await requireRole("admin");
   const supabase = await createClient();
-  const settings = await loadSettings();
+  const settings = await loadInvoiceSettings(supabase);
 
   const { data: group } = await supabase
     .from("groups")
@@ -70,7 +50,7 @@ export async function generateInvoicesForGroup(
   const { data: regs } = await supabase
     .from("registrations")
     .select(
-      "id, unit_price_cents, promo_code, billed_to_profile_id, billed_to_org_id, players(first_name,last_name), slots(weekday,start_time,product_id,products(name))",
+      "id, unit_price_cents, promo_code, billed_to_profile_id, billed_to_org_id, first_session, session_count, players(first_name,last_name), slots(weekday,start_time,product_id,session_count,products(name,pricing_model))",
     )
     .eq("group_id", groupId)
     .eq("status", "validee");
@@ -103,44 +83,7 @@ export async function generateInvoicesForGroup(
   for (const [payerId, payerRegs] of byPayer) {
     const orgId = payerRegs[0].billed_to_org_id;
 
-    // Snapshot destinataire
-    let recipient: Record<string, string>;
-    if (orgId) {
-      const { data: org } = await supabase
-        .from("organizations")
-        .select("name, address, vat_number")
-        .eq("id", orgId)
-        .single();
-      recipient = {
-        name: org?.name ?? "",
-        address: org?.address ?? "",
-        vat_number: org?.vat_number ?? "",
-        type: "organisation",
-      };
-    } else {
-      const { data: prof } = await supabase
-        .from("profiles")
-        .select("first_name, last_name, address_line, postal_code, city")
-        .eq("id", payerId)
-        .single();
-      let email = "";
-      try {
-        const { data: u } = await createAdminClient().auth.admin.getUserById(
-          payerId,
-        );
-        email = u.user?.email ?? "";
-      } catch {
-        /* e-mail facultatif sur la facture */
-      }
-      recipient = {
-        name: `${prof?.first_name ?? ""} ${prof?.last_name ?? ""}`.trim(),
-        address: [prof?.address_line, `${prof?.postal_code ?? ""} ${prof?.city ?? ""}`.trim()]
-          .filter(Boolean)
-          .join(", "),
-        email,
-        type: "particulier",
-      };
-    }
+    const recipient = await recipientSnapshot(supabase, payerId, orgId);
 
     const today = new Date().toISOString().slice(0, 10);
     const { data: invoice, error: invErr } = await supabase
@@ -171,7 +114,8 @@ export async function generateInvoicesForGroup(
         weekday: number;
         start_time: string;
         product_id: string;
-        products: { name: string } | null;
+        session_count: number;
+        products: { name: string; pricing_model: string } | null;
       } | null;
       const player = r.players as unknown as {
         first_name: string;
@@ -203,7 +147,14 @@ export async function generateInvoicesForGroup(
       lines.push({
         invoice_id: invoice!.id,
         registration_id: r.id,
-        description: `${slot?.products?.name ?? "Cours"} — ${player?.first_name ?? ""} ${player?.last_name ?? ""}`.trim(),
+        description: lineDescription({
+          productName: slot?.products?.name,
+          engagementCount:
+            slot?.products?.pricing_model === "per_duration"
+              ? engagementRange(r, slot.session_count).count
+              : null,
+          playerName: `${player?.first_name ?? ""} ${player?.last_name ?? ""}`.trim(),
+        }),
         quantity: 1,
         unit_price_cents: unit,
         discount_cents: discount,

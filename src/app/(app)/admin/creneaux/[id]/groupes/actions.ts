@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { computeUnitPriceCents } from "@/lib/pricing";
+import { engagementRange } from "@/lib/engagement";
+import { extendRegistration } from "@/lib/extension";
 import { regenerateSessions } from "@/lib/sessions";
 import { parseEurosToCents, weekdayLabel, formatTime } from "@/lib/format";
 import { sendEmail } from "@/lib/email";
@@ -173,7 +175,7 @@ export async function confirmGroup(
 
   const { data: members } = await supabase
     .from("registrations")
-    .select("id, prorata_sessions")
+    .select("id, prorata_sessions, first_session, session_count")
     .eq("group_id", groupId)
     .neq("status", "annulee");
   if (!members || members.length === 0) {
@@ -205,7 +207,8 @@ export async function confirmGroup(
         pricingModel: product.pricing_model,
         tiers: product.price_tiers,
         groupSize: size,
-        sessionCount: slot.session_count,
+        // Cycle à durée choisie : le palier suit l'engagement du joueur.
+        sessionCount: engagementRange(m, slot.session_count).count,
         prorataSessions: m.prorata_sessions,
       });
     }
@@ -279,4 +282,34 @@ export async function confirmGroup(
 
   refresh(slotId);
   return { ok: true };
+}
+
+export type AdminExtendState = { error?: string; ok?: string };
+
+/**
+ * Prolongation décidée par l'académie. Contrairement au parent, l'admin peut
+ * dépasser la capacité (la période passe alors en rouge dans le suivi).
+ */
+export async function extendRegistrationByAdmin(
+  slotId: string,
+  registrationId: string,
+  _prev: AdminExtendState,
+  formData: FormData,
+): Promise<AdminExtendState> {
+  await requireRole("admin");
+  const newCount = Number(formData.get("count"));
+  if (!Number.isInteger(newCount) || newCount <= 0) {
+    return { error: "Choisis une durée." };
+  }
+  const res = await extendRegistration(registrationId, newCount, {
+    enforceCapacity: false,
+  });
+  if (res.error) return { error: res.error };
+  refresh(slotId);
+  revalidatePath("/admin/factures");
+  return {
+    ok: res.invoiceId
+      ? `Prolongé à ${newCount} cours — facture complémentaire en brouillon.`
+      : `Prolongé à ${newCount} cours.`,
+  };
 }

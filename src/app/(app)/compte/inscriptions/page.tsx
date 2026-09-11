@@ -1,6 +1,17 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatEuros, formatTime, weekdayLabel } from "@/lib/format";
+import {
+  formatDayMonth,
+  formatEuros,
+  formatTime,
+  todayInBrussels,
+  weekdayLabel,
+} from "@/lib/format";
+import {
+  engagementRange,
+  extensionOptions,
+  sessionDate,
+} from "@/lib/engagement";
 import {
   REGISTRATION_STATUS_LABEL,
   type RegistrationStatus,
@@ -8,6 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { CancelButton } from "./cancel-button";
+import { ExtendForm } from "./extend-form";
 
 export const metadata = { title: "Mes inscriptions" };
 
@@ -20,12 +32,25 @@ type Row = {
   level_mismatch: boolean;
   group_id: string | null;
   unit_price_cents: number | null;
+  first_session: number;
+  session_count: number | null;
   players: { first_name: string; last_name: string } | null;
   slots:
     | {
         weekday: number;
         start_time: string;
-        products: { name: string } | null;
+        session_count: number;
+        starts_on: string | null;
+        products: {
+          name: string;
+          pricing_model: string;
+          price_tiers: {
+            kind: string;
+            session_count: number | null;
+            amount_cents: number;
+            active: boolean;
+          }[];
+        } | null;
         locations: { name: string } | null;
       }
     | null;
@@ -44,7 +69,7 @@ export default async function InscriptionsPage({
   const { data, error } = await supabase
     .from("registrations")
     .select(
-      "id, status, requested_at, cancel_requested_at, late_cancellation, level_mismatch, group_id, unit_price_cents, players(first_name,last_name), slots(weekday, start_time, products(name), locations(name)), organizations(name)",
+      "id, status, requested_at, cancel_requested_at, late_cancellation, level_mismatch, group_id, unit_price_cents, first_session, session_count, players(first_name,last_name), slots(weekday, start_time, session_count, starts_on, products(name, pricing_model, price_tiers(kind, session_count, amount_cents, active)), locations(name)), organizations(name)",
     )
     .order("requested_at", { ascending: false });
 
@@ -170,10 +195,18 @@ function RegList({
                   {roster.map((m) => m.first_name).join(", ")}
                 </p>
               ) : null}
+              {engagementText(r) ? (
+                <p className="text-sm">{engagementText(r)}</p>
+              ) : null}
               {r.unit_price_cents != null ? (
                 <p className="text-sm tabular-nums">
                   Prix : {formatEuros(r.unit_price_cents)} / joueur
                 </p>
+              ) : null}
+              {!muted && extendable(r).length > 0 ? (
+                <div className="mt-2">
+                  <ExtendForm registrationId={r.id} options={extendable(r)} />
+                </div>
               ) : null}
             </div>
             {r.status !== "annulee" &&
@@ -190,4 +223,29 @@ function RegList({
       })}
     </ul>
   );
+}
+
+/** « 18 cours · du 6 janv. au 5 mai » pour un cycle à durée choisie. */
+function engagementText(r: Row): string | null {
+  const s = r.slots;
+  if (!s || s.products?.pricing_model !== "per_duration") return null;
+  const e = engagementRange(r, s.session_count);
+  if (!s.starts_on) return `${e.count} cours`;
+  return `${e.count} cours · du ${formatDayMonth(
+    sessionDate(s.starts_on, e.first),
+  )} au ${formatDayMonth(sessionDate(s.starts_on, e.last))}`;
+}
+
+/** Prolongations proposées tant que le cycle du joueur n'est pas terminé. */
+function extendable(r: Row) {
+  const s = r.slots;
+  if (!s?.products || s.products.pricing_model !== "per_duration") return [];
+  if (r.status === "annulee" || r.cancel_requested_at || r.late_cancellation) {
+    return [];
+  }
+  const e = engagementRange(r, s.session_count);
+  if (s.starts_on && sessionDate(s.starts_on, e.last) < todayInBrussels()) {
+    return [];
+  }
+  return extensionOptions(r, s.products.price_tiers, s.session_count, s.starts_on);
 }

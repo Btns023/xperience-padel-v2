@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { Player } from "@/lib/types";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatDayMonth, formatEuros } from "@/lib/format";
+import type { DurationOption } from "@/lib/engagement";
 import { createRegistrations, type RegState } from "./actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,14 +20,78 @@ function Submit() {
   );
 }
 
+/** Choix de la durée d'un cycle « par durée » (ex. 9 / 18 / 27 cours). */
+function DurationPicker({
+  options,
+  openPeriodIndex,
+}: {
+  options: DurationOption[];
+  openPeriodIndex: number;
+}) {
+  return (
+    <fieldset className="flex flex-col gap-2">
+      <legend className="mb-1 text-sm font-medium">Durée du cycle</legend>
+      {openPeriodIndex > 1 && options[0] ? (
+        <p className="text-xs text-muted-foreground">
+          Le cycle a déjà commencé : l&apos;inscription démarre à la période{" "}
+          {openPeriodIndex}, séance n° {options[0].first}.
+        </p>
+      ) : null}
+      <input type="hidden" name="first_session" value={options[0]?.first ?? 1} />
+      {options.map((o) => (
+        <label
+          key={o.count}
+          className="flex items-start gap-3 rounded-md border p-3 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+        >
+          <input
+            type="radio"
+            name="session_count"
+            value={o.count}
+            required
+            className="mt-0.5 size-4"
+          />
+          <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <span>
+              <span className="font-medium">{o.count} cours</span>
+              {o.fromDate && o.toDate ? (
+                <span className="text-muted-foreground">
+                  {" "}
+                  · du {formatDayMonth(o.fromDate)} au {formatDayMonth(o.toDate)}
+                </span>
+              ) : null}
+              {o.placesLeft <= 0 ? (
+                <span className="mt-1 block font-medium text-amber-700 dark:text-amber-400">
+                  Complet — ta demande sera placée en liste d&apos;attente.
+                </span>
+              ) : o.placesLeft <= 2 ? (
+                <span className="mt-1 block text-muted-foreground">
+                  Plus que {o.placesLeft} place{o.placesLeft > 1 ? "s" : ""}.
+                </span>
+              ) : null}
+            </span>
+            <span className="font-medium tabular-nums">
+              {formatEuros(o.amountCents)}
+            </span>
+          </span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
 export function RegisterForm({
   slotId,
   players,
   warnByPlayer,
+  durations = null,
+  openPeriodIndex = 1,
 }: {
   slotId: string;
   players: Player[];
   warnByPlayer: Record<string, boolean>;
+  /** Cycle « par durée » : options proposées ; null sinon. */
+  durations?: DurationOption[] | null;
+  openPeriodIndex?: number;
 }) {
   const [state, formAction] = useActionState<RegState, FormData>(
     createRegistrations,
@@ -51,6 +116,10 @@ export function RegisterForm({
   return (
     <form action={formAction} className="flex max-w-lg flex-col gap-6">
       <input type="hidden" name="slot_id" value={slotId} />
+
+      {durations ? (
+        <DurationPicker options={durations} openPeriodIndex={openPeriodIndex} />
+      ) : null}
 
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-1 text-sm font-medium">

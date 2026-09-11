@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { formatEuros } from "@/lib/format";
+import type { ExtensionOption } from "@/lib/engagement";
 import { GROUP_STATUS_LABEL, type GroupStatus } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,8 @@ import {
   deleteGroup,
   reopenGroup,
   confirmGroup,
+  extendRegistrationByAdmin,
+  type AdminExtendState,
   type ConfirmState,
 } from "./actions";
 import { generateInvoicesForGroup } from "@/app/(app)/admin/factures/actions";
@@ -22,6 +25,9 @@ import { CancellationActions } from "@/app/(app)/admin/demandes/cancel-actions";
 
 export type RegView = {
   id: string;
+  /** Cycle à durée choisie : « 9 cours », « 18 cours · dès P2 »… */
+  engagement: string | null;
+  extensions: ExtensionOption[];
   level_mismatch: boolean;
   cancelRequested: boolean;
   lateCancellation: boolean;
@@ -66,6 +72,9 @@ export function AssignForm({
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="font-medium">{reg.player}</span>
           <span className="text-muted-foreground">{reg.level}</span>
+          {reg.engagement ? (
+            <Badge variant="secondary">{reg.engagement}</Badge>
+          ) : null}
           {reg.level_mismatch ? (
             <Badge className={orangeBadge}>écart de niveau</Badge>
           ) : null}
@@ -101,7 +110,40 @@ export function AssignForm({
           <CancellationActions registrationId={reg.id} slotId={slotId} />
         </div>
       ) : null}
+      {reg.extensions.length > 0 ? (
+        <AdminExtendForm slotId={slotId} reg={reg} />
+      ) : null}
     </div>
+  );
+}
+
+/** Prolonger la durée d'un inscrit (supplément = différence de palier). */
+function AdminExtendForm({ slotId, reg }: { slotId: string; reg: RegView }) {
+  const [state, action] = useActionState<AdminExtendState, FormData>(
+    extendRegistrationByAdmin.bind(null, slotId, reg.id),
+    {},
+  );
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-2 text-xs">
+      <span className="text-muted-foreground">Prolonger :</span>
+      <select
+        name="count"
+        defaultValue={reg.extensions[0]?.count}
+        className="h-7 rounded-md border bg-background px-2 text-xs"
+      >
+        {reg.extensions.map((o) => (
+          <option key={o.count} value={o.count}>
+            {o.count} cours (+ {formatEuros(o.extraCents)})
+          </option>
+        ))}
+      </select>
+      <SubmitSm label="Prolonger" />
+      {state.error ? (
+        <span className="text-destructive">{state.error}</span>
+      ) : state.ok ? (
+        <span className="text-muted-foreground">{state.ok}</span>
+      ) : null}
+    </form>
   );
 }
 
@@ -159,6 +201,9 @@ export function GroupCard({
                 <span className="flex flex-wrap items-center gap-2">
                   <span className="font-medium">{m.player}</span>
                   <span className="text-muted-foreground">{m.level}</span>
+                  {m.engagement ? (
+                    <Badge variant="secondary">{m.engagement}</Badge>
+                  ) : null}
                   {m.level_mismatch ? (
                     <Badge className={orangeBadge}>écart</Badge>
                   ) : null}
@@ -187,6 +232,9 @@ export function GroupCard({
               </div>
               {m.cancelRequested ? (
                 <CancellationActions registrationId={m.id} slotId={slotId} />
+              ) : null}
+              {m.extensions.length > 0 ? (
+                <AdminExtendForm slotId={slotId} reg={m} />
               ) : null}
             </li>
           ))}

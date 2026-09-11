@@ -886,6 +886,8 @@ export type Database = {
           billed_to_profile_id: string
           cancel_requested_at: string | null
           created_at: string
+          extension_offer_sent_at: string | null
+          first_session: number
           group_id: string | null
           id: string
           late_cancellation: boolean
@@ -896,6 +898,7 @@ export type Database = {
           prorata_sessions: number | null
           requested_at: string
           season_id: string
+          session_count: number | null
           slot_id: string
           status: Database["public"]["Enums"]["registration_status"]
           unit_price_cents: number | null
@@ -906,6 +909,8 @@ export type Database = {
           billed_to_profile_id: string
           cancel_requested_at?: string | null
           created_at?: string
+          extension_offer_sent_at?: string | null
+          first_session?: number
           group_id?: string | null
           id?: string
           late_cancellation?: boolean
@@ -916,6 +921,7 @@ export type Database = {
           prorata_sessions?: number | null
           requested_at?: string
           season_id: string
+          session_count?: number | null
           slot_id: string
           status?: Database["public"]["Enums"]["registration_status"]
           unit_price_cents?: number | null
@@ -926,6 +932,8 @@ export type Database = {
           billed_to_profile_id?: string
           cancel_requested_at?: string | null
           created_at?: string
+          extension_offer_sent_at?: string | null
+          first_session?: number
           group_id?: string | null
           id?: string
           late_cancellation?: boolean
@@ -936,6 +944,7 @@ export type Database = {
           prorata_sessions?: number | null
           requested_at?: string
           season_id?: string
+          session_count?: number | null
           slot_id?: string
           status?: Database["public"]["Enums"]["registration_status"]
           unit_price_cents?: number | null
@@ -1067,6 +1076,7 @@ export type Database = {
           level_note: string | null
           location_id: string | null
           max_level_code: string | null
+          min_capacity: number | null
           min_level_code: string | null
           notes: string | null
           product_id: string
@@ -1087,6 +1097,7 @@ export type Database = {
           level_note?: string | null
           location_id?: string | null
           max_level_code?: string | null
+          min_capacity?: number | null
           min_level_code?: string | null
           notes?: string | null
           product_id: string
@@ -1107,6 +1118,7 @@ export type Database = {
           level_note?: string | null
           location_id?: string | null
           max_level_code?: string | null
+          min_capacity?: number | null
           min_level_code?: string | null
           notes?: string | null
           product_id?: string
@@ -1248,6 +1260,15 @@ export type Database = {
         Returns: Database["public"]["Enums"]["app_role"]
       }
       current_coach_id: { Args: never; Returns: string }
+      engagement_covers: {
+        Args: {
+          p_count: number
+          p_first: number
+          p_seq: number
+          p_slot_count: number
+        }
+        Returns: boolean
+      }
       group_roster: {
         Args: { p_group_id: string }
         Returns: {
@@ -1260,6 +1281,14 @@ export type Database = {
       next_document_number: {
         Args: { p_kind: Database["public"]["Enums"]["invoice_kind"] }
         Returns: number
+      }
+      slot_engagements: {
+        Args: { p_slot_ids: string[] }
+        Returns: {
+          first_session: number
+          session_count: number
+          slot_id: string
+        }[]
       }
     }
     Enums: {

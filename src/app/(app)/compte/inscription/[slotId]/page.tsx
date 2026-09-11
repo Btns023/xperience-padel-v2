@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { formatEuros, formatTime, weekdayLabel } from "@/lib/format";
+import {
+  formatDayMonth,
+  formatEuros,
+  formatTime,
+  todayInBrussels,
+  weekdayLabel,
+} from "@/lib/format";
 import type { PadelLevel, Player, ProductCategory } from "@/lib/types";
 import { PRODUCT_CATEGORY_LABEL } from "@/lib/types";
+import { durationOptions, sessionDate } from "@/lib/engagement";
+import { loadEngagements, slotCycle } from "@/lib/slot-cycle";
 import { Badge } from "@/components/ui/badge";
 import { RegisterForm } from "../register-form";
 
@@ -16,14 +24,23 @@ type Slot = {
   start_time: string;
   duration_minutes: number;
   session_count: number;
+  starts_on: string | null;
   capacity: number;
+  min_capacity: number | null;
   level_note: string | null;
   min_level_code: string | null;
   max_level_code: string | null;
   products: {
     name: string;
     category: ProductCategory;
-    price_tiers: { label: string; amount_cents: number; active: boolean }[];
+    pricing_model: string;
+    price_tiers: {
+      kind: string;
+      session_count: number | null;
+      label: string;
+      amount_cents: number;
+      active: boolean;
+    }[];
   } | null;
   locations: { name: string } | null;
   coaches: { first_name: string; last_name: string } | null;
@@ -43,7 +60,7 @@ export default async function SlotInscriptionPage({
       supabase
         .from("slots")
         .select(
-          "id, status, weekday, start_time, duration_minutes, session_count, capacity, level_note, min_level_code, max_level_code, products(name, category, price_tiers(label, amount_cents, active)), locations(name), coaches(first_name,last_name), seasons(name)",
+          "id, status, weekday, start_time, duration_minutes, session_count, starts_on, capacity, min_capacity, level_note, min_level_code, max_level_code, products(name, category, pricing_model, price_tiers(kind, session_count, label, amount_cents, active)), locations(name), coaches(first_name,last_name), seasons(name)",
         )
         .eq("id", slotId)
         .single(),
@@ -78,6 +95,23 @@ export default async function SlotInscriptionPage({
     slot.level_note ||
     [slot.min_level_code, slot.max_level_code].filter(Boolean).join("–");
 
+  // Cycle à durée choisie : périodes, places et options proposées.
+  const engagements = (await loadEngagements(supabase, [slot.id])).get(slot.id) ?? [];
+  const cycle = slotCycle(slot, engagements, todayInBrussels());
+  const durations =
+    cycle.byDuration && cycle.open
+      ? durationOptions({
+          tiers,
+          slotCount: slot.session_count,
+          startsOn: slot.starts_on,
+          capacity: slot.capacity,
+          periods: cycle.periods,
+          occupancy: cycle.occupancy,
+          start: cycle.open,
+        })
+      : null;
+  const closed = cycle.byDuration && !cycle.open;
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -102,30 +136,60 @@ export default async function SlotInscriptionPage({
           ) : null}
           {level ? <Badge variant="outline">{level}</Badge> : null}
         </div>
-        <p className="text-muted-foreground">
-          {slot.seasons?.name} · {slot.session_count} séances de{" "}
-          {slot.duration_minutes} min · capacité {slot.capacity}
-          {slot.locations ? ` · ${slot.locations.name}` : ""}
-          {slot.coaches
-            ? ` · ${slot.coaches.first_name} ${slot.coaches.last_name}`
-            : ""}
-        </p>
-        {tiers.length > 0 ? (
-          <p className="mt-2 text-muted-foreground tabular-nums">
-            Tarif :{" "}
-            {tiers
-              .map((t) => `${t.label} ${formatEuros(t.amount_cents)}`)
-              .join(" · ")}{" "}
-            — le montant exact dépend de l&apos;effectif final du groupe.
+        {cycle.byDuration ? (
+          <p className="text-muted-foreground">
+            {slot.seasons?.name} · séances de {slot.duration_minutes} min
+            {slot.starts_on
+              ? ` · du ${formatDayMonth(slot.starts_on)} au ${formatDayMonth(
+                  sessionDate(slot.starts_on, slot.session_count),
+                )}`
+              : ""}
+            {" · "}
+            {slot.min_capacity ? `${slot.min_capacity} à ` : "jusqu'à "}
+            {slot.capacity} enfants par groupe
+            {slot.locations ? ` · ${slot.locations.name}` : ""}
+            {slot.coaches
+              ? ` · ${slot.coaches.first_name} ${slot.coaches.last_name}`
+              : ""}
           </p>
-        ) : null}
+        ) : (
+          <>
+            <p className="text-muted-foreground">
+              {slot.seasons?.name} · {slot.session_count} séances de{" "}
+              {slot.duration_minutes} min · capacité {slot.capacity}
+              {slot.locations ? ` · ${slot.locations.name}` : ""}
+              {slot.coaches
+                ? ` · ${slot.coaches.first_name} ${slot.coaches.last_name}`
+                : ""}
+            </p>
+            {tiers.length > 0 ? (
+              <p className="mt-2 text-muted-foreground tabular-nums">
+                Tarif :{" "}
+                {tiers
+                  .map((t) => `${t.label} ${formatEuros(t.amount_cents)}`)
+                  .join(" · ")}{" "}
+                — le montant exact dépend de l&apos;effectif final du groupe.
+              </p>
+            ) : null}
+          </>
+        )}
       </div>
 
-      <RegisterForm
-        slotId={slot.id}
-        players={players}
-        warnByPlayer={warnByPlayer}
-      />
+      {closed ? (
+        <p className="rounded-lg border p-4 text-sm text-muted-foreground">
+          Ce cycle a déjà commencé et plus aucune période n&apos;est ouverte aux
+          nouvelles inscriptions. Contacte l&apos;académie pour une entrée en
+          cours de route.
+        </p>
+      ) : (
+        <RegisterForm
+          slotId={slot.id}
+          players={players}
+          warnByPlayer={warnByPlayer}
+          durations={durations}
+          openPeriodIndex={cycle.open?.index ?? 1}
+        />
+      )}
     </div>
   );
 }

@@ -254,7 +254,7 @@ export function SlotForm({
           />
         </Field>
 
-        <Field label="Capacité" htmlFor="capacity" error={fe.capacity}>
+        <Field label="Capacité (max.)" htmlFor="capacity" error={fe.capacity}>
           <Input
             id="capacity"
             name="capacity"
@@ -265,6 +265,24 @@ export function SlotForm({
           />
         </Field>
       </div>
+
+      <Field
+        label="Effectif minimum (facultatif)"
+        htmlFor="min_capacity"
+        error={fe.min_capacity}
+      >
+        <Input
+          id="min_capacity"
+          name="min_capacity"
+          type="number"
+          min={1}
+          defaultValue={slot?.min_capacity ?? ""}
+          className="max-w-32"
+        />
+        <p className="text-xs text-muted-foreground">
+          Sous ce nombre, la période est signalée en orange (groupe trop petit).
+        </p>
+      </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Niveau min." htmlFor="min_level_code">

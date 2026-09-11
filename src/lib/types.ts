@@ -126,6 +126,8 @@ export interface Slot {
   session_count: number;
   starts_on: string | null;
   capacity: number;
+  /** Effectif minimum par période ; en dessous, alerte « groupe trop petit ». */
+  min_capacity: number | null;
   min_level_code: string | null;
   max_level_code: string | null;
   level_note: string | null;
@@ -211,6 +213,11 @@ export interface Registration {
   late_cancellation: boolean;
   promo_code: string | null;
   prorata_sessions: number | null;
+  /** N° de la 1re séance suivie dans le cycle du créneau (1 = début). */
+  first_session: number;
+  /** Séances suivies à partir de first_session ; null = jusqu'à la fin. */
+  session_count: number | null;
+  extension_offer_sent_at: string | null;
   notes: string | null;
   cancel_requested_at: string | null;
   requested_at: string;

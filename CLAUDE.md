@@ -51,6 +51,25 @@ Contexte métier : voir `README.md` et le cahier des charges
   `src/lib/database.types.ts` (voir README) et remplacer progressivement les
   types manuels de `src/lib/types.ts`.
 
+## Cycles à durée choisie (cycles enfants 9 / 18 / 27)
+
+- **Un seul créneau par horaire**, qui porte le cycle complet (27 séances).
+  Ne jamais créer un créneau par durée : ça scinde le groupe du court.
+- L'inscription porte l'engagement : `first_session` (1 = début) et
+  `session_count` (null = jusqu'à la fin). Le prix (`per_duration`) suit
+  `session_count` de l'inscription, pas celui du créneau.
+- Le cycle est découpé en périodes de la longueur du plus petit palier
+  (1–9, 10–18, 19–27). Toute la logique est dans `src/lib/engagement.ts`
+  (pur, utilisable client/serveur) ; `src/lib/slot-cycle.ts` charge les
+  engagements via `slot_engagements()` — un client ne voit que ses propres
+  inscriptions en lecture directe.
+- `capacity` = maximum par période, `min_capacity` = seuil d'alerte.
+  La capacité reste souple (liste d'attente), comme pour les adultes.
+- Prolongation = différence de palier ; facture complémentaire en brouillon
+  si l'inscription était déjà facturée (`src/lib/extension.ts`).
+- Dates de séances : toujours `sessionDate()` (calcul UTC). Un calcul en heure
+  locale décale d'un jour les séances après le passage à l'heure d'été.
+
 ## Routes
 
 - Espaces protégés : `/compte` (client), `/coach` (coach + admin),

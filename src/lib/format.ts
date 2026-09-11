@@ -52,6 +52,26 @@ export function formatDate(iso: string | null | undefined): string {
   return Number.isNaN(d.getTime()) ? "—" : DATE_FMT.format(d);
 }
 
+const DAY_MONTH_FMT = new Intl.DateTimeFormat("fr-BE", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
+/** "2027-01-06" -> "6 janv." (dates de séances, sans année) */
+export function formatDayMonth(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
+  return Number.isNaN(d.getTime()) ? "—" : DAY_MONTH_FMT.format(d);
+}
+
+/** Date du jour à Bruxelles, "AAAA-MM-JJ" (comparable telle quelle). */
+export function todayInBrussels(): string {
+  return new Intl.DateTimeFormat("fr-CA", {
+    timeZone: "Europe/Brussels",
+  }).format(new Date());
+}
+
 /** "19:30:00" -> "19h30" */
 export function formatTime(time: string | null | undefined): string {
   if (!time) return "—";

@@ -31,6 +31,11 @@ const schema = z
       .or(z.literal(""))
       .transform((v) => (v === "" ? null : v)),
     capacity: z.coerce.number().int().positive(),
+    min_capacity: z
+      .string()
+      .regex(/^\d*$/, "Nombre entier attendu")
+      .transform((v) => (v === "" ? null : Number(v)))
+      .refine((v) => v === null || v > 0, "Doit être positif"),
     min_level_code: z.string().or(z.literal("")).transform((v) => v || null),
     max_level_code: z.string().or(z.literal("")).transform((v) => v || null),
     level_note: z.string().trim().optional(),
@@ -41,6 +46,13 @@ const schema = z
   // (src/lib/sessions.ts) : la 1re séance doit donc tomber le jour du
   // créneau. Même règle en base : contrainte slots_starts_on_weekday_chk.
   .superRefine((v, ctx) => {
+    if (v.min_capacity != null && v.min_capacity > v.capacity) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Le minimum ne peut pas dépasser la capacité.",
+        path: ["min_capacity"],
+      });
+    }
     if (!v.starts_on) return;
     const day = isoWeekday(v.starts_on);
     if (Number.isNaN(day)) {
@@ -72,6 +84,7 @@ function parse(formData: FormData) {
     session_count: formData.get("session_count"),
     starts_on: formData.get("starts_on") ?? "",
     capacity: formData.get("capacity"),
+    min_capacity: String(formData.get("min_capacity") ?? "").trim(),
     min_level_code: formData.get("min_level_code") ?? "",
     max_level_code: formData.get("max_level_code") ?? "",
     level_note: formData.get("level_note") || undefined,
@@ -92,6 +105,7 @@ function toRow(d: z.infer<typeof schema>) {
     session_count: d.session_count,
     starts_on: d.starts_on,
     capacity: d.capacity,
+    min_capacity: d.min_capacity,
     min_level_code: d.min_level_code,
     max_level_code: d.max_level_code,
     level_note: d.level_note ?? null,

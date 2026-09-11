@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatTime, weekdayLabel } from "@/lib/format";
+import { formatTime, todayInBrussels, weekdayLabel } from "@/lib/format";
+import { loadEngagements, slotCycle } from "@/lib/slot-cycle";
+import { PeriodOccupancy } from "./period-occupancy";
 import { SLOT_STATUS_LABEL, type Slot } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -10,7 +12,16 @@ export const metadata = { title: "Créneaux" };
 
 type Row = Slot & {
   seasons: { name: string } | null;
-  products: { name: string } | null;
+  products: {
+    name: string;
+    pricing_model: string;
+    price_tiers: {
+      kind: string;
+      session_count: number | null;
+      amount_cents: number;
+      active: boolean;
+    }[];
+  } | null;
   locations: { name: string } | null;
   coaches: { first_name: string; last_name: string } | null;
 };
@@ -20,12 +31,21 @@ export default async function CreneauxPage() {
   const { data, error } = await supabase
     .from("slots")
     .select(
-      "*, seasons(name), products(name), locations(name), coaches(first_name,last_name)",
+      "*, seasons(name), products(name, pricing_model, price_tiers(kind, session_count, amount_cents, active)), locations(name), coaches(first_name,last_name)",
     )
     .order("weekday")
     .order("start_time");
 
   const slots = (data ?? []) as Row[];
+  const engagementsBySlot = await loadEngagements(
+    supabase,
+    slots.map((s) => s.id),
+  );
+  const today = todayInBrussels();
+  const cycles = new Map(
+    slots.map((s) => [s.id, slotCycle(s, engagementsBySlot.get(s.id) ?? [], today)]),
+  );
+  const cycleOf = (s: Row) => cycles.get(s.id)!;
 
   return (
     <div className="flex flex-col gap-6">
@@ -85,6 +105,17 @@ export default async function CreneauxPage() {
                       ? ` · ${s.coaches.first_name} ${s.coaches.last_name}`
                       : ""}
                   </p>
+                  {cycleOf(s).byDuration ? (
+                    <div className="mt-1">
+                      <PeriodOccupancy
+                        periods={cycleOf(s).periods}
+                        occupancy={cycleOf(s).occupancy}
+                        capacity={s.capacity}
+                        minCapacity={s.min_capacity}
+                        startsOn={s.starts_on}
+                      />
+                    </div>
+                  ) : null}
                 </div>
                 <div className="flex items-center gap-3">
                   <Link

@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatEuros, formatTime, weekdayLabel } from "@/lib/format";
+import {
+  formatEuros,
+  formatTime,
+  todayInBrussels,
+  weekdayLabel,
+} from "@/lib/format";
+import { loadEngagements, slotCycle } from "@/lib/slot-cycle";
 import { PRODUCT_CATEGORY_LABEL, type ProductCategory } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -12,13 +18,21 @@ type SlotRow = {
   weekday: number;
   start_time: string;
   capacity: number;
+  session_count: number;
+  starts_on: string | null;
   level_note: string | null;
   min_level_code: string | null;
   max_level_code: string | null;
   products: {
     name: string;
     category: ProductCategory;
-    price_tiers: { amount_cents: number; active: boolean }[];
+    pricing_model: string;
+    price_tiers: {
+      kind: string;
+      session_count: number | null;
+      amount_cents: number;
+      active: boolean;
+    }[];
   } | null;
   locations: { name: string } | null;
   coaches: { first_name: string; last_name: string } | null;
@@ -38,23 +52,29 @@ function priceRange(tiers: { amount_cents: number; active: boolean }[]) {
 export default async function InscriptionPage() {
   const supabase = await createClient();
 
-  const [{ data: slotsData, error }, { data: regRows }] = await Promise.all([
-    supabase
-      .from("slots")
-      .select(
-        "id, weekday, start_time, capacity, level_note, min_level_code, max_level_code, products(name, category, price_tiers(amount_cents, active)), locations(name), coaches(first_name,last_name), seasons(name)",
-      )
-      .eq("status", "open")
-      .order("weekday")
-      .order("start_time"),
-    supabase.from("registrations").select("slot_id, status"),
-  ]);
+  const { data: slotsData, error } = await supabase
+    .from("slots")
+    .select(
+      "id, weekday, start_time, capacity, session_count, starts_on, level_note, min_level_code, max_level_code, products(name, category, pricing_model, price_tiers(kind, session_count, amount_cents, active)), locations(name), coaches(first_name,last_name), seasons(name)",
+    )
+    .eq("status", "open")
+    .order("weekday")
+    .order("start_time");
 
   const slots = (slotsData ?? []) as unknown as SlotRow[];
+
+  // Inscrits sur la période ouverte aux nouveaux venus (le cycle entier
+  // quand le créneau n'est pas découpé en périodes).
+  const engagementsBySlot = await loadEngagements(
+    supabase,
+    slots.map((s) => s.id),
+  );
+  const today = todayInBrussels();
   const takenBySlot = new Map<string, number>();
-  for (const r of regRows ?? []) {
-    if (r.status === "annulee") continue;
-    takenBySlot.set(r.slot_id, (takenBySlot.get(r.slot_id) ?? 0) + 1);
+  for (const s of slots) {
+    const cycle = slotCycle(s, engagementsBySlot.get(s.id) ?? [], today);
+    const i = cycle.open ? cycle.periods.indexOf(cycle.open) : 0;
+    takenBySlot.set(s.id, cycle.occupancy[i] ?? 0);
   }
 
   return (

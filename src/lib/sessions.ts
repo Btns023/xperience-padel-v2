@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { sessionDate } from "@/lib/engagement";
 
 /**
  * (Re)génère les séances d'un groupe à partir du créneau : 1re séance =
@@ -24,15 +25,14 @@ export async function regenerateSessions(
   } | null;
   if (!slot?.starts_on) return;
 
-  const first = new Date(slot.starts_on);
+  // Dates calculées en UTC (sessionDate) : en heure locale, le passage à
+  // l'heure d'été décalait les séances suivantes d'un jour.
   const rows = [];
-  for (let i = 0; i < (slot.session_count ?? 0); i++) {
-    const d = new Date(first);
-    d.setDate(d.getDate() + i * 7);
+  for (let seq = 1; seq <= (slot.session_count ?? 0); seq++) {
     rows.push({
       group_id: groupId,
-      seq: i + 1,
-      date: d.toISOString().slice(0, 10),
+      seq,
+      date: sessionDate(slot.starts_on, seq),
       start_time: slot.start_time,
     });
   }

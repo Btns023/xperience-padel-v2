@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatTime, weekdayLabel } from "@/lib/format";
+import { engagementRange } from "@/lib/engagement";
 import { CancellationActions } from "./cancel-actions";
 import {
   REGISTRATION_STATUS_LABEL,
@@ -18,12 +19,15 @@ type Row = {
   level_mismatch: boolean;
   late_cancellation: boolean;
   slot_id: string;
+  first_session: number;
+  session_count: number | null;
   players: { first_name: string; last_name: string; level_code: string } | null;
   slots:
     | {
         weekday: number;
         start_time: string;
-        products: { name: string } | null;
+        session_count: number;
+        products: { name: string; pricing_model: string } | null;
       }
     | null;
   billed_to: { first_name: string | null; last_name: string | null } | null;
@@ -35,7 +39,7 @@ export default async function DemandesPage() {
   const { data, error } = await supabase
     .from("registrations")
     .select(
-      "id, status, requested_at, cancel_requested_at, level_mismatch, late_cancellation, slot_id, players(first_name,last_name,level_code), slots(weekday,start_time,products(name)), billed_to:profiles(first_name,last_name), organizations(name)",
+      "id, status, requested_at, cancel_requested_at, level_mismatch, late_cancellation, slot_id, first_session, session_count, players(first_name,last_name,level_code), slots(weekday,start_time,session_count,products(name,pricing_model)), billed_to:profiles(first_name,last_name), organizations(name)",
     )
     .order("requested_at", { ascending: false });
 
@@ -92,6 +96,11 @@ export default async function DemandesPage() {
                   >
                     {REGISTRATION_STATUS_LABEL[r.status]}
                   </Badge>
+                  {r.slots?.products?.pricing_model === "per_duration" ? (
+                    <Badge variant="outline">
+                      {engagementRange(r, r.slots.session_count).count} cours
+                    </Badge>
+                  ) : null}
                   {r.level_mismatch ? (
                     <Badge className="border-transparent bg-orange-500/15 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300">
                       écart de niveau
