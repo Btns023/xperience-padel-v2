@@ -25,7 +25,7 @@ export default function SponsorsPage() {
       />
 
       <Section>
-        <SectionHead eyebrow="Partenaires actuels" title="Merci pour leur soutien" />
+        <SectionHead eyebrow="Partenaires actuels" title={<>Merci pour <span className="gold">leur soutien</span></>} />
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           {PARTNERS.map((p) => (
             <a
@@ -44,7 +44,7 @@ export default function SponsorsPage() {
         </div>
       </Section>
 
-      <div className="border-t border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-t border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
           <div className="card card--gold p-8 text-center">
             <h2 className="d text-3xl sm:text-4xl">

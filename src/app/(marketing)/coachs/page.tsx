@@ -45,7 +45,7 @@ export default function CoachsPage() {
       />
 
       <Section>
-        <SectionHead eyebrow="L'équipe adultes" title="Trois profils, une méthode" />
+        <SectionHead eyebrow="L'équipe adultes" title={<>Trois profils, <span className="gold">une méthode</span></>} />
         <div className="mt-8 flex flex-col gap-4">
           {COACHES.map((c, i) => (
             <Reveal key={c.name} delay={i * 60}>
@@ -61,7 +61,7 @@ export default function CoachsPage() {
         </div>
       </Section>
 
-      <div className="border-t border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-t border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
           <SectionHead
             eyebrow="Encadrement kids"

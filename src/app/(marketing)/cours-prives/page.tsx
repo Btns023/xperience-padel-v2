@@ -52,7 +52,7 @@ export default function CoursPrivesPage() {
       <Section>
         <SectionHead
           eyebrow="Tarifs clairs, sans surprise"
-          title="Choisissez votre formule"
+          title={<>Choisissez <span className="gold">votre formule</span></>}
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <PriceCard
@@ -73,7 +73,7 @@ export default function CoursPrivesPage() {
         </p>
       </Section>
 
-      <div className="border-y border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-y border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
           <SectionHead
             eyebrow="Pourquoi un cours privé ?"
@@ -94,7 +94,7 @@ export default function CoursPrivesPage() {
       </div>
 
       <Section>
-        <SectionHead eyebrow="C'est fait pour vous si…" title="Un besoin, une séance" />
+        <SectionHead eyebrow="C'est fait pour vous si…" title={<>Un besoin, <span className="gold">une séance</span></>} />
         <ul className="mt-8 grid gap-3 sm:grid-cols-2">
           {FOR_YOU.map(([t, d]) => (
             <li key={t} className="card p-5">
@@ -105,9 +105,9 @@ export default function CoursPrivesPage() {
         </ul>
       </Section>
 
-      <div className="border-t border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-t border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
-          <SectionHead eyebrow="En 4 étapes" title="Comment ça se passe ?" />
+          <SectionHead eyebrow="En 4 étapes" title={<>Comment <span className="gold">ça se passe</span> ?</>} />
           <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map(([n, t, d]) => (
               <li key={n} className="card p-6">

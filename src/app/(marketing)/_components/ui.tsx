@@ -113,7 +113,7 @@ export function PriceCard({
             </span>
           ) : null}
           <span className="text-sm text-[var(--ink-55)]">{label}</span>
-          <span className="d mt-3 text-5xl tabular-nums">
+          <span className="d figure mt-3 text-5xl tabular-nums">
             {price}
             {unit ? (
               <span className="ml-1.5 align-baseline text-sm font-normal not-italic tracking-normal text-[var(--ink-40)] [font-family:var(--font-body)]">
@@ -183,7 +183,7 @@ export function PriceTable({
           {r.prices.map((p, i) => (
             <span
               key={columns[i]}
-              className="d text-right text-2xl tabular-nums sm:text-3xl"
+              className="d figure text-right text-2xl tabular-nums sm:text-3xl"
             >
               {p}
             </span>

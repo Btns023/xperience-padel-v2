@@ -207,7 +207,7 @@ export default function HomePage() {
       <Section id="formules">
         <SectionHead
           eyebrow="Toutes nos formules"
-          title="Le détail, formule par formule"
+          title={<>Le détail, <span className="gold">formule par formule</span></>}
           lead="Cinq façons de progresser, du cours à l'unité au cycle interclubs. Terrain, matériel et coaching toujours compris."
         />
         <div className="scene mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -238,7 +238,7 @@ export default function HomePage() {
       </Section>
 
       {/* Calendrier de la saison */}
-      <div className="border-y border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-y border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
           <SectionHead
             eyebrow="Toute la saison 2026"
@@ -329,7 +329,7 @@ export default function HomePage() {
       <Section>
         <SectionHead
           eyebrow="Sans engagement"
-          title="Cours privés à la carte"
+          title={<>Cours privés <span className="gold">à la carte</span></>}
           lead="La formule sans cycle ni groupe à constituer : vous réservez une séance quand vous en avez besoin."
         />
         <Reveal className="mt-10">
@@ -389,11 +389,11 @@ export default function HomePage() {
       </Section>
 
       {/* Coachs */}
-      <div className="border-y border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-y border-[var(--line)] bg-[var(--bg-2)] band">
         <Section id="coachs">
           <SectionHead
             eyebrow="L'équipe encadrante"
-            title="Des coachs qui jouent vraiment"
+            title={<>Des coachs qui <span className="gold">jouent vraiment</span></>}
             lead="P1000, P700, P500, P300 — ils pratiquent à haut niveau. Ce qu'ils transmettent, ils le vivent sur le court."
           />
           <div className="scene mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

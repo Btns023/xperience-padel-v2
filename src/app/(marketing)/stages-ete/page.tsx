@@ -51,11 +51,11 @@ export default function StagesEtePage() {
         </div>
       </Section>
 
-      <div className="border-y border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-y border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
           <SectionHead
             eyebrow="Calendrier des stages"
-            title="Choisissez votre semaine"
+            title={<>Choisissez <span className="gold">votre semaine</span></>}
           />
           <ul className="mt-10 flex flex-col gap-3">
             {WEEKS.map(([name, dates, coach, status]) => (
@@ -89,7 +89,7 @@ export default function StagesEtePage() {
       <Section>
         <SectionHead
           eyebrow="Tarifs · par personne, tout compris"
-          title="Tarif stage (3 × 2h)"
+          title={<>Tarif stage <span className="gold">(3 × 2h)</span></>}
           lead="Terrain, matériel et coaching compris. Groupe constitué par les joueurs eux-mêmes."
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-3">

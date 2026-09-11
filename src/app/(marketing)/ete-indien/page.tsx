@@ -44,9 +44,9 @@ export default function EteIndienPage() {
         </div>
       </Section>
 
-      <div className="border-y border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-y border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
-          <SectionHead eyebrow="Offre spéciale équipes" title="Accès illimité équipe" />
+          <SectionHead eyebrow="Offre spéciale équipes" title={<>Accès <span className="gold">illimité</span> équipe</>} />
           <div className="card card--gold mt-6 flex flex-col items-start gap-2 p-8">
             <span className="text-sm text-[var(--ink-55)]">
               Tous les joueurs de l&apos;équipe aux 5 séances du cycle
@@ -64,7 +64,7 @@ export default function EteIndienPage() {
       <Section>
         <SectionHead
           eyebrow="Cours collectifs · 5 cours, tous niveaux"
-          title="Cycle été indien"
+          title={<>Cycle <span className="gold">été indien</span></>}
           lead="5 cours × 1h30 · à partir du 24 août. Terrain, matériel et coaching compris. Prix par joueur selon l'effectif."
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-3">

@@ -45,7 +45,7 @@ export default function CoursAdultesPage() {
         </div>
       </Section>
 
-      <div className="border-y border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-y border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
           <SectionHead
             eyebrow="Tarifs cycles collectifs"
@@ -67,7 +67,7 @@ export default function CoursAdultesPage() {
       <Section>
         <SectionHead
           eyebrow="Vous préférez la souplesse ?"
-          title="Cours à la carte"
+          title={<>Cours <span className="gold">à la carte</span></>}
           lead="Flexible, sans engagement, terrain et matériel compris. 1h30 disponible sur demande (tarif ×1,5)."
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2">

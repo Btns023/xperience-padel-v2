@@ -180,7 +180,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 border-t border-[var(--line)] bg-[var(--bg-2)]">
+    <footer className="mt-20 border-t border-[var(--line)] bg-[var(--bg-2)] band">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-14 sm:flex-row sm:justify-between">
         <div className="max-w-xs">
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -87,9 +87,9 @@ export default function CoursEnfantsPage() {
         </div>
       </Section>
 
-      <div className="border-y border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-y border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
-          <SectionHead eyebrow="Créneaux" title="À quelle heure ?" />
+          <SectionHead eyebrow="Créneaux" title={<>À quelle <span className="gold">heure</span> ?</>} />
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             <Reveal>
               <Planning
@@ -132,11 +132,11 @@ export default function CoursEnfantsPage() {
         </div>
       </Section>
 
-      <div className="border-t border-[var(--line)] bg-[var(--bg-2)]">
+      <div className="border-t border-[var(--line)] bg-[var(--bg-2)] band">
         <Section>
           <SectionHead
             eyebrow="Coaching individuel enfant"
-            title="Cours à la carte"
+            title={<>Cours <span className="gold">à la carte</span></>}
             lead="Coaching individuel, terrain et matériel compris. Horaires à convenir avec le coach, flexible 7 j/7. 1h30 sur demande (×1,5)."
           />
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
