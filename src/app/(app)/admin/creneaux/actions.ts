@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
+import { weekdayLabel } from "@/lib/format";
 
 export type FormState = { error?: string; fieldErrors?: Record<string, string> };
 
@@ -35,7 +36,29 @@ const schema = z
     level_note: z.string().trim().optional(),
     status: z.enum(["draft", "open", "closed"]),
     notes: z.string().trim().optional(),
+  })
+  // Les séances sont générées de semaine en semaine à partir de starts_on
+  // (src/lib/sessions.ts) : la 1re séance doit donc tomber le jour du
+  // créneau. Même règle en base : contrainte slots_starts_on_weekday_chk.
+  .superRefine((v, ctx) => {
+    if (!v.starts_on) return;
+    const day = isoWeekday(v.starts_on);
+    if (Number.isNaN(day)) {
+      ctx.addIssue({ code: "custom", message: "Date invalide", path: ["starts_on"] });
+    } else if (day !== v.weekday) {
+      ctx.addIssue({
+        code: "custom",
+        message: `La date de début doit tomber un ${weekdayLabel(v.weekday)} (jour du créneau).`,
+        path: ["starts_on"],
+      });
+    }
   });
+
+/** "2026-10-07" -> 3 (1 = lundi … 7 = dimanche, comme isodow en SQL). */
+function isoWeekday(isoDate: string): number {
+  const d = new Date(`${isoDate}T00:00:00Z`).getUTCDay();
+  return d === 0 ? 7 : d;
+}
 
 function parse(formData: FormData) {
   return schema.safeParse({

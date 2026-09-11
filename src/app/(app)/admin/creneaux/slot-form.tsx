@@ -245,7 +245,7 @@ export function SlotForm({
           />
         </Field>
 
-        <Field label="1re séance" htmlFor="starts_on">
+        <Field label="1re séance" htmlFor="starts_on" error={fe.starts_on}>
           <Input
             id="starts_on"
             name="starts_on"
