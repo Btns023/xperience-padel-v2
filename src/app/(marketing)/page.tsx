@@ -117,7 +117,7 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <div className="relative overflow-hidden">
-        <CourtBackdrop opacity={72} />
+        <CourtBackdrop opacity={66} />
 
         <div className="scene relative z-10 mx-auto flex max-w-4xl flex-col items-center px-5 py-28 text-center sm:py-40">
           <Parallax speed={-0.08}>

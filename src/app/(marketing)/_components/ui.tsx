@@ -221,10 +221,23 @@ export function FeatureCard({
   );
 }
 
-/** Décor de fond en profondeur : la photo du court dérive plus lentement. */
-export function CourtBackdrop({ opacity = 78 }: { opacity?: number }) {
+/**
+ * Décor de fond : la photo du court en bichromie dorée, qui dérive plus
+ * lentement que le contenu. `opacity` règle le voile sombre par-dessus,
+ * `duo` l'intensité de la teinte (0 = photo grise, 1 = plein doré).
+ */
+export function CourtBackdrop({
+  opacity = 70,
+  duo = 0.9,
+}: {
+  opacity?: number;
+  duo?: number;
+}) {
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div
+      className="duotone absolute inset-0 overflow-hidden"
+      style={{ "--duo": duo } as React.CSSProperties}
+    >
       <Parallax speed={0.22} className="absolute inset-0">
         <div className="absolute -inset-y-[22%] inset-x-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -232,13 +245,16 @@ export function CourtBackdrop({ opacity = 78 }: { opacity?: number }) {
             src="/court-bg.jpg"
             alt=""
             aria-hidden="true"
-            className="h-full w-full scale-110 object-cover"
+            className="duotone__img h-full w-full scale-110 object-cover"
           />
+          <div className="duotone__shade absolute inset-0" />
+          <div className="duotone__tint absolute inset-0" />
         </div>
       </Parallax>
+      {/* Voile sombre légèrement chaud, pour la lisibilité du texte */}
       <div
         className="absolute inset-0"
-        style={{ background: `rgba(7,7,7,${opacity / 100})` }}
+        style={{ background: `rgba(9,7,4,${opacity / 100})` }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#070707]/40 to-[#070707]" />
       {/* Vignettage : creuse le centre de l'image */}

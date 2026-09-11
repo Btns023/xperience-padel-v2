@@ -112,6 +112,36 @@
   background: var(--gold-tint);
 }
 
+/* ---------------------------------------------------------------------------
+   Photo du court en bichromie dorée
+   L'image est désaturée, puis un aplat doré lui donne sa teinte en conservant
+   ses valeurs (mix-blend-mode: color). Intensité réglable par --duo.
+   --------------------------------------------------------------------------- */
+.duotone {
+  isolation: isolate;
+}
+.duotone__img {
+  filter: grayscale(1) contrast(1.2) brightness(0.95);
+}
+.duotone__tint {
+  background: var(--gold);
+  mix-blend-mode: color;
+  opacity: var(--duo, 0.9);
+}
+/* Ombres réchauffées, pour éviter le gris neutre dans les noirs */
+.duotone__shade {
+  background: #16110a;
+  mix-blend-mode: multiply;
+  opacity: 0.45;
+}
+/* Navigateur sans fusion de calques : on garde la photo telle quelle */
+@supports not (mix-blend-mode: color) {
+  .duotone__tint,
+  .duotone__shade {
+    display: none;
+  }
+}
+
 /* Bande sombre réchauffée par un halo doré diffus */
 .band {
   position: relative;
