@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
   formatDayMonth,
@@ -13,6 +13,8 @@ import { PRODUCT_CATEGORY_LABEL } from "@/lib/types";
 import { durationOptions, sessionDate } from "@/lib/engagement";
 import { loadEngagements, slotCycle } from "@/lib/slot-cycle";
 import { Badge } from "@/components/ui/badge";
+import { getCurrentProfile } from "@/lib/auth";
+import { needsProfileCompletion, profileCompletionPath } from "@/lib/profile";
 import { RegisterForm } from "../register-form";
 
 export const metadata = { title: "S'inscrire à un créneau" };
@@ -53,6 +55,12 @@ export default async function SlotInscriptionPage({
   params: Promise<{ slotId: string }>;
 }) {
   const { slotId } = await params;
+
+  // Les coordonnées de facturation d'abord : sans elles, pas de facture valable.
+  if (needsProfileCompletion(await getCurrentProfile())) {
+    redirect(profileCompletionPath(`/compte/inscription/${slotId}`));
+  }
+
   const supabase = await createClient();
 
   const [{ data: slotData }, { data: playersData }, { data: levelsData }] =

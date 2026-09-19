@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { signIn, type AuthState } from "../actions";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GoogleButton } from "../google-button";
+import { AuthError } from "../auth-error";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -34,6 +36,12 @@ export default function ConnexionPage() {
         <CardTitle>Connexion</CardTitle>
         <CardDescription>Accède à ton espace Xperience Padel.</CardDescription>
       </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <Suspense>
+          <AuthError />
+        </Suspense>
+        <GoogleButton />
+      </CardContent>
       <form action={formAction}>
         <CardContent className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">

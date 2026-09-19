@@ -19,6 +19,8 @@ export interface Profile {
   city: string | null;
   country: string | null;
   notif_prefs: Record<string, boolean>;
+  /** Acceptation des conditions d'inscription et de confidentialité. */
+  terms_accepted_at: string | null;
   created_at: string;
   updated_at: string;
 }

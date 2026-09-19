@@ -83,7 +83,7 @@ export async function signUp(
     password,
     options: {
       emailRedirectTo: `${siteUrl()}/auth/confirm`,
-      data: { first_name, last_name, phone },
+      data: { first_name, last_name, phone, accept_terms: true },
     },
   });
 
@@ -101,6 +101,33 @@ export async function signUp(
     message:
       "Compte créé. Vérifie ta boîte mail : un lien d'activation vient de t'être envoyé.",
   };
+}
+
+// --- Connexion Google -----------------------------------------------------
+/**
+ * Démarre la connexion Google (OAuth, flux PKCE). Le retour se fait sur
+ * /auth/callback, qui ouvre la session puis envoie compléter le profil si
+ * besoin (téléphone, adresse, conditions).
+ */
+export async function signInWithGoogle(formData: FormData): Promise<void> {
+  const next = String(formData.get("next") ?? "");
+  const callback = new URL(`${siteUrl()}/auth/callback`);
+  if (next.startsWith("/") && !next.startsWith("//")) {
+    callback.searchParams.set("next", next);
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: callback.toString(),
+      // Laisse choisir le compte quand plusieurs sont ouverts sur l'appareil.
+      queryParams: { prompt: "select_account" },
+    },
+  });
+
+  if (error || !data.url) redirect("/connexion?error=google");
+  redirect(data.url);
 }
 
 // --- Déconnexion -------------------------------------------------------

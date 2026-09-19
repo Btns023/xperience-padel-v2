@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCurrentProfile } from "@/lib/auth";
+import { missingProfileFields, needsProfileCompletion } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import {
   Card,
@@ -31,6 +32,17 @@ export default async function ComptePage() {
           Bonjour{profile?.first_name ? ` ${profile.first_name}` : ""}.
         </p>
       </div>
+
+      {needsProfileCompletion(profile) ? (
+        <Link
+          href="/compte/profil?completer=1"
+          className="rounded-lg border border-amber-400 bg-amber-50 p-4 text-sm transition-colors hover:bg-amber-100 dark:border-amber-500/50 dark:bg-amber-500/10"
+        >
+          <span className="font-medium">Complète ton profil</span> — il manque :{" "}
+          {missingProfileFields(profile).join(", ")}. Ces informations figurent
+          sur tes factures et sont nécessaires pour t&apos;inscrire. →
+        </Link>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Link href="/compte/joueurs">

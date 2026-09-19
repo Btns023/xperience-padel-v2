@@ -11,6 +11,7 @@ import { recipientForProfile, wantsNotif } from "@/lib/recipients";
 import { weekdayLabel, formatTime, todayInBrussels } from "@/lib/format";
 import { tierPrice } from "@/lib/engagement";
 import { loadEngagements, slotCycle } from "@/lib/slot-cycle";
+import { needsProfileCompletion } from "@/lib/profile";
 
 export type RegState = { error?: string };
 
@@ -71,6 +72,13 @@ export async function createRegistrations(
 
   if (as_org && !org_name) {
     return { error: "Nom de l'entreprise requis." };
+  }
+
+  if (needsProfileCompletion(await getCurrentProfile())) {
+    return {
+      error:
+        "Complète d'abord ton profil (téléphone et adresse) dans « Mon profil » : ils figurent sur la facture.",
+    };
   }
 
   const supabase = await createClient();
