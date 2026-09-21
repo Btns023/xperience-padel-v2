@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
 import type { PadelLevel } from "@/lib/types";
 import { createPlayer } from "../actions";
 import { PlayerForm } from "../player-form";
@@ -8,11 +9,17 @@ export const metadata = { title: "Ajouter un joueur" };
 
 export default async function NouveauJoueurPage() {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("padel_levels")
-    .select("*")
-    .order("rank");
+  const [{ data }, user, profile] = await Promise.all([
+    supabase.from("padel_levels").select("*").order("rank"),
+    getCurrentUser(),
+    getCurrentProfile(),
+  ]);
   const levels = (data ?? []) as PadelLevel[];
+  const self = {
+    first_name: profile?.first_name ?? "",
+    last_name: profile?.last_name ?? "",
+    email: user?.email ?? "",
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -32,6 +39,7 @@ export default async function NouveauJoueurPage() {
         levels={levels}
         submitLabel="Ajouter le joueur"
         allowSelf
+        self={self}
       />
     </div>
   );

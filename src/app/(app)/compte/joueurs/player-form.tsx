@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { PadelLevel, Player } from "@/lib/types";
 import type { FormState } from "./actions";
@@ -51,22 +51,58 @@ export function PlayerForm({
   levels,
   submitLabel,
   allowSelf,
+  self,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   player?: Player;
   levels: PadelLevel[];
   submitLabel: string;
   allowSelf?: boolean;
+  /** Identité du titulaire du compte, pour la case « C'est moi ». */
+  self?: { first_name: string; last_name: string; email: string };
 }) {
   const [state, formAction] = useActionState<FormState, FormData>(action, {});
   const fe = state.fieldErrors ?? {};
   const levelItems = Object.fromEntries(levels.map((l) => [l.code, l.label]));
 
+  // « C'est moi » : préremplit l'identité du compte. L'e-mail est alors figé
+  // sur celui du compte, sans quoi le joueur ne serait pas reconnu comme toi.
+  const [isSelf, setIsSelf] = useState(false);
+  const [identity, setIdentity] = useState({
+    first_name: player?.first_name ?? "",
+    last_name: player?.last_name ?? "",
+    email: player?.email ?? "",
+  });
+  const [saved, setSaved] = useState(identity);
+
+  const toggleSelf = (checked: boolean) => {
+    setIsSelf(checked);
+    if (!self) return;
+    if (checked) {
+      setSaved(identity);
+      setIdentity({
+        first_name: self.first_name,
+        last_name: self.last_name,
+        email: self.email,
+      });
+    } else {
+      setIdentity(saved);
+    }
+  };
+  const set = (key: keyof typeof identity) => (v: string) =>
+    setIdentity((p) => ({ ...p, [key]: v }));
+
   return (
     <form action={formAction} className="flex max-w-lg flex-col gap-5">
       {allowSelf ? (
         <label className="flex items-center gap-2 rounded-md border p-3 text-sm">
-          <input type="checkbox" name="is_self" className="size-4" />
+          <input
+            type="checkbox"
+            name="is_self"
+            className="size-4"
+            checked={isSelf}
+            onChange={(e) => toggleSelf(e.target.checked)}
+          />
           C&apos;est moi (je m&apos;inscris en tant que joueur)
         </label>
       ) : null}
@@ -76,7 +112,8 @@ export function PlayerForm({
           <Input
             id="first_name"
             name="first_name"
-            defaultValue={player?.first_name}
+            value={identity.first_name}
+            onChange={(e) => set("first_name")(e.target.value)}
             required
           />
         </Field>
@@ -84,7 +121,8 @@ export function PlayerForm({
           <Input
             id="last_name"
             name="last_name"
-            defaultValue={player?.last_name}
+            value={identity.last_name}
+            onChange={(e) => set("last_name")(e.target.value)}
             required
           />
         </Field>
@@ -95,11 +133,15 @@ export function PlayerForm({
           id="email"
           name="email"
           type="email"
-          defaultValue={player?.email}
+          value={identity.email}
+          onChange={(e) => set("email")(e.target.value)}
+          readOnly={isSelf}
           required
         />
         <p className="text-xs text-muted-foreground">
-          Sert à envoyer l&apos;invitation d&apos;activation du compte du joueur.
+          {isSelf
+            ? "C'est l'adresse de ton compte : elle ne peut pas être modifiée ici."
+            : "Sert à envoyer l'invitation d'activation du compte du joueur."}
         </p>
       </Field>
 

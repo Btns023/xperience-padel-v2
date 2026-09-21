@@ -59,6 +59,9 @@ export async function createPlayer(
   const supabase = await createClient();
   const { error } = await supabase.from("players").insert({
     ...toRow(parsed.data),
+    // « C'est moi » : le joueur, c'est le titulaire du compte, donc son
+    // adresse est celle du compte.
+    ...(isSelf && user.email ? { email: user.email } : {}),
     managed_by: user.id,
     profile_id: isSelf ? user.id : null,
     invitation_status: isSelf ? "accepted" : "pending",
