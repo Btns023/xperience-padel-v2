@@ -151,7 +151,7 @@ export function PlayerForm({
             id="birthdate"
             name="birthdate"
             type="date"
-            defaultValue={player?.birthdate}
+            defaultValue={player?.birthdate ?? ""}
             required
           />
         </Field>

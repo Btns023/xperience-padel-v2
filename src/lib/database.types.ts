@@ -815,12 +815,12 @@ export type Database = {
       }
       players: {
         Row: {
-          birthdate: string
+          birthdate: string | null
           created_at: string
-          email: string
+          email: string | null
           first_name: string
           id: string
-          image_consent: boolean
+          image_consent: boolean | null
           invitation_status: Database["public"]["Enums"]["invitation_status"]
           last_name: string
           level_code: string
@@ -829,12 +829,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          birthdate: string
+          birthdate?: string | null
           created_at?: string
-          email: string
+          email?: string | null
           first_name: string
           id?: string
-          image_consent: boolean
+          image_consent?: boolean | null
           invitation_status?: Database["public"]["Enums"]["invitation_status"]
           last_name: string
           level_code: string
@@ -843,12 +843,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          birthdate?: string
+          birthdate?: string | null
           created_at?: string
-          email?: string
+          email?: string | null
           first_name?: string
           id?: string
-          image_consent?: boolean
+          image_consent?: boolean | null
           invitation_status?: Database["public"]["Enums"]["invitation_status"]
           last_name?: string
           level_code?: string

@@ -194,10 +194,12 @@ export interface Player {
   profile_id: string | null;
   first_name: string;
   last_name: string;
-  email: string;
-  birthdate: string;
+  /** null pour les fiches reprises de l'historique. */
+  email: string | null;
+  birthdate: string | null;
   level_code: string;
-  image_consent: boolean;
+  /** null = jamais demandé : à traiter comme un refus. */
+  image_consent: boolean | null;
   invitation_status: InvitationStatus;
   created_at: string;
   updated_at: string;

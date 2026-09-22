@@ -66,8 +66,13 @@ export default async function JoueursPage() {
                   ) : null}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Né(e) le {formatDate(p.birthdate)} · {p.email} · droit à
-                  l&apos;image : {p.image_consent ? "oui" : "non"}
+                  Né(e) le {formatDate(p.birthdate)} · {p.email ?? "e-mail à compléter"} ·
+                  droit à l&apos;image :{" "}
+                  {p.image_consent == null
+                    ? "à demander"
+                    : p.image_consent
+                      ? "oui"
+                      : "non"}
                 </p>
               </div>
               <div className="flex items-center gap-4">
