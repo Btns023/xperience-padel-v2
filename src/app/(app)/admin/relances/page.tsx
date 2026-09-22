@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatEuros } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { DUNNING_LEVEL_LABEL } from "@/lib/emails";
 import { RunDunningButton } from "./run-button";
 
 export const metadata = { title: "Impayés & relances" };
@@ -27,6 +28,17 @@ function daysOverdue(due: string | null): number | null {
   return d > 0 ? d : 0;
 }
 
+/**
+ * Les 3 relances par e-mail sont épuisées et la dernière date de plus de
+ * 8 jours : place à la mise en demeure officielle, par courrier recommandé.
+ */
+function needsFormal(r: Row): boolean {
+  if (r.dunning_count < 3 || r.dunning_paused) return false;
+  if (!r.last_dunned_at) return true;
+  const days = (Date.now() - new Date(r.last_dunned_at).getTime()) / 86_400_000;
+  return days > 8;
+}
+
 export default async function RelancesPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -39,7 +51,7 @@ export default async function RelancesPage() {
     .order("due_on", { ascending: true });
 
   const rows = (data ?? []) as unknown as Row[];
-  const flagged = rows.filter((r) => r.dunning_count >= 3).length;
+  const flagged = rows.filter(needsFormal).length;
   const totalDue = rows.reduce(
     (s, r) =>
       s +
@@ -56,8 +68,10 @@ export default async function RelancesPage() {
           </h1>
           <p className="text-muted-foreground">
             {rows.length} facture(s) impayée(s) · {formatEuros(totalDue)} en
-            attente · {flagged} signalée(s). Relances automatiques chaque lundi ;
-            ici tu peux les déclencher à la main.
+            attente · {flagged} en attente de mise en demeure officielle. Relances automatiques chaque lundi ;
+            ici tu peux les déclencher à la main. Trois relances par e-mail —
+            rappel amical, dernier rappel, mise en demeure — puis la mise en
+            demeure officielle, à envoyer par courrier recommandé.
           </p>
         </div>
         <RunDunningButton />
@@ -85,10 +99,22 @@ export default async function RelancesPage() {
                   <span className="tabular-nums font-medium">
                     {formatEuros(remaining)}
                   </span>
-                  {r.dunning_count >= 3 ? (
-                    <Badge className="border-transparent bg-orange-500/15 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300">
-                      signalée
-                    </Badge>
+                  <Badge variant="secondary">
+                    {r.dunning_count === 0
+                      ? "aucune relance"
+                      : `relance ${Math.min(3, r.dunning_count)} — ${
+                          DUNNING_LEVEL_LABEL[
+                            Math.min(3, r.dunning_count) as 1 | 2 | 3
+                          ]
+                        }`}
+                  </Badge>
+                  {needsFormal(r) ? (
+                    <Link
+                      href={`/admin/factures/${r.id}/mise-en-demeure`}
+                      className="rounded-md border border-transparent bg-orange-500/15 px-2 py-0.5 text-xs font-medium text-orange-700 underline-offset-4 hover:underline dark:bg-orange-500/20 dark:text-orange-300"
+                    >
+                      mise en demeure officielle à envoyer →
+                    </Link>
                   ) : null}
                   {r.dunning_paused ? (
                     <Badge variant="outline">relances en pause</Badge>

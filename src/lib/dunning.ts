@@ -1,13 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
-import { dunningMail } from "@/lib/emails";
+import { dunningMail, type DunningLevel } from "@/lib/emails";
 import { recipientForProfile } from "@/lib/recipients";
 import { formatDate } from "@/lib/format";
 
 /**
  * Passe en revue les factures « envoyées » impayées et non mises en pause,
  * échues, dont la dernière relance date de plus de 7 jours (ou jamais).
- * Incrémente le compteur, marque la date, et envoie l'e-mail de relance.
+ *
+ * Trois niveaux, repris des courriers de l'académie : rappel amical,
+ * dernier rappel, puis mise en demeure. Au-delà, plus d'e-mail automatique :
+ * la mise en demeure officielle part par courrier postal, à l'initiative de
+ * l'académie (voir la page « Impayés & relances »).
  */
 export async function processDunning(
   supabase: SupabaseClient,
@@ -19,11 +23,12 @@ export async function processDunning(
   const { data: due, error } = await supabase
     .from("invoices")
     .select(
-      "id, number, total_cents, due_on, structured_comm, dunning_count, billed_to_profile_id, issuer_snapshot",
+      "id, number, total_cents, issued_on, due_on, structured_comm, dunning_count, billed_to_profile_id, issuer_snapshot",
     )
     .eq("kind", "invoice")
     .eq("status", "sent")
     .eq("dunning_paused", false)
+    .lt("dunning_count", 3)
     .lte("due_on", today)
     .or(`last_dunned_at.is.null,last_dunned_at.lt.${weekAgo}`);
   if (error) throw new Error(error.message);
@@ -46,13 +51,14 @@ export async function processDunning(
         await sendEmail({
           to: email,
           ...dunningMail({
+            level: Math.min(3, (inv.dunning_count ?? 0) + 1) as DunningLevel,
             number: inv.number ?? "",
             amountCents: inv.total_cents,
+            issuedOn: inv.issued_on ? formatDate(inv.issued_on) : null,
             dueOn: inv.due_on ? formatDate(inv.due_on) : null,
             comm: inv.structured_comm,
             iban: iss?.issuer_iban ?? "",
             url: `${site}/facture/${inv.id}`,
-            count: (inv.dunning_count ?? 0) + 1,
           }),
         });
       }
