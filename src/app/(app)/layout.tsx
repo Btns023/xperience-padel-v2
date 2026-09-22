@@ -9,6 +9,7 @@ const ROLE_LABEL: Record<AppRole, string> = {
   client: "Espace client",
   coach: "Espace coach",
   admin: "Administration",
+  comptable: "Comptabilité",
 };
 
 export default async function AppLayout({

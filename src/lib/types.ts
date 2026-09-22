@@ -6,7 +6,7 @@
  * Ce fichier ne conserve alors que les alias métier.
  */
 
-export type AppRole = "client" | "coach" | "admin";
+export type AppRole = "client" | "coach" | "admin" | "comptable";
 
 export interface Profile {
   id: string;

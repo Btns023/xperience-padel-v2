@@ -13,6 +13,8 @@ const NAV = [
   { href: "/admin/creneaux", label: "Créneaux" },
   { href: "/admin/lieux", label: "Lieux" },
   { href: "/admin/coachs", label: "Coachs" },
+  { href: "/compta", label: "Comptabilité" },
+  { href: "/admin/comptable", label: "Accès comptable" },
 ];
 
 export default async function AdminLayout({

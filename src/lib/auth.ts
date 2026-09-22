@@ -63,6 +63,8 @@ export function homePathForRole(role: AppRole): string {
       return "/admin";
     case "coach":
       return "/coach";
+    case "comptable":
+      return "/compta";
     default:
       return "/compte";
   }

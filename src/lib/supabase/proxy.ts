@@ -52,6 +52,7 @@ export async function updateSession(request: NextRequest) {
     under("/compte") ||
     under("/coach") ||
     under("/admin") ||
+    under("/compta") ||
     under("/facture");
 
   if (!user && isProtected) {

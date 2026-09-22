@@ -492,6 +492,190 @@ export type Database = {
           },
         ]
       }
+      ledger_attachments: {
+        Row: {
+          created_at: string
+          entry_id: string
+          file_name: string
+          id: string
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          file_name: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          file_name?: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ledger_attachments_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "ledger_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ledger_categories: {
+        Row: {
+          active: boolean
+          annex_post: string | null
+          code: string
+          direction: Database["public"]["Enums"]["ledger_direction"]
+          label: string
+          position: number
+        }
+        Insert: {
+          active?: boolean
+          annex_post?: string | null
+          code: string
+          direction: Database["public"]["Enums"]["ledger_direction"]
+          label: string
+          position?: number
+        }
+        Update: {
+          active?: boolean
+          annex_post?: string | null
+          code?: string
+          direction?: Database["public"]["Enums"]["ledger_direction"]
+          label?: string
+          position?: number
+        }
+        Relationships: []
+      }
+      ledger_entries: {
+        Row: {
+          account: Database["public"]["Enums"]["ledger_account"]
+          amount_cents: number
+          bank_ref: string | null
+          category_code: string | null
+          communication: string | null
+          counterparty: string | null
+          counterparty_iban: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          fiscal_year: number
+          id: string
+          invoice_id: string | null
+          notes: string | null
+          operation_date: string
+          piece_number: string | null
+          source: string
+          statement_no: string | null
+          statement_seq: string | null
+          updated_at: string
+          value_date: string | null
+        }
+        Insert: {
+          account?: Database["public"]["Enums"]["ledger_account"]
+          amount_cents: number
+          bank_ref?: string | null
+          category_code?: string | null
+          communication?: string | null
+          counterparty?: string | null
+          counterparty_iban?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          fiscal_year: number
+          id?: string
+          invoice_id?: string | null
+          notes?: string | null
+          operation_date: string
+          piece_number?: string | null
+          source?: string
+          statement_no?: string | null
+          statement_seq?: string | null
+          updated_at?: string
+          value_date?: string | null
+        }
+        Update: {
+          account?: Database["public"]["Enums"]["ledger_account"]
+          amount_cents?: number
+          bank_ref?: string | null
+          category_code?: string | null
+          communication?: string | null
+          counterparty?: string | null
+          counterparty_iban?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          fiscal_year?: number
+          id?: string
+          invoice_id?: string | null
+          notes?: string | null
+          operation_date?: string
+          piece_number?: string | null
+          source?: string
+          statement_no?: string | null
+          statement_seq?: string | null
+          updated_at?: string
+          value_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ledger_entries_category_code_fkey"
+            columns: ["category_code"]
+            isOneToOne: false
+            referencedRelation: "ledger_categories"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "ledger_entries_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_entries_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ledger_piece_counters: {
+        Row: {
+          fiscal_year: number
+          last_number: number
+        }
+        Insert: {
+          fiscal_year: number
+          last_number?: number
+        }
+        Update: {
+          fiscal_year?: number
+          last_number?: number
+        }
+        Relationships: []
+      }
       locations: {
         Row: {
           active: boolean
@@ -1184,6 +1368,7 @@ export type Database = {
     }
     Functions: {
       accept_coach_invite: { Args: { p_token: string }; Returns: undefined }
+      can_read_accounts: { Args: never; Returns: boolean }
       coach_group_roster: {
         Args: { p_group_id: string }
         Returns: {
@@ -1285,6 +1470,7 @@ export type Database = {
         Args: { p_kind: Database["public"]["Enums"]["invoice_kind"] }
         Returns: number
       }
+      next_piece_number: { Args: { p_year: number }; Returns: string }
       slot_engagements: {
         Args: { p_slot_ids: string[] }
         Returns: {
@@ -1295,11 +1481,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "client" | "coach" | "admin"
+      app_role: "client" | "coach" | "admin" | "comptable"
       group_status: "forming" | "confirmed"
       invitation_status: "none" | "pending" | "accepted"
       invoice_kind: "invoice" | "credit_note"
       invoice_status: "draft" | "sent" | "paid" | "cancelled"
+      ledger_account: "banque" | "caisse" | "epargne"
+      ledger_direction: "recette" | "depense"
       price_tier_kind: "group_size" | "duration" | "unit" | "flat"
       pricing_model: "per_group_size" | "per_duration" | "unit" | "flat"
       product_category:
@@ -1447,11 +1635,13 @@ export const Constants = {
   },
   public: {
     Enums: {
-      app_role: ["client", "coach", "admin"],
+      app_role: ["client", "coach", "admin", "comptable"],
       group_status: ["forming", "confirmed"],
       invitation_status: ["none", "pending", "accepted"],
       invoice_kind: ["invoice", "credit_note"],
       invoice_status: ["draft", "sent", "paid", "cancelled"],
+      ledger_account: ["banque", "caisse", "epargne"],
+      ledger_direction: ["recette", "depense"],
       price_tier_kind: ["group_size", "duration", "unit", "flat"],
       pricing_model: ["per_group_size", "per_duration", "unit", "flat"],
       product_category: [
