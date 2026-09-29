@@ -4,6 +4,12 @@ const KEY = process.env.RESEND_API_KEY;
 const FROM =
   process.env.EMAIL_FROM ?? "Xperience Padel <onboarding@resend.dev>";
 
+/**
+ * Adresse de réponse par défaut. Quel que soit l'expéditeur technique, une
+ * réponse d'un client doit arriver dans une boîte que quelqu'un relève.
+ */
+const REPLY_TO = process.env.EMAIL_REPLY_TO ?? "info@padelxp.be";
+
 const resend = KEY ? new Resend(KEY) : null;
 
 export type SendResult = { sent: boolean; skipped?: string; error?: string };
@@ -32,7 +38,7 @@ export async function sendEmail(opts: {
       to,
       subject: opts.subject,
       html: opts.html,
-      replyTo: opts.replyTo,
+      replyTo: opts.replyTo ?? REPLY_TO,
     });
     if (error) return { sent: false, error: error.message };
     return { sent: true };
