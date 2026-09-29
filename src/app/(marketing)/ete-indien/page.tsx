@@ -7,6 +7,7 @@ import {
   Section,
   SectionHead,
 } from "../_components/ui";
+import { ETE_INDIEN, prix } from "../_components/tarifs";
 
 export const metadata = {
   title: "Été indien 2026 — préparation interclubs",
@@ -52,7 +53,7 @@ export default function EteIndienPage() {
               Tous les joueurs de l&apos;équipe aux 5 séances du cycle
             </span>
             <span className="d text-5xl">
-              400 €{" "}
+              {prix(ETE_INDIEN.forfaitEquipeCents)}{" "}
               <span className="align-baseline text-sm font-normal tracking-normal text-[var(--ink-40)] [font-family:var(--font-body)]">
                 / équipe
               </span>
@@ -67,10 +68,17 @@ export default function EteIndienPage() {
           title={<>Cycle <span className="gold">été indien</span></>}
           lead="5 cours × 1h30 · à partir du 24 août. Terrain, matériel et coaching compris. Prix par joueur selon l'effectif."
         />
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          <PriceCard label="4 joueurs" price="130 €" unit="/ joueur" highlight="Meilleur tarif" />
-          <PriceCard label="3 joueurs" price="170 €" unit="/ joueur" />
-          <PriceCard label="2 joueurs" price="235 €" unit="/ joueur" />
+        <div className="scene mt-10 grid gap-4 sm:grid-cols-3">
+          {ETE_INDIEN.tarifs.map((t, i) => (
+            <Reveal key={t.label} delay={i * 50}>
+              <PriceCard
+                label={t.label}
+                price={prix(t.cents)}
+                unit={t.unit}
+                highlight={t.highlight}
+              />
+            </Reveal>
+          ))}
         </div>
         <div className="mt-8">
           <CtaLink href="/inscription">Réserver l&apos;été indien</CtaLink>

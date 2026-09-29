@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Tilt } from "./depth";
 import { RENTREE } from "./season";
+import { COURS_PRIVE, CYCLES_ENFANTS, prix } from "./tarifs";
 
 type Who = "adulte" | "enfant";
 type Level = "decouvre" | "joue" | "interclubs";
@@ -43,9 +44,9 @@ function resolve(a: Answers): Result | null {
       return {
         eyebrow: "Cours enfant à la carte",
         title: "Coaching individuel",
-        price: "45 €",
+        price: prix(COURS_PRIVE.enfant.h1),
         why: "Un coach pour votre enfant seul, horaire à convenir. Idéal pour rattraper, débloquer un geste ou tester avant de s'engager sur un cycle.",
-        note: "1h · terrain et matériel compris · 65 € en 1h30",
+        note: `1h · terrain et matériel compris · ${prix(COURS_PRIVE.enfant.h15)} en 1h30`,
         href: "/cours-enfants",
         hrefLabel: "Voir les cours enfants",
       };
@@ -53,8 +54,10 @@ function resolve(a: Answers): Result | null {
     return {
       eyebrow: "Cycle enfants & ados",
       title: "Cours collectifs à l'année",
-      price: "dès 150 €",
-      why: "Groupe de son âge, encadré par Andréa Maronet (P300, éducatrice physique). Plus le cycle est long, moins la séance coûte cher — 13 € en cycle complet.",
+      price: `dès ${prix(CYCLES_ENFANTS[0].cents)}`,
+      why: `Groupe de son âge, encadré par Andréa Maronet (P300, éducatrice physique). Trois formules dans le même cours : ${CYCLES_ENFANTS.map(
+        (c) => `${c.nom} (${c.count} cours)`,
+      ).join(", ")} — plus le cycle est long, moins la séance coûte cher.`,
       note: `${KID_SLOTS[a.age]} · séances d'1h · ${RENTREE.enfants.label.toLowerCase()}`,
       href: "/cours-enfants",
       hrefLabel: "Voir les créneaux",
@@ -67,14 +70,14 @@ function resolve(a: Answers): Result | null {
     return {
       eyebrow: "Cours privé",
       title: a.level === "interclubs" ? "Perfectionnement ciblé" : "Un coach pour vous seul",
-      price: "60 €",
+      price: prix(COURS_PRIVE.solo.h1),
       why:
         a.level === "decouvre"
           ? "La façon la plus rapide de partir sur de bonnes bases, sans attendre qu'un groupe se forme."
           : a.level === "joue"
             ? "Une heure pour corriger ce qui résiste depuis des mois : le coach ne travaille que sur votre jeu."
             : "On cible vos points faibles avant la saison d'équipe, sans partager le temps de coaching.",
-      note: "1h en solo · 70 € à deux · 7 j/7, horaire à convenir",
+      note: `1h en solo · ${prix(COURS_PRIVE.duo.h1)} à deux · 7 j/7, horaire à convenir`,
       href: "/cours-prives",
       hrefLabel: "Voir les cours privés",
     };

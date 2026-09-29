@@ -90,12 +90,15 @@ export function SectionHead({
 
 export function PriceCard({
   label,
+  name,
   price,
   unit,
   highlight,
   note,
 }: {
   label: string;
+  /** Nom de la formule, mis en avant au-dessus du libellé. */
+  name?: string;
   price: string;
   unit?: string;
   highlight?: string;
@@ -111,6 +114,9 @@ export function PriceCard({
             <span className="mb-3 w-fit rounded-[2px] bg-[var(--gold)] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-black">
               {highlight}
             </span>
+          ) : null}
+          {name ? (
+            <span className="d mb-1 text-2xl leading-none">{name}</span>
           ) : null}
           <span className="text-sm text-[var(--ink-55)]">{label}</span>
           <span className="d figure mt-3 text-5xl tabular-nums">

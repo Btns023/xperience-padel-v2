@@ -27,6 +27,19 @@ const btn = (href: string, label: string) =>
   `<a href="${href}" style="display:inline-block;background:${ACCENT};color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600">${label}</a>`;
 const p = (t: string) => `<p style="margin:0 0 12px;line-height:1.5">${t}</p>`;
 
+/**
+ * Neutralise le HTML d'un texte saisi par un visiteur. Les autres gabarits
+ * reprennent des données que nous avons nous-mêmes écrites en base ; le
+ * formulaire de contact, lui, est ouvert à tout le monde.
+ */
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export type Mail = { subject: string; html: string };
 
 export function coachInviteMail(o: { coachName: string; url: string }): Mail {
@@ -402,6 +415,45 @@ export function extensionAdminMail(o: {
           `${SITE}/admin/${o.invoiced ? "factures" : "demandes"}`,
           o.invoiced ? "Voir les factures" : "Voir les demandes",
         )}</p>`,
+    ),
+  };
+}
+
+/**
+ * Message envoyé depuis le formulaire de contact du site.
+ * Tout ce que le visiteur écrit est échappé : c'est la seule entrée publique.
+ */
+export function contactMessageMail(o: {
+  name: string;
+  email: string;
+  phone?: string | null;
+  subject: string;
+  message: string;
+}): Mail {
+  const safe = {
+    name: escapeHtml(o.name),
+    email: escapeHtml(o.email),
+    phone: o.phone ? escapeHtml(o.phone) : null,
+    subject: escapeHtml(o.subject),
+    message: escapeHtml(o.message).replace(/\n/g, "<br>"),
+  };
+  const row = (k: string, v: string) =>
+    `<tr><td style="padding:4px 12px 4px 0;color:#5c6b64;white-space:nowrap">${k}</td><td style="padding:4px 0">${v}</td></tr>`;
+
+  return {
+    subject: `Site — ${safe.subject}`,
+    html: layout(
+      "Message depuis le site",
+      `<table role="presentation" style="font-size:14px;margin-bottom:16px">
+        ${row("Nom", safe.name)}
+        ${row("E-mail", `<a href="mailto:${safe.email}">${safe.email}</a>`)}
+        ${safe.phone ? row("Téléphone", safe.phone) : ""}
+        ${row("Objet", safe.subject)}
+      </table>` +
+        `<div style="border-left:3px solid ${ACCENT};padding:2px 0 2px 14px;line-height:1.5">${safe.message}</div>` +
+        p(
+          `<span style="font-size:12px;color:#5c6b64">Répondre à cet e-mail écrit directement à ${safe.name}.</span>`,
+        ),
     ),
   };
 }

@@ -7,6 +7,7 @@ import {
   Section,
   SectionHead,
 } from "../_components/ui";
+import { COURS_PRIVE, prix } from "../_components/tarifs";
 
 export const metadata = {
   title: "Cours privés de padel",
@@ -57,15 +58,15 @@ export default function CoursPrivesPage() {
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <PriceCard
             label="Cours solo · 1 joueur · coaching 100 % personnalisé"
-            price="60 €"
+            price={prix(COURS_PRIVE.solo.h1)}
             unit="/ 1h"
-            note="90 € / 1h30 (×1,5)"
+            note={`${prix(COURS_PRIVE.solo.h15)} / 1h30 (×1,5)`}
           />
           <PriceCard
             label="Cours duo · 2 joueurs · prix total"
-            price="70 €"
+            price={prix(COURS_PRIVE.duo.h1)}
             unit="/ 1h"
-            note="105 € / 1h30 (×1,5)"
+            note={`${prix(COURS_PRIVE.duo.h15)} / 1h30 (×1,5)`}
           />
         </div>
         <p className="mt-4 text-xs text-[var(--ink-40)]">

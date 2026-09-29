@@ -12,6 +12,7 @@ import {
   Section,
   SectionHead,
 } from "./_components/ui";
+import { COURS_PRIVE, prix } from "./_components/tarifs";
 
 const OFFERS = [
   { href: "/cours-adultes", k: "Adultes", t: "Cycles collectifs", d: "9 séances de 1h30, groupes de niveau. Dès 230 € / joueur." },
@@ -322,6 +323,21 @@ export default function HomePage() {
               );
             })}
           </div>
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <CtaLink href="/calendrier-tarifs" variant="ghost">
+              Calendrier complet &amp; tarifs
+            </CtaLink>
+            <span className="text-sm text-[var(--ink-55)]">
+              Aucun cours pendant les{" "}
+              <Link
+                href="/calendrier-tarifs#conges"
+                className="text-[var(--gold)] hover:underline"
+              >
+                congés scolaires
+              </Link>
+              .
+            </span>
+          </div>
         </Section>
       </div>
 
@@ -373,11 +389,14 @@ export default function HomePage() {
                   bare
                   columns={["1 h", "1 h 30"]}
                   rows={[
-                    { label: "Solo", prices: ["60 €", "90 €"] },
+                    {
+                      label: "Solo",
+                      prices: [prix(COURS_PRIVE.solo.h1), prix(COURS_PRIVE.solo.h15)],
+                    },
                     {
                       label: "À deux",
                       hint: "prix total, pas par joueur",
-                      prices: ["70 €", "105 €"],
+                      prices: [prix(COURS_PRIVE.duo.h1), prix(COURS_PRIVE.duo.h15)],
                     },
                   ]}
                   note="Facturation après confirmation, par virement. Aucun paiement en ligne."

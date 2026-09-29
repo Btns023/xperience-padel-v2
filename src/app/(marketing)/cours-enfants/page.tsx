@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Reveal } from "../_components/motion";
 import {
   CtaLink,
@@ -7,6 +8,7 @@ import {
   Section,
   SectionHead,
 } from "../_components/ui";
+import { COURS_PRIVE, CYCLE_ENFANT_TARIFS, prix } from "../_components/tarifs";
 
 export const metadata = {
   title: "Cours de padel enfants & ados",
@@ -117,19 +119,34 @@ export default function CoursEnfantsPage() {
               Plus vous prenez, <span className="gold">moins c&apos;est cher</span>
             </>
           }
-          lead="Séances d'1h · location comprise. Le cycle annuel complet revient à seulement 13 € par séance."
+          lead="Séances d'1h · location comprise. Votre enfant rejoint le groupe de son âge ; vous choisissez seulement la durée de son engagement."
         />
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          <PriceCard label="9 cours · sept. → déc. 2026" price="150 €" unit="/ enfant" />
-          <PriceCard label="18 cours · sept. 2026 → mars 2027" price="275 €" unit="/ enfant" />
-          <PriceCard
-            label="27 cours · sept. 2026 → juin 2027"
-            price="350 €"
-            unit="/ enfant"
-            highlight="Le meilleur calcul"
-            note="≈ 13 € / séance"
-          />
+        <div className="scene mt-10 grid gap-4 sm:grid-cols-3">
+          {CYCLE_ENFANT_TARIFS.map((t, i) => (
+            <Reveal key={t.label} delay={i * 50}>
+              <PriceCard
+                name={t.name}
+                label={t.label}
+                price={prix(t.cents)}
+                unit={t.unit}
+                highlight={t.highlight}
+                note={t.note}
+              />
+            </Reveal>
+          ))}
         </div>
+        <p className="mt-6 max-w-3xl text-sm leading-relaxed text-[var(--ink-55)]">
+          Les trois formules se donnent dans le même cours : un enfant inscrit
+          en « Découverte » qui veut continuer garde sa place et ne paie que la
+          différence. Aucune séance n&apos;est donnée ni comptée pendant les{" "}
+          <Link
+            href="/calendrier-tarifs#conges"
+            className="text-[var(--gold)] hover:underline"
+          >
+            congés scolaires
+          </Link>
+          .
+        </p>
       </Section>
 
       <div className="border-t border-[var(--line)] bg-[var(--bg-2)] band">
@@ -140,8 +157,16 @@ export default function CoursEnfantsPage() {
             lead="Coaching individuel, terrain et matériel compris. Horaires à convenir avec le coach, flexible 7 j/7. 1h30 sur demande (×1,5)."
           />
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
-            <PriceCard label="Par enfant · 1h" price="45 €" unit="/ 1h" />
-            <PriceCard label="Par enfant · 1h30" price="65 €" unit="/ 1h30" />
+            <PriceCard
+              label="Par enfant · 1h"
+              price={prix(COURS_PRIVE.enfant.h1)}
+              unit="/ 1h"
+            />
+            <PriceCard
+              label="Par enfant · 1h30"
+              price={prix(COURS_PRIVE.enfant.h15)}
+              unit="/ 1h30"
+            />
           </div>
           <div className="mt-8">
             <CtaLink href="/inscription">Inscrire mon enfant</CtaLink>

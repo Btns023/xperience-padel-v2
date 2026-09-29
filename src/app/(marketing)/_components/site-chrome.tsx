@@ -17,10 +17,19 @@ const NAV: NavItem[] = [
       { href: "/cours-prives", label: "Cours privés" },
     ],
   },
-  { href: "/stages-ete", label: "Stages été" },
-  { href: "/ete-indien", label: "Été indien" },
+  {
+    // Les deux formules saisonnières, regroupées : elles ne concernent le
+    // visiteur qu'une partie de l'année et encombraient le menu principal.
+    label: "Stages",
+    children: [
+      { href: "/stages-ete", label: "Stages d'été" },
+      { href: "/ete-indien", label: "Été indien" },
+    ],
+  },
+  { href: "/calendrier-tarifs", label: "Calendrier & tarifs" },
   { href: "/coachs", label: "Coachs" },
   { href: "/sponsors", label: "Sponsors" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const LINK_CLS =
@@ -97,7 +106,9 @@ export function SiteHeader() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-x-6 lg:flex">
+        {/* Le menu déroulé demande de la place : en dessous de 1280 px, on
+            bascule sur le menu burger plutôt que de serrer les libellés. */}
+        <nav className="hidden items-center gap-x-5 xl:flex">
           {NAV.map((n) =>
             "children" in n ? (
               <DesktopDropdown key={n.label} label={n.label} items={n.children} />
@@ -112,7 +123,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-3">
           <Link
             href="/connexion"
-            className="hidden text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)] transition-colors hover:text-white sm:inline"
+            className="hidden whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-55)] transition-colors hover:text-white sm:inline"
           >
             Se connecter
           </Link>
@@ -123,7 +134,7 @@ export function SiteHeader() {
             type="button"
             aria-label="Menu"
             onClick={() => setOpen((v) => !v)}
-            className="flex h-9 w-9 items-center justify-center rounded-[2px] border border-[var(--line-3)] text-white lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-[2px] border border-[var(--line-3)] text-white xl:hidden"
           >
             <span className="text-lg leading-none">{open ? "✕" : "≡"}</span>
           </button>
@@ -131,7 +142,7 @@ export function SiteHeader() {
       </div>
 
       {open ? (
-        <nav className="border-t border-[var(--line)] bg-[#070707] px-5 py-3 lg:hidden">
+        <nav className="border-t border-[var(--line)] bg-[#070707] px-5 py-3 xl:hidden">
           <ul className="flex flex-col">
             {NAV.map((n) =>
               "children" in n ? (
@@ -215,6 +226,12 @@ export function SiteFooter() {
             <Link href="/ete-indien" className="text-[var(--ink-40)] hover:text-white">
               Été indien
             </Link>
+            <Link
+              href="/calendrier-tarifs"
+              className="text-[var(--ink-40)] hover:text-white"
+            >
+              Calendrier &amp; tarifs
+            </Link>
           </div>
           <div className="flex flex-col gap-2.5">
             <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
@@ -233,6 +250,9 @@ export function SiteFooter() {
               info@padelxp.be
             </a>
             <span className="text-[var(--ink-40)]">Padel Smash Gembloux</span>
+            <Link href="/contact" className="text-[var(--ink-40)] hover:text-white">
+              Nous écrire
+            </Link>
             <Link
               href="/conditions"
               className="text-[var(--ink-40)] hover:text-white"

@@ -7,6 +7,7 @@ import {
   Section,
   SectionHead,
 } from "../_components/ui";
+import { STAGE_ETE, prix } from "../_components/tarifs";
 
 export const metadata = {
   title: "Stages adultes été 2026",
@@ -92,10 +93,17 @@ export default function StagesEtePage() {
           title={<>Tarif stage <span className="gold">(3 × 2h)</span></>}
           lead="Terrain, matériel et coaching compris. Groupe constitué par les joueurs eux-mêmes."
         />
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          <PriceCard label="4 joueurs" price="105 €" unit="/ personne" highlight="Le plus avantageux" />
-          <PriceCard label="3 joueurs" price="140 €" unit="/ personne" />
-          <PriceCard label="2 joueurs" price="210 €" unit="/ personne" />
+        <div className="scene mt-10 grid gap-4 sm:grid-cols-3">
+          {STAGE_ETE.tarifs.map((t, i) => (
+            <Reveal key={t.label} delay={i * 50}>
+              <PriceCard
+                label={t.label}
+                price={prix(t.cents)}
+                unit={t.unit}
+                highlight={t.highlight}
+              />
+            </Reveal>
+          ))}
         </div>
         <div className="mt-8">
           <CtaLink href="/inscription">S&apos;inscrire à un stage</CtaLink>
