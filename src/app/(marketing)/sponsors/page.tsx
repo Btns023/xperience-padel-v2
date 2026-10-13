@@ -3,12 +3,13 @@ import { PageHero, Section, SectionHead } from "../_components/ui";
 export const metadata = {
   title: "Sponsors & partenaires",
   description:
-    "Les partenaires de Xperience Padel Academy à Gembloux : Pano Gembloux, Bowling Le Leader. Devenez partenaire XPA.",
+    "Les partenaires de Xperience Padel Academy à Gembloux : Pano Gembloux, Bowling Le Leader, Quartson. Devenez partenaire XPA.",
 };
 
 const PARTNERS = [
   { name: "Pano Gembloux", url: "https://pano-gembloux.be" },
   { name: "Bowling Le Leader", url: "https://bowlingleleader.be" },
+  { name: "Quartson", url: "https://www.quartson.be" },
 ];
 
 export default function SponsorsPage() {

@@ -93,7 +93,7 @@ const COACHES = [
   { name: "Nicolas Bertholet", role: "Co-fondateur · P1000", text: "Lecture du terrain chirurgicale, schémas tactiques offensifs." },
   { name: "Stéphane Stellings", role: "Co-fondateur · P700", text: "Prof de tennis certifié. Technique, régularité, progression structurée." },
   { name: "Antonin Hulster", role: "Coach adultes · P500", text: "Automatismes, corrections, développement du jeu offensif." },
-  { name: "Andréa Maronet", role: "Coach enfants · P300", text: "Éducatrice physique. Motricité, coordination et bases techniques pour les 6–18 ans." },
+  { name: "Andréa Maronet", role: "Coach kids · P300", text: "Enseignante de profession. Prépare aussi de jeunes équipes de hockey : rigueur, pédagogie et énergie." },
 ];
 
 /** Les 7 mois de la saison, avec leur numéro (1 = janvier). */

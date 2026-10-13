@@ -55,7 +55,7 @@ function resolve(a: Answers): Result | null {
       eyebrow: "Cycle enfants & ados",
       title: "Cours collectifs à l'année",
       price: `dès ${prix(CYCLES_ENFANTS[0].cents)}`,
-      why: `Groupe de son âge, encadré par Andréa Maronet (P300, éducatrice physique). Trois formules dans le même cours : ${CYCLES_ENFANTS.map(
+      why: `Groupe de son âge, encadré par Andréa Maronet (P300, enseignante de profession). Trois formules dans le même cours : ${CYCLES_ENFANTS.map(
         (c) => `${c.nom} (${c.count} cours)`,
       ).join(", ")} — plus le cycle est long, moins la séance coûte cher.`,
       note: `${KID_SLOTS[a.age]} · séances d'1h · ${RENTREE.enfants.label.toLowerCase()}`,

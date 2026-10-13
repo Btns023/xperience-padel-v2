@@ -67,8 +67,7 @@ export default function CoachsPage() {
             eyebrow="Encadrement kids"
             title={
               <>
-                Une <span className="gold">éducatrice physique</span> pour nos
-                jeunes
+                Une <span className="gold">enseignante</span> pour nos jeunes
               </>
             }
             lead="Le poste de coach kids est pourvu : Andréa Maronet rejoint XPA pour encadrer les 6–18 ans, les mercredis après-midi et les samedis matin."
@@ -81,10 +80,10 @@ export default function CoachsPage() {
                 </div>
                 <h2 className="d mt-2 text-3xl">Andréa Maronet</h2>
                 <p className="mt-3 max-w-2xl text-[var(--ink-55)]">
-                  Joueuse classée P300 et éducatrice physique de formation.
-                  Andréa sait construire une séance pour des jeunes : motricité,
-                  coordination et bases techniques avant tout, dans une ambiance
-                  où l&apos;on a envie de revenir la semaine suivante.
+                  P300 et enseignante de profession, Andréa a l&apos;habitude de
+                  travailler avec les enfants au quotidien. Elle assure aussi la
+                  préparation physique de jeunes équipes de hockey, apportant
+                  rigueur, pédagogie et énergie à chaque séance.
                 </p>
               </div>
             </Reveal>

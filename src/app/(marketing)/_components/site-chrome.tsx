@@ -250,6 +250,14 @@ export function SiteFooter() {
               info@padelxp.be
             </a>
             <span className="text-[var(--ink-40)]">Padel Smash Gembloux</span>
+            <a
+              href="https://www.instagram.com/xperience_padel_academy/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[var(--ink-40)] hover:text-white"
+            >
+              Instagram
+            </a>
             <Link href="/contact" className="text-[var(--ink-40)] hover:text-white">
               Nous écrire
             </Link>

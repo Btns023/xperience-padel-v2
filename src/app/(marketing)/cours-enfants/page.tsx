@@ -74,7 +74,7 @@ export default function CoursEnfantsPage() {
             Offrez-leur la passion <span className="gold">du padel</span>
           </>
         }
-        lead="Des cours adaptés par tranche d'âge, dans une ambiance dynamique et bienveillante. Votre enfant progresse à son rythme, encadré par Andréa Maronet, joueuse P300 et éducatrice physique."
+        lead="Des cours adaptés par tranche d'âge, dans une ambiance dynamique et bienveillante. Votre enfant progresse à son rythme, encadré par Andréa Maronet, joueuse P300 et enseignante de profession."
         primary={{ href: "/inscription", label: "Inscrire mon enfant" }}
         secondary={{ href: "/coachs", label: "Voir les coachs" }}
       />
