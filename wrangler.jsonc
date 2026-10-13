@@ -1,6 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "xperience-padel",
+  // Doit correspondre exactement au nom du Worker créé dans Cloudflare,
+  // sinon `wrangler deploy` en crée un second à côté.
+  "name": "xperience-padel-v2",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-10-13",
   // nodejs_compat : Next.js et le client Supabase utilisent des API Node.
