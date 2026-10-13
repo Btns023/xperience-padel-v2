@@ -9,6 +9,8 @@
   // global_fetch_strictly_public : le Worker sort par l'Internet public pour
   // atteindre son propre domaine, comportement attendu par l'adaptateur.
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Publie le Worker sur <nom>.<compte>.workers.dev, l'adresse de test.
+  "workers_dev": true,
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
