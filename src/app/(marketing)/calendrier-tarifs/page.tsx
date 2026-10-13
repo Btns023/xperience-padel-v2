@@ -247,7 +247,7 @@ export default function CalendrierTarifsPage() {
 
       <Section id="stages">
         <Bloc
-          eyebrow="Stages d'été · juillet et août"
+          eyebrow="Stage intensif · semaines du 19 et du 26 octobre"
           title={
             <>
               Court et <span className="gold">intensif</span>
@@ -256,7 +256,7 @@ export default function CalendrierTarifsPage() {
           lead={`${STAGE_ETE.format}, en soirée. On progresse vite quand on ne redescend pas entre deux séances.`}
           tarifs={STAGE_ETE.tarifs}
           href="/stages-ete"
-          hrefLabel="Voir les stages d'été"
+          hrefLabel="Voir le stage intensif"
         />
       </Section>
 
@@ -266,13 +266,13 @@ export default function CalendrierTarifsPage() {
 
       <Section id="interclubs">
         <Bloc
-          eyebrow="Été indien · fin août à septembre"
+          eyebrow="Été indien · cycle terminé, de retour en fin d'été"
           title={
             <>
               Préparation <span className="gold">interclubs</span>
             </>
           }
-          lead={`${ETE_INDIEN.sessions} cours de ${ETE_INDIEN.duree} pour arriver prêts à la saison d'équipe.`}
+          lead={`${ETE_INDIEN.sessions} cours de ${ETE_INDIEN.duree} pour arriver prêts à la saison d'équipe. Le prochain cycle aura lieu fin août ; les tarifs sont donnés à titre indicatif.`}
           tarifs={ETE_INDIEN.tarifs}
           href="/ete-indien"
           hrefLabel="Voir l'été indien"

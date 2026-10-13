@@ -18,14 +18,13 @@ const OFFERS = [
   { href: "/cours-adultes", k: "Adultes", t: "Cycles collectifs", d: "9 séances de 1h30, groupes de niveau. Dès 230 € / joueur." },
   { href: "/cours-enfants", k: "6–18 ans", t: "Cours enfants & ados", d: "Mercredis après-midi et samedis matin, groupes par âge. Dès 150 €." },
   { href: "/cours-prives", k: "Solo ou duo", t: "Cours privés", d: "Un coach rien que pour vous, 7 j/7. Solo 60 € / 1h." },
-  { href: "/stages-ete", k: "Juillet–Août", t: "Stages d'été", d: "3 × 2h sur une semaine, en soirée. Dès 105 € / personne." },
-  { href: "/ete-indien", k: "Interclubs", t: "Été indien", d: "5 cours pour préparer la saison d'équipe. Offre équipe 400 €." },
+  { href: "/stages-ete", k: "Octobre", t: "Stage intensif", d: "3 × 2h sur une semaine, en soirée. Dès 105 € / personne." },
 ];
 
 export const metadata = {
   title: "Cours & stages de padel à Gembloux",
   description:
-    "Xperience Padel Academy — cours collectifs adultes et enfants, cours privés, stages d'été et préparation interclubs à Gembloux. Coachs P1000, P700, P500, P300.",
+    "Xperience Padel Academy — cours collectifs adultes et enfants, cours privés et stages intensifs à Gembloux. Coachs P1000, P700, P500, P300.",
 };
 
 /** Le calendrier se met à jour tout seul : re-rendu toutes les heures. */
@@ -33,20 +32,13 @@ export const revalidate = 3600;
 
 const CALENDAR = [
   {
-    start: "2026-07-01",
-    end: "2026-08-31",
-    period: "Juillet – Août",
-    title: "Stages adultes",
-    text: "Formule courte et intensive : 3 × 2h en une semaine.",
+    start: "2026-10-19",
+    end: "2026-10-30",
+    period: "Octobre",
+    title: "Stage intensif",
+    date: "Semaines du 19 et du 26 octobre",
+    text: "Formule courte et intensive : 3 × 2h en une semaine, en soirée.",
     href: "/stages-ete",
-  },
-  {
-    start: "2026-08-24",
-    end: "2026-09-30",
-    period: "Fin août – Septembre",
-    title: "Été indien",
-    text: "5 cours pour préparer les interclubs. Offre équipe dédiée.",
-    href: "/ete-indien",
   },
   {
     start: RENTREE.enfants.iso,
@@ -209,7 +201,7 @@ export default function HomePage() {
         <SectionHead
           eyebrow="Toutes nos formules"
           title={<>Le détail, <span className="gold">formule par formule</span></>}
-          lead="Cinq façons de progresser, du cours à l'unité au cycle interclubs. Terrain, matériel et coaching toujours compris."
+          lead="Quatre façons de progresser, du cours à l'unité au cycle à l'année. Terrain, matériel et coaching toujours compris."
         />
         <div className="scene mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {OFFERS.map((o, i) => (

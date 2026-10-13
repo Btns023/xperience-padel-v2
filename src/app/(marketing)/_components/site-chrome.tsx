@@ -17,15 +17,10 @@ const NAV: NavItem[] = [
       { href: "/cours-prives", label: "Cours privés" },
     ],
   },
-  {
-    // Les deux formules saisonnières, regroupées : elles ne concernent le
-    // visiteur qu'une partie de l'année et encombraient le menu principal.
-    label: "Stages",
-    children: [
-      { href: "/stages-ete", label: "Stages d'été" },
-      { href: "/ete-indien", label: "Été indien" },
-    ],
-  },
+  // L'Été indien ne figure plus au menu : le cycle est terminé. La page reste
+  // en ligne pour les liens déjà partagés, elle réapparaîtra la saison
+  // prochaine.
+  { href: "/stages-ete", label: "Stage intensif" },
   { href: "/calendrier-tarifs", label: "Calendrier & tarifs" },
   { href: "/coachs", label: "Coachs" },
   { href: "/sponsors", label: "Sponsors" },
@@ -221,10 +216,7 @@ export function SiteFooter() {
               Cours privés
             </Link>
             <Link href="/stages-ete" className="text-[var(--ink-40)] hover:text-white">
-              Stages été
-            </Link>
-            <Link href="/ete-indien" className="text-[var(--ink-40)] hover:text-white">
-              Été indien
+              Stage intensif
             </Link>
             <Link
               href="/calendrier-tarifs"

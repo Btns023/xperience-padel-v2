@@ -4,7 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { Tilt } from "./depth";
 import { RENTREE } from "./season";
-import { COURS_PRIVE, CYCLES_ENFANTS, prix } from "./tarifs";
+import {
+  COURS_PRIVE,
+  CYCLES_ENFANTS,
+  CYCLE_ADULTE,
+  STAGE_ETE,
+  prix,
+} from "./tarifs";
 
 type Who = "adulte" | "enfant";
 type Level = "decouvre" | "joue" | "interclubs";
@@ -85,36 +91,26 @@ function resolve(a: Answers): Result | null {
 
   if (a.format === "ete") {
     return {
-      eyebrow: "Stage d'été",
+      eyebrow: "Stage intensif",
       title: "Formule courte et intensive",
-      price: "dès 105 €",
+      price: `dès ${prix(STAGE_ETE.tarifs[0].cents)}`,
       why: "Trois séances de 2h sur une même semaine, en soirée. On progresse vite quand on ne redescend pas entre deux cours.",
-      note: "Juillet et août · terrain compris",
+      note: "Semaines du 19 et du 26 octobre · terrain compris",
       href: "/stages-ete",
-      hrefLabel: "Voir les stages",
-    };
-  }
-
-  if (a.level === "interclubs") {
-    return {
-      eyebrow: "Été indien",
-      title: "Préparation interclubs",
-      price: "400 €",
-      why: "Cinq cours pour arriver prêts à la saison d'équipe : schémas, placements et automatismes travaillés ensemble.",
-      note: "Offre équipe · fin août à septembre",
-      href: "/ete-indien",
-      hrefLabel: "Voir l'été indien",
+      hrefLabel: "Voir le stage",
     };
   }
 
   return {
     eyebrow: "Cycle collectif adultes",
     title: a.level === "decouvre" ? "Cycle découverte" : "Cycle groupe de niveau",
-    price: "dès 230 €",
+    price: `dès ${prix(CYCLE_ADULTE.tarifs[0].cents)}`,
     why:
       a.level === "decouvre"
         ? "Neuf séances d'1h30 pour installer les bases dans un groupe de débutants — personne ne joue mieux que vous."
-        : "Neuf séances d'1h30 dans un groupe constitué à votre niveau, pour que chaque échange serve à quelque chose.",
+        : a.level === "interclubs"
+          ? "Neuf séances d'1h30 dans un groupe à votre niveau, pour travailler les automatismes d'équipe. La préparation interclubs dédiée revient en fin d'été."
+          : "Neuf séances d'1h30 dans un groupe constitué à votre niveau, pour que chaque échange serve à quelque chose.",
     note: `9 séances de 1h30 · ${RENTREE.adultes.label.toLowerCase()} · le prix baisse quand le groupe se remplit`,
     href: "/cours-adultes",
     hrefLabel: "Voir les créneaux",
