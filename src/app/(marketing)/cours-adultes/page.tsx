@@ -26,7 +26,7 @@ export default function CoursAdultesPage() {
   return (
     <>
       <PageHero
-        eyebrow="Padel Smash Gembloux · Saison 2026"
+        eyebrow="Padel Smash Gembloutois · Saison 2026"
         title={
           <>
             Cours collectifs <span className="gold">adultes</span>

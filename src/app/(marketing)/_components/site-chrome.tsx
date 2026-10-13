@@ -249,7 +249,7 @@ export function SiteFooter() {
             >
               info@padelxp.be
             </a>
-            <span className="text-[var(--ink-40)]">Padel Smash Gembloux</span>
+            <span className="text-[var(--ink-40)]">Padel Smash Gembloutois</span>
             <a
               href="https://www.instagram.com/xperience_padel_academy/"
               target="_blank"

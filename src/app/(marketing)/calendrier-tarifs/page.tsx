@@ -78,7 +78,7 @@ export default function CalendrierTarifsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Saison 2026-2027 · Padel Smash Gembloux"
+        eyebrow="Saison 2026-2027 · Padel Smash Gembloutois"
         title={
           <>
             Le calendrier et <span className="gold">tous les tarifs</span>

@@ -18,7 +18,7 @@ export const metadata = {
 const FEATURES = [
   ["Spécial interclubs", "Programme conçu pour préparer efficacement les matchs d'équipe de l'automne."],
   ["5 cours intensifs", "Un cycle court mais puissant, fin août et septembre, idéal avant la reprise."],
-  ["Offre équipe", "Tarif préférentiel pour les équipes inscrites en interclubs au Padel Smash Gembloux."],
+  ["Offre équipe", "Tarif préférentiel pour les équipes inscrites en interclubs au Padel Smash Gembloutois."],
 ];
 
 export default function EteIndienPage() {

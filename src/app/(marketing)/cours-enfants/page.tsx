@@ -68,7 +68,7 @@ export default function CoursEnfantsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Mercredi après-midi & samedi matin · Padel Smash Gembloux"
+        eyebrow="Mercredi après-midi & samedi matin · Padel Smash Gembloutois"
         title={
           <>
             Offrez-leur la passion <span className="gold">du padel</span>
@@ -96,14 +96,14 @@ export default function CoursEnfantsPage() {
             <Reveal>
               <Planning
                 title="Planning mercredis"
-                subtitle="Padel Smash Gembloux · après-midi"
+                subtitle="Padel Smash Gembloutois · après-midi"
                 rows={MERCREDI}
               />
             </Reveal>
             <Reveal delay={60}>
               <Planning
                 title="Planning samedis · Nouveau"
-                subtitle="Padel Smash Gembloux · matin"
+                subtitle="Padel Smash Gembloutois · matin"
                 rows={SAMEDI}
               />
             </Reveal>

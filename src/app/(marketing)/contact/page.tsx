@@ -7,11 +7,11 @@ import { CONTACT_EMAIL, CONTACT_PHONE } from "./coordonnees";
 export const metadata = {
   title: "Contact",
   description:
-    "Contactez l'Xperience Padel Academy à Gembloux : 0473 60 72 07, info@padelxp.be, Padel Smash Gembloux, Chaussée de Charleroi 206.",
+    "Contactez l'Xperience Padel Academy à Gembloux : 0473 60 72 07, info@padelxp.be, Padel Smash Gembloutois, Chaussée de Charleroi 206.",
 };
 
 const TERRAIN = {
-  nom: "Padel Smash Gembloux",
+  nom: "Padel Smash Gembloutois",
   rue: "Chaussée de Charleroi 206",
   ville: "5030 Gembloux",
 };
