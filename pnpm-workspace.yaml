@@ -1,3 +1,8 @@
+# Dépendances autorisées à exécuter leur script d'installation.
+# esbuild et workerd téléchargent un binaire natif : l'adaptateur Cloudflare
+# ne peut pas construire le site sans eux.
 allowBuilds:
+  esbuild: true
   sharp: false
   unrs-resolver: false
+  workerd: true

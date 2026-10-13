@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "xperience-padel",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-13",
+  // nodejs_compat : Next.js et le client Supabase utilisent des API Node.
+  // global_fetch_strictly_public : le Worker sort par l'Internet public pour
+  // atteindre son propre domaine, comportement attendu par l'adaptateur.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+
+  // À FAIRE — tâches planifiées.
+  // Vercel appelait deux routes HTTP (voir l'ancien vercel.json) :
+  //   /api/cron/reminders  tous les jours à 7h   "0 7 * * *"
+  //   /api/cron/dunning    le lundi à 8h         "0 8 * * 1"
+  // Chez Cloudflare, un « cron trigger » appelle un handler `scheduled` que le
+  // worker généré par OpenNext n'expose pas. Les deux routes restent valables
+  // et protégées par CRON_SECRET : il faut un petit worker séparé qui les
+  // appelle, ou un point d'entrée personnalisé. Tant que ce n'est pas fait,
+  // ni les rappels de séance ni les relances d'impayés ne partent tout seuls.
+}
