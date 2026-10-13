@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Sortie de l'adaptateur Cloudflare : un bundle d'un seul tenant, que
+    // ESLint tentait d'analyser jusqu'à épuiser la mémoire.
+    ".open-next/**",
+    ".wrangler/**",
+    "cloudflare-env.d.ts",
   ]),
 ]);
 
